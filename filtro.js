@@ -72,8 +72,8 @@ window.Filtro = (() => {
       if (!suave || suave.length !== faces.length) suave = faces.map(() => null);
       faces.forEach((f, n) => {
         const a = P(f, 33), b = P(f, 263), e = P(f, 234), d = P(f, 454), t = P(f, 10), m = P(f, 168);
-        const alvo = {ang: Math.atan2(a[1] - b[1], a[0] - b[0]) + (a[0] < b[0] ? 0 : Math.PI), lw: Math.hypot(d[0] - e[0], d[1] - e[1]), ow: Math.hypot(b[0] - a[0], b[1] - a[1]), t, m};
-        if (alvo.ang > Math.PI) alvo.ang -= Math.PI * 2;
+        const [L, R] = a[0] < b[0] ? [a, b] : [b, a];   // olho da esquerda e da direita na tela
+        const alvo = {ang: Math.atan2(R[1] - L[1], R[0] - L[0]), lw: Math.hypot(d[0] - e[0], d[1] - e[1]), ow: Math.hypot(b[0] - a[0], b[1] - a[1]), t, m};
         const g = suave[n] || (suave[n] = alvo), k = .45;
         ['ang', 'lw', 'ow'].forEach(p => g[p] += (alvo[p] - g[p]) * k);
         ['t', 'm'].forEach(p => g[p] = [g[p][0] + (alvo[p][0] - g[p][0]) * k, g[p][1] + (alvo[p][1] - g[p][1]) * k]);
