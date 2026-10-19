@@ -300,9 +300,9 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
 #vip .fita.b{bottom:9%;transform:translateX(120%) rotate(7deg);transition:transform .7s var(--ease) .1s}
 #vip.on.go .fita.a{transform:rotate(-9deg)}#vip.on.go .fita.b{transform:rotate(7deg)}
 #vip .miolo{position:absolute;inset:0;max-width:420px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 92px) 24px 0;display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2}
-#vip .bf{width:150px;opacity:0;transform:scale(2.2) rotate(-8deg)}
+#vip .bf{width:220px;opacity:0;transform:scale(2.2) rotate(-8deg)}
 #vip.go .bf{opacity:1;transform:rotate(-4deg);transition:opacity .2s .5s,transform .5s cubic-bezier(.3,1.6,.5,1) .5s}
-#vip .ac{width:250px;margin-top:16px;opacity:0;transform:translateY(12px)}
+#vip .ac{margin:16px 0 10px;padding:9px 22px 7px;background:var(--amarelo);color:var(--preto);font:400 30px/1 Anton;letter-spacing:.02em;box-shadow:5px 5px 0 #000,5px 5px 0 1.5px #fdc72f55;rotate:-1.5deg;opacity:0;transform:translateY(12px)}
 #vip .ok{font:700 10px "Courier Prime";letter-spacing:.2em;color:var(--amarelo);margin-top:14px;opacity:0}
 #vip p.t{color:#e8e8e8;font-size:14px;line-height:1.5;margin-top:8px;max-width:310px;opacity:0;transform:translateY(12px)}
 #vip p.t b{color:var(--amarelo)}
@@ -614,9 +614,9 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 <div id="vip">
   <div class="fita a"><span></span></div>
   <div class="miolo">
-    <img class="bf" src="assets/logo.png" alt="Black Friday">
+    <img class="bf" src="assets/cb-logo.png" alt="Caso Black">
     <div class="ok">CASO RESOLVIDO · SUSPEITO DESMASCARADO</div>
-    <img class="ac" src="assets/acesso.png" alt="Acesso antecipado">
+    <div class="ac">ACESSO ANTECIPADO</div>
     <p class="t">Parabéns, investigador(a). Você entrou na <b>lista VIP da Black Friday Village</b> e vê as ofertas <b>antes de todo mundo</b>.</p>
     <div class="selos" id="vipSelos"></div>
     <button class="btn" id="garantir">Garantir meu acesso</button>
