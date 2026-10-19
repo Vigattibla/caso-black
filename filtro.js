@@ -1,11 +1,13 @@
 /* Caso Black · foto de detetive (fim do caso)
    Câmera frontal + MediaPipe Face Landmarker: chapéu na testa e óculos nos olhos, moldura por cima.
-   Artes (PNG transparente) em assets/filtro/: chapeu.png, oculos.png, moldura.png (1080x1920).
+   Artes (PNG transparente) em assets/filtro/: chapeu.png, oculos.png, moldura.png (1080x1920, fonte moldura.svg).
+   Com moldura, a câmera entra só no furo da folha (JANELA, girada como a folha).
    Sem arquivo, usa o desenho reserva. Sem rastreio (modelo não carregou), o chapéu fica fixo no topo. */
 window.Filtro = (() => {
   const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
   const MODELO = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
   const W = 1080, H = 1920, img = {};
+  const JANELA = {cx: 539.35, cy: 755, w: 724, h: 824, ang: -2.5 * Math.PI / 180};   // furo de moldura.svg (+2 px por baixo da borda)
   let rosto = null, carregando = null, fluxo = null, laco = 0, ui = null, ultimo = null, suave = null;
 
   const carregaImg = n => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `assets/filtro/${n}.png` });
@@ -64,11 +66,14 @@ window.Filtro = (() => {
     if (!fluxo) return;
     const v = $('#fiV'), c = $('#fiC'), x = c.getContext('2d'), vw = v.videoWidth, vh = v.videoHeight;
     if (vw) {
-      const s = Math.max(W / vw, H / vh), dw = vw * s, dh = vh * s, ox = (W - dw) / 2, oy = (H - dh) / 2;
-      x.save(); x.translate(W, 0); x.scale(-1, 1); x.drawImage(v, ox, oy, dw, dh); x.restore();   // espelhado, como um espelho
+      const J = img.moldura ? JANELA : {cx: W / 2, cy: H / 2, w: W, h: H, ang: 0};
+      x.fillStyle = '#111'; x.fillRect(0, 0, W, H);
+      x.save(); x.translate(J.cx, J.cy); x.rotate(J.ang); x.beginPath(); x.rect(-J.w / 2, -J.h / 2, J.w, J.h); x.clip(); x.translate(-J.w / 2, -J.h / 2);
+      const s = Math.max(J.w / vw, J.h / vh), dw = vw * s, dh = vh * s, ox = (J.w - dw) / 2, oy = (J.h - dh) / 2;
+      x.save(); x.translate(J.w, 0); x.scale(-1, 1); x.drawImage(v, ox, oy, dw, dh); x.restore();   // espelhado, como um espelho
       let faces = [];
       if (rosto) { try { faces = rosto.detectForVideo(v, performance.now()).faceLandmarks || [] } catch (e) {} }
-      const P = (f, i) => [W - (ox + f[i].x * dw), oy + f[i].y * dh];
+      const P = (f, i) => [J.w - (ox + f[i].x * dw), oy + f[i].y * dh];
       if (!suave || suave.length !== faces.length) suave = faces.map(() => null);
       faces.forEach((f, n) => {
         const a = P(f, 33), b = P(f, 263), e = P(f, 234), d = P(f, 454), t = P(f, 10), m = P(f, 168);
@@ -86,7 +91,8 @@ window.Filtro = (() => {
         if (img.chapeu) { const ch = cw * img.chapeu.height / img.chapeu.width; x.drawImage(img.chapeu, -cw / 2, -ch, cw, ch) } else chapeuReserva(x, cw);
         x.restore();
       });
-      if (!faces.length) { x.save(); x.translate(W / 2, H * .3); if (img.chapeu) { const cw = W * .62, ch = cw * img.chapeu.height / img.chapeu.width; x.drawImage(img.chapeu, -cw / 2, -ch, cw, ch) } else chapeuReserva(x, W * .62); x.restore() }
+      if (!faces.length) { x.save(); x.translate(J.w / 2, J.h * .3); const cw = J.w * .62; if (img.chapeu) { const ch = cw * img.chapeu.height / img.chapeu.width; x.drawImage(img.chapeu, -cw / 2, -ch, cw, ch) } else chapeuReserva(x, cw); x.restore() }
+      x.restore();
       $('#fiMsg').textContent = faces.length ? '' : rosto ? 'MOSTRE O ROSTO PRA CÂMERA' : 'ENCAIXE A CABEÇA NO CHAPÉU';
       if (img.moldura) x.drawImage(img.moldura, 0, 0, W, H); else molduraReserva(x);
     }
