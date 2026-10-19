@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vitrine das provas</title><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Revisão de design: as 5 provas (desafio + molde da foto) lado a lado, cada uma num celular 375px jogável. */
+body{margin:0;background:#0d0b0a;color:#F4F1EA;font:14px "Courier Prime",monospace;padding:28px 20px 60px}
+h1{font:400 34px Anton;margin:0;color:#FDC72F;letter-spacing:.02em}
+.sub{color:#aaa;margin:6px 0 26px;max-width:760px}
+.turma{display:flex;gap:18px;align-items:flex-end;margin-bottom:34px;flex-wrap:wrap}
+.turma figure{margin:0;text-align:center}.turma img{height:110px;display:block;margin:0 auto 6px}.turma figcaption{font-size:11px;color:#999}
+section{margin-bottom:44px}
+h2{font:400 22px Anton;margin:0 0 4px;letter-spacing:.04em}h2 span{color:#FDC72F}
+.d{color:#aaa;margin:0 0 14px;font-size:12px;max-width:760px}
+.par{display:flex;gap:22px;flex-wrap:wrap}
+.tel{width:375px;max-width:100%}.tel small{display:block;color:#888;font-size:11px;margin-bottom:6px;letter-spacing:.12em}
+iframe{width:375px;max-width:100%;height:760px;border:0;border-radius:26px;box-shadow:0 0 0 8px #222,0 20px 50px #000;background:#141210}
+a{color:#FDC72F}
+</style></head><body>
+<h1>VITRINE · PROVAS DO CASO BLACK</h1>
+<p class="sub">Cada celular é a prova de verdade, jogável. À esquerda o desafio; à direita o molde da foto (com foto de exemplo). Sprites são provisórios.</p>
+<div class="turma">
+  <figure><img src="assets/lucas.webp" alt=""><figcaption>LUCAS · Água e Sabor</figcaption></figure>
+  <figure><img src="assets/gabi.webp" alt=""><figcaption>GABI · Kids</figcaption></figure>
+  <figure><img src="assets/pipoca.webp" alt=""><figcaption>PIPOCA · Natureza</figcaption></figure>
+  <figure><img src="assets/be-corpo.webp" alt=""><figcaption>BÊ · aparece no fim</figcaption></figure>
+</div>
+<div id="lista"></div>
+<script>
+const P=[['01','ÁGUA','Lucas','Jogo da memória na piscina: 6 pares (boia, pato, óculos de natação, picolé, sol, chinelo). Cartas viram em 3D.'],
+ ['02','SABOR','Lucas','Receita secreta do Bê: bilhete com 4 charadas, toalha xadrez e 8 pratos. Ingrediente certo risca a linha.'],
+ ['03','KIDS','Gabi','Pegadas na caixa de areia: tocar da menor pra maior. Trilha tracejada liga os passos; errou, recomeça.'],
+ ['04','NATUREZA','Pipoca','Cena da trilha com 5 objetos do Bê escondidos (chapéu, óculos, osso, lupa, bilhete). Lista de achados embaixo.'],
+ ['05','LOBBY','turma toda','Cofre de 4 dígitos: cada personagem dá uma pista. Código certo: luz verde, porta abre e mostra bilhete do Bê.']];
+document.getElementById('lista').innerHTML=P.map(([n,l,a,d],i)=>`<section><h2>PROVA ${n} · <span>${l}</span> · ${a}</h2><p class="d">${d}</p>
+ <div class="par"><div class="tel"><small>1 · DESAFIO</small><iframe loading="lazy" src="prova-demo.html?p=${i}"></iframe></div>
+ <div class="tel"><small>2 · MOLDE DA FOTO</small><iframe loading="lazy" src="prova-demo.html?p=${i}&m=foto"></iframe></div></div></section>`).join('');
+</script></body></html>
