@@ -333,11 +333,15 @@ body.aberto .be.fala{animation:fala .5s}
 .vira svg{width:20px;height:20px}.vira.ant{left:max(14px,calc(50% - 190px))}.vira.prox{right:max(14px,calc(50% - 190px))}
 body.aberto .vira{opacity:1;transform:none}body.aberto .vira[disabled]{opacity:.25}
 body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes chama{50%{transform:translateX(5px);box-shadow:0 0 0 2px var(--amarelo)}}
-.balao{position:fixed;left:50%;translate:-50% 0;width:max-content;bottom:calc(env(safe-area-inset-bottom) + 84px);z-index:47;max-width:min(280px,calc(100vw - 24px));background:#fffdf6;color:var(--preto);border:2px solid var(--preto);box-shadow:3px 3px 0 var(--preto);border-radius:10px;padding:10px 12px 11px;font:600 13px/1.4 Montserrat;
-  opacity:0;transform:translateY(8px) scale(.96);transform-origin:20px 100%;pointer-events:none;transition:opacity .25s,transform .3s cubic-bezier(.3,1.4,.5,1)}
+.balao{position:fixed;left:50%;translate:-50% 0;bottom:calc(env(safe-area-inset-bottom) + 84px);z-index:47;width:min(340px,calc(100vw - 24px));background:#16140f;color:#fffdf6;border:2px solid var(--amarelo);border-radius:8px;border-top-left-radius:0;padding:13px 14px 17px;font:500 13px/1.4 Montserrat;
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .25s,transform .3s cubic-bezier(.3,1.4,.5,1)}
 .balao.on{opacity:1;transform:none;pointer-events:auto}
-.balao b{display:block;font:400 14px Anton;letter-spacing:.06em;color:var(--verm);margin-bottom:2px}
-.balao::after{display:none;content:"";position:absolute;left:20px;bottom:-9px;width:14px;height:14px;background:#fffdf6;border-right:2px solid var(--preto);border-bottom:2px solid var(--preto);transform:rotate(45deg)}
+.balao b{display:block;font:400 13px Anton;letter-spacing:.06em;color:var(--amarelo);margin-bottom:2px}
+.beQ{position:absolute;left:-2px;bottom:100%;margin-bottom:-2px;width:72px;height:72px;border:2px solid var(--preto);border-bottom:0;border-radius:6px 6px 0 0;background:var(--amarelo) radial-gradient(#e0a800 1.2px,transparent 1.4px) 0 0/6px 6px;overflow:hidden;opacity:0;transform:translateX(-28px);transition:transform .4s cubic-bezier(.3,1.4,.5,1) .05s,opacity .2s .05s}
+.balao.on .beQ{opacity:1;transform:none}
+.beQ img{position:absolute;left:0;bottom:0;width:100%}
+.beNome{position:absolute;left:80px;top:-12px;background:var(--amarelo);color:var(--preto);font:400 12px/1 Anton;letter-spacing:.08em;padding:4px 9px 3px;border:2px solid var(--preto);border-radius:3px}
+.beSeta{position:absolute;right:9px;bottom:4px;color:var(--amarelo);font-size:10px;animation:beSeta 1s steps(2) infinite}@keyframes beSeta{50%{opacity:0}}
 #sheet textarea{width:100%;border:1.5px dashed #0005;border-radius:4px;background:repeating-linear-gradient(#fff0 0 23px,#0000001a 23px 24px),#fffdf6;padding:2px 10px;font:700 19px/24px Caveat;color:#1b2a6b;resize:none;outline:none}
 #sheet textarea:focus{border-color:var(--preto)}
 /* lupa */
@@ -577,7 +581,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
   <div class="rola"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>OU ARRASTE PRO LADO</div>
 </div>
 <button class="fab" id="lupaBtn" aria-label="Abrir a lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>LUPA</button>
-<div class="balao" id="balao" role="status"></div>
+<div class="balao" id="balao" role="status"><div class="beQ"><img src="assets/be-busto.png" alt=""></div><span class="beNome">BÊ</span><div id="beTx"></div><span class="beSeta" aria-hidden="true">▼</span></div>
 
 <div id="fimAnim" aria-hidden="true">
   <div class="luzC"></div>
@@ -858,7 +862,7 @@ const DICAS={relatorio:'Oi, eu sou o Bê! Vou te ajudar no caso. Arraste a folha
  suspeito:'Cada placa que você achar desenha um pedaço desse retrato. Quem será esse aí, hein?',
  evidencias:'Ele levou as 4 ofertas da Black! Bora recuperar tudo antes do check-out.',
  quadro:'As 5 placas estão nesses lugares. Achou uma? Toque na LUPA e aponte pro quadriculado.'};
-function beFala(t,tit){const B=$('#balao'),be=$('#beBtn')||document.createElement('i');B.innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
+function beFala(t,tit){const B=$('#balao'),be=$('#beBtn')||document.createElement('i');$('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
 function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
   const ch=chave();beFala(ch.feito?'Caso fechado! Você me pegou, hein?':ch.ok?'Provas completas! Pega sua carta, abre a lupa e aponta pro selo no verso. Quero ver de quem é essa digital...':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra da placa.')}
