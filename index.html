@@ -571,7 +571,7 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
   <div class="falso">QUEM ACHAR<br>AS 5 PISTAS<br>LEVA TUDO</div>
   <div class="aro"></div>
   <button class="x" id="lupaX" aria-label="Fechar lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  <div class="info"><b>LUPA DE TINTA INVISÍVEL</b><p id="lupaTxt">Aponte para o quadro TINTA INVISÍVEL no verso da carta. A lente apaga o vermelho e revela a mensagem secreta.</p></div>
+  <div class="info"><b>LUPA DE TINTA INVISÍVEL</b><p id="lupaTxt">Passe a lente pelas rasuras vermelhas da carta, frente e verso. Ela apaga o vermelho e revela o que está escondido.</p></div>
 </div>
 <div id="toast" role="status"></div>
 
@@ -758,7 +758,7 @@ async function abrirLupa(){const L=$('#lupa');L.classList.add('on');L.classList.
     const v=$('#lupaV');v.srcObject=fluxo;await v.play();const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
     (function quadro(){if(!fluxo)return;const w=c.width=Math.min(480,v.videoWidth||480),h=c.height=Math.round(w*(v.videoHeight||640)/(v.videoWidth||480));
       x.drawImage(v,0,0,w,h);const d=x.getImageData(0,0,w,h),a=d.data;
-      for(let i=0;i<a.length;i+=4){let r=a[i];r=(r-110)*2.2+128;r=r<0?0:r>255?255:r;a[i]=a[i+1]=a[i+2]=r}
+      for(let i=0;i<a.length;i+=4){let r=a[i];r=(r-130)*3+128;r=r<0?0:r>255?255:r;a[i]=a[i+1]=a[i+2]=r}
       x.putImageData(d,0,0);laco=requestAnimationFrame(quadro)})();
   }catch(e){L.classList.add('semcam');$('#lupaTxt').textContent='Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
 }
