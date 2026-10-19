@@ -56,6 +56,7 @@
 .fiBar{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 22px);display:flex;justify-content:center;gap:10px;padding:0 20px}
 .fiBar.pronta,#filtro.foto .fiBar.vivo,#filtro.foto .fiMsg{display:none}
 #filtro.foto .fiBar.pronta{display:flex}
+.fiDica{display:none;z-index:3}#filtro.foto .fiDica{display:block}
 .fiBar .btn{flex:1;max-width:200px;margin:0}
 .fiBar .btn.alt{background:#f2f2f2}
 .fiDisp{width:76px;height:76px;border-radius:50%;background:var(--amarelo);border:5px solid #fff;box-shadow:0 0 0 3px #0008}

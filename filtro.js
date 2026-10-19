@@ -1,20 +1,20 @@
 /* Caso Black · foto de detetive (fim do caso)
-   Câmera frontal + MediaPipe Face Landmarker: chapéu na testa e óculos nos olhos, moldura por cima.
-   Artes (PNG transparente) em assets/filtro/: chapeu.png, oculos.png, moldura.png (1080x1920, fonte moldura.svg).
-   Com moldura, a câmera entra só no furo da folha (JANELA, girada como a folha).
+   Câmera frontal + MediaPipe Face Landmarker: chapéu na testa e óculos nos olhos, selo leve por cima.
+   O hóspede posta a foto no story marcando o Village; a equipe reposta na moldura da pasta (moldura.html).
+   Artes (PNG transparente) em assets/filtro/: chapeu.png, oculos.png, selo.png (1080x1920, textos entre y=250 e 1670).
    Sem arquivo, usa o desenho reserva. Sem rastreio (modelo não carregou), o chapéu fica fixo no topo. */
 window.Filtro = (() => {
   const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
   const MODELO = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
   const W = 1080, H = 1920, img = {};
-  const JANELA = {cx: 539.35, cy: 835, w: 724, h: 824, ang: -2.5 * Math.PI / 180};   // furo de moldura.svg (+2 px por baixo da borda)
+  const ARROBA = '@villageresortmg';
   let rosto = null, carregando = null, fluxo = null, laco = 0, ui = null, ultimo = null, suave = null;
 
   const carregaImg = n => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `assets/filtro/${n}.png` });
   async function prepara() {
     if (carregando) return carregando;
     carregando = (async () => {
-      [img.chapeu, img.oculos, img.moldura] = await Promise.all(['chapeu', 'oculos', 'moldura'].map(carregaImg));
+      [img.chapeu, img.oculos, img.selo] = await Promise.all(['chapeu', 'oculos', 'selo'].map(carregaImg));
       img.logo = await new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = 'assets/cb-logo.png' });
       try {
         const v = await import(MP + '/vision_bundle.mjs');
@@ -32,6 +32,7 @@ window.Filtro = (() => {
       <button class="x" id="fiX" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <div class="fiMsg" id="fiMsg">PREPARANDO O DISFARCE…</div>
       <div class="fiBar vivo"><button class="fiDisp" id="fiDisp" aria-label="Tirar foto"></button></div>
+      <p class="fiDica" style="position:absolute;left:16px;right:16px;bottom:96px;margin:0;text-align:center;font:700 13px 'Courier Prime',monospace;color:#fff;text-shadow:0 1px 3px #000">POSTA NO STORY E MARCA ${ARROBA}<br>A GENTE REPOSTA NO ARQUIVO DO CASO!</p>
       <div class="fiBar pronta"><button class="btn alt" id="fiDe">Refazer</button><button class="btn brilho" id="fiShare">Compartilhar</button></div>
     </div>`);
     ui = $('#filtro');
@@ -53,12 +54,14 @@ window.Filtro = (() => {
     [-1, 1].forEach(s => { x.beginPath(); x.arc(s * w * .25, 0, r, 0, Math.PI * 2); x.fill(); x.stroke() });
     x.beginPath(); x.moveTo(-w * .05, -r * .2); x.quadraticCurveTo(0, -r * .5, w * .05, -r * .2); x.stroke(); x.restore();
   }
-  function molduraReserva(x) {
-    x.save(); x.lineWidth = 36; x.strokeStyle = '#FDC72F'; x.strokeRect(18, 18, W - 36, H - 36);
-    x.fillStyle = '#111'; x.fillRect(0, H - 250, W, 250);
-    x.fillStyle = '#FDC72F'; x.font = '400 92px Anton'; x.textAlign = 'center'; x.fillText('INVESTIGADOR OFICIAL', W / 2, H - 140);
-    x.fillStyle = '#fff'; x.font = '700 34px "Courier Prime"'; x.fillText('CASO Nº 2026-BF · VILLAGE RESORT', W / 2, H - 80);
-    if (img.logo) { const lw = 300, lh = lw * img.logo.height / img.logo.width; x.drawImage(img.logo, 60, 60, lw, lh) }
+  function seloReserva(x) {   // fora das faixas que o Instagram cobre (250 px em cima e embaixo)
+    x.save();
+    if (img.logo) { const lw = 320, lh = lw * img.logo.height / img.logo.width; x.drawImage(img.logo, 56, 270, lw, lh) }
+    x.translate(W / 2, 1560); x.rotate(-.04);
+    x.fillStyle = '#FDC72F'; x.fillRect(-400, -120, 800, 120);
+    x.fillStyle = '#111'; x.font = '400 88px Anton'; x.textAlign = 'center'; x.fillText('INVESTIGADOR OFICIAL', 0, -26);
+    x.fillRect(-400, 0, 800, 64);
+    x.fillStyle = '#fff'; x.font = '700 30px "Courier Prime"'; x.fillText(`CASO BLACK · ${ARROBA}`, 0, 43);
     x.restore();
   }
 
@@ -66,14 +69,11 @@ window.Filtro = (() => {
     if (!fluxo) return;
     const v = $('#fiV'), c = $('#fiC'), x = c.getContext('2d'), vw = v.videoWidth, vh = v.videoHeight;
     if (vw) {
-      const J = img.moldura ? JANELA : {cx: W / 2, cy: H / 2, w: W, h: H, ang: 0};
-      x.fillStyle = '#111'; x.fillRect(0, 0, W, H);
-      x.save(); x.translate(J.cx, J.cy); x.rotate(J.ang); x.beginPath(); x.rect(-J.w / 2, -J.h / 2, J.w, J.h); x.clip(); x.translate(-J.w / 2, -J.h / 2);
-      const s = Math.max(J.w / vw, J.h / vh), dw = vw * s, dh = vh * s, ox = (J.w - dw) / 2, oy = (J.h - dh) / 2;
-      x.save(); x.translate(J.w, 0); x.scale(-1, 1); x.drawImage(v, ox, oy, dw, dh); x.restore();   // espelhado, como um espelho
+      const s = Math.max(W / vw, H / vh), dw = vw * s, dh = vh * s, ox = (W - dw) / 2, oy = (H - dh) / 2;
+      x.save(); x.translate(W, 0); x.scale(-1, 1); x.drawImage(v, ox, oy, dw, dh); x.restore();   // espelhado, como um espelho
       let faces = [];
       if (rosto) { try { faces = rosto.detectForVideo(v, performance.now()).faceLandmarks || [] } catch (e) {} }
-      const P = (f, i) => [J.w - (ox + f[i].x * dw), oy + f[i].y * dh];
+      const P = (f, i) => [W - (ox + f[i].x * dw), oy + f[i].y * dh];
       if (!suave || suave.length !== faces.length) suave = faces.map(() => null);
       faces.forEach((f, n) => {
         const a = P(f, 33), b = P(f, 263), e = P(f, 234), d = P(f, 454), t = P(f, 10), m = P(f, 168);
@@ -91,10 +91,9 @@ window.Filtro = (() => {
         if (img.chapeu) { const ch = cw * img.chapeu.height / img.chapeu.width; x.drawImage(img.chapeu, -cw / 2, -ch, cw, ch) } else chapeuReserva(x, cw);
         x.restore();
       });
-      if (!faces.length) { x.save(); x.translate(J.w / 2, J.h * .3); const cw = J.w * .62; if (img.chapeu) { const ch = cw * img.chapeu.height / img.chapeu.width; x.drawImage(img.chapeu, -cw / 2, -ch, cw, ch) } else chapeuReserva(x, cw); x.restore() }
-      x.restore();
+      if (!faces.length) { x.save(); x.translate(W / 2, H * .3); const cw = W * .62; if (img.chapeu) { const ch = cw * img.chapeu.height / img.chapeu.width; x.drawImage(img.chapeu, -cw / 2, -ch, cw, ch) } else chapeuReserva(x, cw); x.restore() }
       $('#fiMsg').textContent = faces.length ? '' : rosto ? 'MOSTRE O ROSTO PRA CÂMERA' : 'ENCAIXE A CABEÇA NO CHAPÉU';
-      if (img.moldura) x.drawImage(img.moldura, 0, 0, W, H); else molduraReserva(x);
+      if (img.selo) x.drawImage(img.selo, 0, 0, W, H); else seloReserva(x);
     }
     laco = requestAnimationFrame(quadro);
   }
@@ -121,10 +120,10 @@ window.Filtro = (() => {
     if (!ultimo) return;
     const arq = new File([ultimo], 'caso-black-detetive.jpg', {type: 'image/jpeg'});
     try {
-      if (navigator.canShare && navigator.canShare({files: [arq]})) return await navigator.share({files: [arq], title: 'Caso Black', text: 'Resolvi o Caso Black no Village Resort! #CasoBlack'});
+      if (navigator.canShare && navigator.canShare({files: [arq]})) return await navigator.share({files: [arq], title: 'Caso Black', text: `Resolvi o Caso Black no Village Resort! ${ARROBA} #CasoBlack`});
     } catch (e) { if (e.name === 'AbortError') return }
     const a = document.createElement('a'); a.href = URL.createObjectURL(ultimo); a.download = arq.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    toast('Foto salva. Posta e marca o Village!');
+    toast(`Foto salva. Posta no story e marca ${ARROBA}!`);
   }
   return {abrir, fechar, prepara};
 })();

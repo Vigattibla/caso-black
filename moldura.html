@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repost Caso Black</title><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+<style>
+/* Uso da equipe: abre a foto que o hóspede postou (print do story) e monta o repost na moldura da pasta. */
+:root{--preto:#111;--amarelo:#FDC72F;--papel:#F4F1EA}
+*{box-sizing:border-box}body{margin:0;background:var(--preto);color:var(--papel);font:700 14px 'Courier Prime',monospace;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;min-height:100vh}
+h1{font:400 26px Anton,sans-serif;margin:0;color:var(--amarelo);letter-spacing:.02em}
+canvas{width:min(100%,360px);aspect-ratio:9/16;touch-action:none;background:#000;border-radius:6px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:min(100%,360px)}
+label,button{flex:1;padding:14px 10px;border:0;border-radius:6px;background:var(--amarelo);color:var(--preto);font:inherit;text-align:center;cursor:pointer}
+button.alt{background:#333;color:var(--papel)}input[type=file]{display:none}input[type=range]{width:min(100%,360px);accent-color:var(--amarelo)}
+p{margin:0;max-width:360px;text-align:center;color:#aaa;font-size:12px}
+</style></head><body>
+<h1>REPOST · CASO BLACK</h1>
+<canvas id="c" width="1080" height="1920"></canvas>
+<input type="range" id="zoom" min="1" max="3" step=".01" value="1" aria-label="Zoom">
+<div class="bar"><label>Abrir foto<input type="file" id="arq" accept="image/*"></label><button id="sai">Baixar story</button></div>
+<p>Arraste a foto pra encaixar. Cabeças sempre dentro da folha. Ao postar, marque o hóspede.</p>
+<script>
+const W=1080,H=1920,J={cx:539.35,cy:835,w:724,h:824,ang:-2.5*Math.PI/180};   // furo de assets/filtro/moldura.svg
+const c=document.getElementById('c'),x=c.getContext('2d'),mold=new Image();let foto=null,z=1,dx=0,dy=0;
+mold.onload=desenha;mold.src='assets/filtro/moldura.png';
+function base(){const s=Math.max(J.w/foto.width,J.h/foto.height)*z;return{s,w:foto.width*s,h:foto.height*s}}
+function limita(){const b=base();dx=Math.min(0,Math.max(J.w-b.w,dx));dy=Math.min(0,Math.max(J.h-b.h,dy))}
+function desenha(){
+  x.fillStyle='#111';x.fillRect(0,0,W,H);
+  if(foto){const b=base();x.save();x.translate(J.cx,J.cy);x.rotate(J.ang);x.beginPath();x.rect(-J.w/2,-J.h/2,J.w,J.h);x.clip();x.drawImage(foto,-J.w/2+dx,-J.h/2+dy,b.w,b.h);x.restore()}
+  if(mold.complete&&mold.naturalWidth)x.drawImage(mold,0,0,W,H);
+}
+document.getElementById('arq').onchange=e=>{const f=e.target.files[0];if(!f)return;const i=new Image();i.onload=()=>{foto=i;z=1;document.getElementById('zoom').value=1;const b=base();dx=(J.w-b.w)/2;dy=0;limita();desenha()};i.src=URL.createObjectURL(f)};   // começa pelo topo: não corta cabeça
+document.getElementById('zoom').oninput=e=>{if(!foto)return;const b0=base();z=+e.target.value;const b=base(),k=b.w/b0.w;dx=J.w/2-(J.w/2-dx)*k;dy=J.h/2-(J.h/2-dy)*k;limita();desenha()};
+let arr=null;c.onpointerdown=e=>{arr=[e.clientX,e.clientY];c.setPointerCapture(e.pointerId)};
+c.onpointermove=e=>{if(!arr||!foto)return;const k=W/c.clientWidth,a=[(e.clientX-arr[0])*k,(e.clientY-arr[1])*k];arr=[e.clientX,e.clientY];
+  const co=Math.cos(-J.ang),si=Math.sin(-J.ang);dx+=a[0]*co-a[1]*si;dy+=a[0]*si+a[1]*co;limita();desenha()};
+c.onpointerup=c.onpointercancel=()=>arr=null;
+document.getElementById('sai').onclick=()=>c.toBlob(async b=>{const f=new File([b],'caso-black-repost.jpg',{type:'image/jpeg'});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]}))return await navigator.share({files:[f]})}catch(e){if(e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click()},'image/jpeg',.92);
+</script></body></html>

@@ -396,7 +396,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important;transition-delay:0s!important}}
 </style>
-<link rel="stylesheet" href="caso.css?v=3">
+<link rel="stylesheet" href="caso.css?v=4">
 </head>
 <body>
 <div class="fundo"><div class="fita fx a parada"><span></span></div><div class="fita fx b parada"><span></span></div></div>
@@ -835,7 +835,7 @@ async function abrirFim(via,daCam){if(abrindo)return;abrindo=true;
   const A=$('#fimAnim'),S=$('#selo6'),ja=chave().feito,t=daCam?-1500:0,em=(ms,fn)=>setTimeout(fn,Math.max(0,ms)),add=c=>A.classList.add(c);
   pintaDig($('#digF'),[92,52,8]);A.className='on'+(daCam?' vem ouro dig':'');A.setAttribute('aria-hidden','false');
   S.classList.remove('on','bate');S.innerHTML=carimboSVG(6,'s6');
-  requestAnimationFrame(()=>requestAnimationFrame(()=>add('vem')));
+  em(40,()=>add('vem'));
   em(t+600,()=>{add('ouro');vibra(20)});
   em(t+1700,()=>{add('dig');vibra([30,40,30])});
   em(Math.max(300,t+3000),()=>{add('brilha');S.classList.add('on','bate');em(330,()=>{baque(true);vibra([60,40,60,40,160])})});
@@ -963,6 +963,6 @@ if(location.hash==='#lupa'){irPara(0,false);abrirLupa()}
 setTimeout(()=>document.body.classList.add('pronto'),2500);
 </script>
 <script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=4"></script>
-<script src="filtro.js?v=4"></script>
+<script src="filtro.js?v=5"></script>
 </body>
 </html>
