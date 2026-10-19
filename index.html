@@ -913,14 +913,14 @@ async function abrirLupa(m='carta'){modo=m;ar=null;const L=$('#lupa');L.classNam
       lo+=(p3-lo)*.2;hi+=(Math.max(p97,lo+20)-hi)*.2;const g=255/(hi-lo);
       for(let i=0;i<a.length;i+=4){let r=((a[i]-lo)*g-128)*1.6+128;r=r<0?0:r>255?255:r;a[i]=a[i+1]=a[i+2]=r}
       x.putImageData(d,0,0)}
-      if(ar&&ar.u)desenhaCaca(x,w,h);
+      if(ar&&ar.u)ar.onda?desenhaOnda(x,w,h):desenhaCaca(x,w,h);
       if(++nq%5===0)for(const mk of Placa.lerTudo(v)){
         if(mk.id===ARUCO0+5){const ch=chave();   // selo do arquivo, no verso da carta
           if(ch.ok){if(!ouroC){ouroC={t0:performance.now()};vibra(40);setTimeout(()=>{fecharLupa();abrirFim('carta-lupa',true)},2300)}
             const s=w/vw;ouroC.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}
           else if(performance.now()-avisou>4000){avisou=performance.now();toast(ch.n<5?`Esse é o selo! Faltam ${5-ch.n} carimbos.`:'Esse é o selo! Falta a palavra do retrato.')}}
         else if(!ouroC){const e=mk.id-ARUCO0;
-          if(!ar){ar={e};videoDe(e).then(u=>{if(!ar||ar.e!==e)return;if(!u){fecharLupa();vibra(40);marcar(e,'placa');return}iniciarAR(u)})}
+          if(!ar){ar={e,onda:ONDA[e]};(ONDA[e]?Promise.resolve(ONDA[e].u):videoDe(e)).then(u=>{if(!ar||ar.e!==e)return;if(!u){fecharLupa();vibra(40);marcar(e,'placa');return}iniciarAR(u)})}
           if(ar&&ar.e===e){const s=w/vw;ar.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}}
       if(ouroC)desenhaOuro(x,w,h);
       laco=requestAnimationFrame(quadro)})();
@@ -936,6 +936,16 @@ function desenhaOuro(x,w,h){const p=cl((performance.now()-ouroC.t0)/1400),q=ez(p
   const r=g.sz*1.5,gr=x.createRadialGradient(g.cx,g.cy,0,g.cx,g.cy,r);gr.addColorStop(0,'#fff3c4');gr.addColorStop(.55,'#fdc72f');gr.addColorStop(1,'#fdc72f00');
   x.globalAlpha=q;x.fillStyle=gr;x.beginPath();x.ellipse(g.cx,g.cy,r,r*1.2,0,0,7);x.fill();
   const dp=ez(cl((p-.35)/.65)),dh=g.sz*2.1*(1.25-.25*dp),dw=dh*.75;x.globalAlpha=dp;x.drawImage(digCam,g.cx-dw/2,g.cy-dh/2,dw,dh);x.globalAlpha=1}
+/* folha com código de áudio: marcador + barras do próprio áudio (medidas em lados do marcador, iguais à folha impressa) */
+const ONDA={0:{u:'assets/a/estacao1.mp3',s0:1.35,s1:5.5,h:[.34,.8,.15,.26,.54,.66,.59,.15,.98,1,.15,.2,.42,.5,.43,.64,.96,.48,.89,.49,.15,.2,.74,.22,.72,.5,.43,.15,.36,.42,.72,.52,.54,.46,.71,.15]}};
+function desenhaOnda(x,w,h){const o=ar.onda,V=$('#cacaV'),pr=V.duration?V.currentTime/V.duration:0,n=o.h.length,pt=(o.s1-o.s0)/n,bw=pt*.62;
+  let m=[1,0,0,1,w*.5-(o.s0+o.s1)/2*w*.17,h*.72];m[0]=m[3]=w*.17;   // sem marcador à vista: onda no rodapé
+  if(ar.alvo){const p=ar.alvo;m=[p[1][0]-p[0][0],p[1][1]-p[0][1],p[3][0]-p[0][0],p[3][1]-p[0][1],p[0][0],p[0][1]]}
+  const g=ar.g||(ar.g=m.slice());for(let i=0;i<6;i++)g[i]+=(m[i]-g[i])*.3;
+  x.save();x.setTransform(...g);x.shadowColor='#fdc72f';
+  o.h.forEach((v,i)=>{const lit=i/n<pr,hh=Math.max(bw,v*(lit?1+.15*Math.sin(performance.now()/90+i):1)),bx=o.s0+i*pt+(pt-bw)/2;
+    x.shadowBlur=lit?12:0;x.fillStyle=lit?'#fdc72f':'#ffffff55';x.beginPath();x.roundRect(bx,.5-hh/2,bw,hh,bw/2);x.fill()});
+  x.restore()}
 /* Caca (fundo verde) em pé em cima da placa */
 function iniciarAR(u){const V=$('#cacaV'),L=$('#lupa');ar.u=u;L.classList.add('ar');V.src=u;V.muted=false;
   V.play().catch(()=>{V.muted=true;L.classList.add('mudo');V.play().catch(()=>{})});V.onended=fimAR}
