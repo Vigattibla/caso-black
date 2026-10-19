@@ -22,7 +22,7 @@ const Prova = (() => {
 #prova .ps span{flex:1;font:700 9px "Courier Prime",monospace;letter-spacing:.14em;color:#F4F1EA55;padding-top:6px;border-top:3px solid #F4F1EA22;transition:.3s}
 #prova .ps span.on{color:#FDC72F;border-color:#FDC72F}
 #prova .ps span.ok{color:#F4F1EA99;border-color:#F4F1EA99}
-#prova .aj{display:flex;align-items:flex-end;gap:8px;width:100%;max-width:420px;min-height:112px}
+#prova .aj{width:100%;max-width:420px;padding-top:84px;margin-bottom:8px}#prova .balao{position:relative;left:auto;bottom:auto;translate:none;width:100%}
 #prova .fig{display:flex;align-items:flex-end;flex:none;animation:sobe .5s cubic-bezier(.2,1.4,.4,1) both}
 #prova .fig img{max-height:118px;max-width:112px;width:auto;height:auto;filter:drop-shadow(0 6px 6px #0008)}
 #prova .fig.g img{max-width:62px}#prova .fig.g img+img{margin-left:-10px}
@@ -49,7 +49,7 @@ const Prova = (() => {
   <div class="tp"><div class="k" id="pvK">PROVA 03</div><button class="x" id="pvX" aria-label="Fechar">✕</button></div>
   <div class="ps" id="pvPs"><span>1 · FOTO</span><span>2 · ÁLBUM</span></div>
   <div id="pvFoto">
-    <div class="aj"><div class="fig" id="pvAj2"></div><div class="bl" id="pvBl2"></div></div>
+    <div class="aj" id="pvAj"></div>
     <div class="cam"><canvas id="pvC" width="${W}" height="${H}"></canvas><div class="cnt" id="pvN"></div></div>
     <div class="bar" id="pvB1"><button class="sec" id="pvVira">VIRAR</button><button class="disp" id="pvDisp" aria-label="Tirar foto (3 segundos)"></button><label class="sec">GALERIA<input type="file" accept="image/*" id="pvArq"></label></div>
     <div class="bar" id="pvB2" hidden><button class="sec" id="pvDe">DE NOVO</button><button class="sec" id="pvSh">COMPARTILHAR</button></div>
@@ -64,8 +64,8 @@ const Prova = (() => {
   let A = null;
   const tom = (f, d = .12, t = 'triangle', v = .16) => { try { A = A || new (window.AudioContext || window.webkitAudioContext)(); const n = A.currentTime, o = A.createOscillator(), g = A.createGain();
     o.type = t; o.frequency.value = f; g.gain.setValueAtTime(v, n); g.gain.exponentialRampToValueAtTime(.001, n + d); o.connect(g).connect(A.destination); o.start(n); o.stop(n + d) } catch (_) {} };
-  const fala = (id, t, x) => { const b = q(id); b.innerHTML = `<b>${t}</b>${x}`; b.style.animation = 'none'; void b.offsetWidth; b.style.animation = '' };
-  const figura = id => { const a = AJ[est], f = q(id); f.className = 'fig' + (a.imgs.length > 1 ? ' g' : ''); f.innerHTML = a.imgs.map(u => `<img src="${u}" alt="">`).join('') };
+  // fala do ajudante no mesmo balão do Bê (#balao), trazido pra dentro da prova
+  const fala = (_, t, x) => { const b = q('#balao'); q('#pvAj').append(b); b.classList.remove('on'); void b.offsetWidth; beFala(x, t, {...AJ[est], fixo: true}) };
   const passo = n => q('#pvPs').querySelectorAll('span').forEach((s, i) => { s.className = i < n ? 'ok' : i === n ? 'on' : '' });
 
   /* ---------- molde da prova ---------- */
@@ -124,9 +124,9 @@ const Prova = (() => {
   q('#pvX').onclick = () => fechar(false);
 
   function passoFoto() { fala('#pvBl2', 'GUARDA ESSA PROVA', `Todo mundo na foto${est === 4 ? ' com a turma' : ' com ' + (est === 3 ? 'o ' : est === 2 ? 'a ' : 'o ') + AJ[est].nome}! Ela vai pro álbum do caso.`);
-    figura('#pvAj2'); passo(0); P.scrollTop = 0; ligarCam() }
+    passo(0); P.scrollTop = 0; ligarCam() }
 
-  function fechar(ok) { pararCam(); P.classList.remove('on'); P.setAttribute('aria-hidden', 'true'); const f = fim; fim = null; if (ok && f) f() }
+  function fechar(ok) { const b = q('#balao'); b.classList.remove('on'); document.body.append(b); pararCam(); P.classList.remove('on'); P.setAttribute('aria-hidden', 'true'); const f = fim; fim = null; if (ok && f) f() }
   function abrir(i, depois) {
     est = i; fim = depois; foto = null; q('#pvK').textContent = `PROVA ${dois(i + 1)} · ${AJ[i].lugar}`;
     P.classList.add('on'); P.setAttribute('aria-hidden', 'false'); document.fonts && document.fonts.load('400 50px Anton'); passoFoto();

@@ -370,6 +370,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 .beQ{position:absolute;left:0;bottom:100%;width:72px;height:72px;border:2px solid var(--preto);border-bottom:0;border-radius:6px 6px 0 0;background:var(--amarelo) radial-gradient(#e0a800 1.2px,transparent 1.4px) 0 0/6px 6px;overflow:hidden;opacity:0;transform:translateX(-28px);transition:transform .4s cubic-bezier(.3,1.4,.5,1) .05s,opacity .2s .05s}
 .balao.on .beQ{opacity:1;transform:none}
 .beQ img{position:absolute;left:0;bottom:-2px;width:100%}
+.beQ.corpo img{top:5px;bottom:auto;left:-8%;width:116%}.beQ.g{display:flex}.beQ.g img{position:static;width:34%;margin-top:6px;object-fit:cover;object-position:top}
 .beNome{position:absolute;left:65px;top:-18px;background:var(--amarelo);color:var(--preto);font:400 11px/1 Anton;letter-spacing:.08em;padding:4px 7px 3px;border:2px solid var(--preto);border-radius:3px}
 .beSeta{position:absolute;right:9px;bottom:4px;color:var(--amarelo);font-size:10px;animation:beSeta 1s steps(2) infinite}@keyframes beSeta{50%{opacity:0}}
 #sheet textarea{width:100%;border:1.5px dashed #0005;border-radius:4px;background:repeating-linear-gradient(#fff0 0 23px,#0000001a 23px 24px),#fffdf6;padding:2px 10px;font:700 19px/24px Caveat;color:#1b2a6b;resize:none;outline:none}
@@ -990,7 +991,9 @@ const DICAS={relatorio:'Oi, eu sou o Bê! Vou te ajudar no caso. Arraste a folha
  suspeito:'Cada placa que você achar desenha um pedaço desse retrato. Quem será esse aí, hein?',
  evidencias:'Ele lacrou as ofertas da Black em 5 sacos. Cada placa que vocês acharem abre um. Aí é só raspar!',
  quadro:'As 5 placas estão nesses lugares. Achou uma? Toque na LUPA e aponte pro quadriculado.'};
-function beFala(t,tit){const B=$('#balao'),be=$('#beBtn')||document.createElement('i');$('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
+function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createElement('i'),Q=B.querySelector('.beQ'),im=quem?quem.imgs:['assets/be-busto.png'];   // quem={nome,imgs,fixo}: outro ajudante no mesmo balão
+  Q.className='beQ'+(quem?' corpo':'')+(im.length>1?' g':'');Q.innerHTML=im.map(u=>`<img src="${u}" alt="">`).join('');B.querySelector('.beNome').textContent=quem?quem.nome.toUpperCase():'BÊ';
+  $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
 function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
   const ch=chave();beFala(ch.feito?'Caso fechado! Você me pegou, hein?':ch.ok?'Provas completas! Pega sua carta, abre a lupa e aponta pro selo no verso. Quero ver de quem é essa digital...':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra da placa.')}
@@ -1104,7 +1107,7 @@ if(location.hash==='#lupa'){irPara(0,false);abrirLupa()}
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{medir();pedir();document.body.classList.add('pronto')});
 setTimeout(()=>document.body.classList.add('pronto'),2500);
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=6"></script><script src="prova.js?v=3"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=6"></script><script src="prova.js?v=4"></script>
 <script src="filtro.js?v=5"></script>
 </body>
 </html>
