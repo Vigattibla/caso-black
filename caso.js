@@ -6,9 +6,12 @@ const PALAVRA = 'LOBBY', ARUCO0 = 300;   // placas: ArUco 4x4 ids 300..304 = est
 const RETRATO = {
   linhas: [
     [[9,6],[9,2],[12,1],[15,2],[18,1],[21,2],[21,6]], [[9,4],[21,4]], [[5,7],[3,6],[27,6],[25,7],[5,7]],   // chapéu
-    [[10,7],[10,11],[12,13],[15,14],[18,13],[20,11],[20,7]],                                                // rosto
-    [[12,9],[13,9]], [[17,9],[18,9]], [[15,9],[14,11],[15,11]], [[12,11],[13,12],[17,12],[18,11]],          // olhos, nariz, bigode
-    [[10,12],[4,15]], [[20,12],[26,15]], [[12,13],[13,15]], [[18,13],[17,15]],                              // casaco
+    [[9,6],[10,8],[12,7],[14,8],[16,7],[18,8],[20,7],[21,6]],                                               // franja
+    [[9,7],[8,10],[10,13],[15,14],[20,13],[22,10],[21,7]],                                                  // rosto
+    [[8,9],[7,9],[7,11],[8,11]], [[22,9],[23,9],[23,11],[22,11]],                                           // orelhas
+    [[11,9],[12,8],[13,9],[12,10],[11,9]], [[17,9],[18,8],[19,9],[18,10],[17,9]],                           // olhos
+    [[12,11],[18,11],[17,12],[15,13],[13,12],[12,11]],                                                      // sorriso
+    [[10,13],[4,15]], [[20,13],[26,15]],                                                                    // ombros
     [[1,15],[29,15],[29,21],[1,21],[1,15]],                                                                 // placa de fichamento
   ],
   letra: {L: [[[-1,16],[-1,20],[1,20]]], O: [[[-1,16],[1,16],[1,20],[-1,20],[-1,16]]],
@@ -67,7 +70,7 @@ document.body.insertAdjacentHTML('beforeend', `
 <div id="cad" class="ov" aria-hidden="true"><div class="ovc papel">
   <div class="k">VILLAGE RESORT · DEPTO. DE INVESTIGAÇÃO</div>
   <h3>Abra sua ficha de investigador</h3>
-  <p class="mono">Cada placa que você achar no resort vira um <b>carimbo</b> na sua ficha. Com os 5, o caso fecha e você entra na <b>lista VIP da Black</b>.</p>
+  <p class="mono">Cada placa que você achar no resort vira um <b>carimbo</b> na sua ficha. Com os 5, você monta a chave do cofre e entra na <b>lista VIP da Black</b>.</p>
   <label for="cNome">NOME DO INVESTIGADOR</label><input id="cNome" maxlength="60" autocomplete="name" placeholder="como te chamamos?">
   <label for="cCont">E-MAIL OU WHATSAPP</label><input id="cCont" maxlength="120" autocomplete="email" inputmode="email" placeholder="voce@email.com ou (31) 9...">
   <label class="lgpd"><input type="checkbox" id="cLgpd"><span>Aceito que o Village Resort use esses dados para me avisar do Caso Black e das ofertas da Black Friday. Posso pedir pra sair quando quiser (LGPD).</span></label>
@@ -90,8 +93,8 @@ document.body.insertAdjacentHTML('beforeend', `
   <div class="cgrade" id="fGrade"></div>
   <div class="k" style="margin-top:12px">RETRATO FALADO DO SUSPEITO</div>
   <div class="rf" id="fRet"></div>
-  <p class="mono pq">Copie cada pedaço no quadro do verso da carta. Juntos, revelam a palavra escrita na placa do suspeito.</p>
-  <div class="campo"><input id="fPal" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PALAVRA"><button class="btn" id="fOk">Fechar o caso</button></div>
+  <p class="mono pq">Copie cada pedaço no verso da carta. Juntos, revelam quem é o suspeito e a palavra da chave do cofre.</p>
+  <div class="campo"><input id="fPal" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PALAVRA"><button class="btn" id="fOk">Conferir</button></div>
   <div class="erro" id="fErro"></div>
 </div></div>`);
 
@@ -124,13 +127,15 @@ function mostrarCarimbo(n, novo) {
   $('#kTit').textContent = fim ? 'Caso resolvido!' : novo ? 'Carimbo conquistado!' : 'Carimbo já estava na ficha';
   $('#kSlot').innerHTML = carimboSVG(n, 'k' + n);
   $('#kFrag').innerHTML = fim ? '' : `<div class="frag"><div class="nq">QUADRO ${dois(n)}</div>${retratoSVG({faixas: [i], letras: true, so: i})}</div>`;
-  $('#kTxt').innerHTML = fim ? `O suspeito se escondeu no <b>${PALAVRA}</b>. Você está na lista VIP da Black.`
-    : `Número do cofre: <b>${PISTAS[i].dig}</b>. Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.`;
+  const falta = 5 - Dados.carimbos().filter(x => x <= 5).length;
+  $('#kTxt').innerHTML = fim ? `O cofre abriu e o suspeito foi desmascarado. Você está na <b>lista VIP da Black</b>.`
+    : `Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.` + (falta ? ` Faltam <b>${falta}</b>.` : ` <b>Retrato completo!</b> Leia a palavra da placa e vá ao cofre do lobby.`);
   $('#carimbo').classList.toggle('fim', fim);
   abreOv('#carimbo'); const s = $('#kSlot'); s.classList.remove('bate'); void s.offsetWidth; s.classList.add('bate');
   setTimeout(() => { baque(fim); vibra(fim ? [60, 40, 60, 40, 160] : [70]) }, 330);
 }
-$('#kOk').onclick = () => { fechaOv('#carimbo'); pintarFicha(); if ($('#carimbo').classList.contains('fim')) setTimeout(liberar, 250) };
+$('#kOk').onclick = () => { fechaOv('#carimbo'); pintarFicha(); if ($('#carimbo').classList.contains('fim')) return setTimeout(liberar, 250);
+  if (Dados.carimbos().filter(x => x <= 5).length >= 5 && typeof irPara === 'function') setTimeout(() => { irPara(N - 1); beDica() }, 350) };
 
 /* chamado pelo registrar() do index: estação 1..5 */
 async function carimbarEstacao(i, via) {
@@ -145,9 +150,13 @@ function pintarFicha() {
   const n = c.filter(x => x <= 5).length; $('#fProg').textContent = `${n}/5 carimbos${f && f.resolvido ? ' · CASO RESOLVIDO' : ''}`;
   $('#fGrade').innerHTML = [1, 2, 3, 4, 5, 6].map(k => `<button class="cel ${c.includes(k) ? 'tem' : ''} ${k === 6 ? 'f6' : ''}" data-k="${k}" aria-label="${k === 6 ? 'Caso resolvido' : 'Estação ' + k}">${c.includes(k) ? carimboSVG(k, 'f' + k) : `<span>${k === 6 ? '★' : dois(k)}</span>`}</button>`).join('');
   $('#fRet').innerHTML = retratoSVG({faixas: c.filter(x => x <= 5).map(x => x - 1)});
-  $('#fPal').parentNode.style.display = f && f.resolvido ? 'none' : '';
+  let pal = false; try { pal = localStorage.getItem('cb-palavra') === '1' } catch (e) {}
+  $('#fPal').parentNode.style.display = f && (f.resolvido || pal) ? 'none' : '';
   $$('#fGrade .cel.tem').forEach(b => b.onclick = () => { fechaOv('#ficha'); mostrarCarimbo(+b.dataset.k, false) });
   $$('#slots i').forEach((e, i) => e.classList.toggle('car', c.includes(i + 1)));
+  const r2 = $('#retrato2'); if (r2) { const fx = [...new Set([...c.filter(x => x <= 5).map(x => x - 1), ...achadas])];
+    r2.innerHTML = retratoSVG({faixas: fx, letras: fx.length >= 5}); $('#retrato2t').textContent = fx.length >= 5 ? 'retrato completo' : `retrato ${fx.length}/5`; }
+  typeof pintarChave === 'function' && pintarChave();
 }
 function abrirFicha() { pedirCadastro(() => { pintarFicha(); abreOv('#ficha') }) }
 $('#fX').onclick = () => fechaOv('#ficha');
@@ -155,7 +164,9 @@ $('#ficha').addEventListener('click', e => { if (e.target.id === 'ficha') fechaO
 $('#fOk').onclick = async () => {
   const v = $('#fPal').value.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s/g, '');
   if (v !== PALAVRA) { $('#fErro').textContent = v ? 'Não é essa. Junte os 5 quadros e leia a placa do suspeito.' : ''; vibra([20, 30, 20]); return }
-  $('#fErro').textContent = ''; await Dados.carimbar(6, 'palavra'); fechaOv('#ficha'); mostrarCarimbo(6, true);
+  $('#fErro').textContent = ''; conferePalavra(v); fechaOv('#ficha');
+  if (Dados.carimbos().filter(x => x <= 5).length < 5) return beFala('Palavra certa! Agora falta completar os carimbos da chave.', 'PALAVRA CERTA');
+  irPara(N - 1); setTimeout(() => beFala('Chave pronta! O cofre tá na parede do lobby. Aponte a lupa pra ele.', 'VAI PRO LOBBY'), 700);
 };
 $('#fPal').addEventListener('keydown', e => { if (e.key === 'Enter') $('#fOk').click() });
 $('.prog').addEventListener('click', abrirFicha); $('.prog').style.cursor = 'pointer';
@@ -172,6 +183,15 @@ const Placa = (() => {
       cx.drawImage(video, 0, 0, cv.width, cv.height);
       for (const m of det.detect(cx.getImageData(0, 0, cv.width, cv.height))) if (m.id >= ARUCO0 && m.id < ARUCO0 + 5) return m.id - ARUCO0;
       return -1;
+    },
+    lerTudo(video) {   // todos os marcadores do caso: [{id, corners:[{x,y}] em pixels do vídeo}]
+      if (!window.AR) return [];
+      det = det || new AR.Detector({dictionaryName: 'ARUCO_4X4_1000', maxHammingDistance: 0});
+      const vw = video.videoWidth || video.width, vh = video.videoHeight || video.height; if (!vw) return [];
+      const f = Math.min(1, 720 / Math.max(vw, vh)); cv.width = Math.round(vw * f); cv.height = Math.round(vh * f);
+      cx.drawImage(video, 0, 0, cv.width, cv.height);
+      return det.detect(cx.getImageData(0, 0, cv.width, cv.height)).filter(m => m.id >= ARUCO0 && m.id <= ARUCO0 + 5)
+        .map(m => ({id: m.id, corners: m.corners.map(p => ({x: p.x / f, y: p.y / f}))}));
     },
     svg: id => { det = det || new AR.Detector({dictionaryName: 'ARUCO_4X4_1000', maxHammingDistance: 0}); return det.dictionary.generateSVG(id) },
   };

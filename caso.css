@@ -41,3 +41,22 @@
 .rf{background:#fffdf7;border:1.5px solid var(--preto);padding:6px;margin-top:6px}.rf .retrato{display:block;width:100%;height:auto}
 .pq{font-size:11.5px!important;margin-top:8px!important}
 .prog i.car{box-shadow:0 0 0 2px #1d3f8f}
+
+/* foto de detetive */
+#filtro{position:fixed;inset:0;z-index:95;background:#000;display:none}
+#filtro.on{display:block}
+#filtro canvas,#filtro img#fiFoto{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#filtro img#fiFoto{display:none;background:#000}
+#filtro.foto img#fiFoto{display:block}
+#filtro.flash::after{content:"";position:absolute;inset:0;background:#fff;animation:flash .3s forwards}
+@keyframes flash{to{opacity:0}}
+#filtro .x{position:absolute;right:14px;top:calc(env(safe-area-inset-top) + 14px);z-index:3;width:44px;height:44px;border-radius:50%;background:#000a;color:#fff;display:grid;place-items:center}
+#filtro .x svg{width:20px;height:20px}
+.fiMsg{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 72px);text-align:center;font:700 12px "Courier Prime";letter-spacing:.18em;color:#fff;text-shadow:0 1px 4px #000}
+.fiBar{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 22px);display:flex;justify-content:center;gap:10px;padding:0 20px}
+.fiBar.pronta,#filtro.foto .fiBar.vivo,#filtro.foto .fiMsg{display:none}
+#filtro.foto .fiBar.pronta{display:flex}
+.fiBar .btn{flex:1;max-width:200px;margin:0}
+.fiBar .btn.alt{background:#f2f2f2}
+.fiDisp{width:76px;height:76px;border-radius:50%;background:var(--amarelo);border:5px solid #fff;box-shadow:0 0 0 3px #0008}
+.fiDisp:active{transform:scale(.92)}

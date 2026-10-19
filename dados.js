@@ -42,6 +42,8 @@ const Dados = (() => {
     ocupado = false;
   }
 
+  const ref = () => { let r = ''; try { r = new URLSearchParams(location.search).get('ref') || ''; r = r.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 30); if (r) localStorage.setItem('cb-ref', r); else r = localStorage.getItem('cb-ref') || '' } catch (e) {} return r || 'carta-qr' };
+  ref();
   let ficha = ler(LS, null);
   return {
     ficha: () => ficha,
@@ -50,7 +52,7 @@ const Dados = (() => {
       const tipo = contato.includes('@') ? 'email' : 'whatsapp';
       ficha = {id: uuid(), nome, contato, tipo, carimbos: [], resolvido: false, em: new Date().toISOString()};
       gravar(LS, ficha);
-      await enviar({tabela: 'investigadores', linha: {id: ficha.id, nome, contato, tipo, lgpd: !!lgpd, origem: 'carta-qr'}});
+      await enviar({tabela: 'investigadores', linha: {id: ficha.id, nome, contato, tipo, lgpd: !!lgpd, origem: ref()}});
       return ficha;
     },
     async carimbar(estacao, via) {   // estacao 1..5 · 6 = caso resolvido
