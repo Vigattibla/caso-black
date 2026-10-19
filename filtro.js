@@ -7,7 +7,7 @@ window.Filtro = (() => {
   const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
   const MODELO = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
   const W = 1080, H = 1920, img = {};
-  const JANELA = {cx: 539.35, cy: 755, w: 724, h: 824, ang: -2.5 * Math.PI / 180};   // furo de moldura.svg (+2 px por baixo da borda)
+  const JANELA = {cx: 539.35, cy: 835, w: 724, h: 824, ang: -2.5 * Math.PI / 180};   // furo de moldura.svg (+2 px por baixo da borda)
   let rosto = null, carregando = null, fluxo = null, laco = 0, ui = null, ultimo = null, suave = null;
 
   const carregaImg = n => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `assets/filtro/${n}.png` });

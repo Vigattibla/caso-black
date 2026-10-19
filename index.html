@@ -187,17 +187,17 @@ h2.tit{font:400 33px/0.98 Anton;letter-spacing:.01em;margin:14px 0 2px;text-tran
 .pista.ok .st i{background:var(--preto);color:var(--amarelo)}
 .pista.novo .dig{animation:pop .6s cubic-bezier(.3,1.8,.5,1)}
 
-/* folha 5 — cofre na parede */
+/* folha 5 — a última prova: a digital na carta */
 .f5 .face.frente{background:#121212;color:var(--off)}
 .f5 .face.frente::after{opacity:.25;mix-blend-mode:overlay}
 .f5 .digital{mix-blend-mode:screen;filter:invert(1)}
 .f5 .fita{position:absolute;left:-30px;right:-30px;z-index:2}
 .f5 .fita.t{top:20px;transform:rotate(-4deg)}.f5 .fita.b{bottom:4px;transform:rotate(3deg)}
-.cofreW{position:absolute;left:20px;right:20px;top:66px;bottom:40px;display:flex;flex-direction:column}
-.cofreW .k5{font:700 8.5px "Courier Prime";letter-spacing:.18em;color:#8a8a8a}
-.cofreW h2{font:400 34px/.95 Anton;color:var(--amarelo);text-transform:uppercase;margin-top:6px}
-.cofreW>p{font-size:11.5px;line-height:1.45;color:#c9c9c9;margin-top:8px}
-.cofreW>p b{color:#fff}
+.fimW{position:absolute;left:20px;right:20px;top:66px;bottom:40px;display:flex;flex-direction:column}
+.fimW .k5{font:700 8.5px "Courier Prime";letter-spacing:.18em;color:#8a8a8a}
+.fimW h2{font:400 34px/.95 Anton;color:var(--amarelo);text-transform:uppercase;margin-top:6px}
+.fimW>p{font-size:11.5px;line-height:1.45;color:#c9c9c9;margin-top:8px}
+.fimW>p b{color:#fff}
 .chave5{margin-top:12px;border:1.5px dashed #fdc72f88;border-radius:6px;padding:10px 12px 12px;transition:border-color .3s,box-shadow .3s}
 .chave5 .ck{display:flex;justify-content:space-between;align-items:baseline;font:400 13px Anton;letter-spacing:.16em;color:var(--amarelo)}
 .chave5 .ck span{font:700 9px "Courier Prime";letter-spacing:.12em;color:#9a9a9a}
@@ -206,15 +206,15 @@ h2.tit{font:400 33px/0.98 Anton;letter-spacing:.01em;margin:14px 0 2px;text-tran
 .chave5 .cs b.tem{border-color:transparent;background:#f4f1ea}
 .chave5 .cs b .selo{position:absolute;inset:-12%;width:124%;height:124%;transform:rotate(-10deg)}
 .chave5 .cp{display:flex;gap:8px;margin-top:10px}
-.chave5 input,.f5 .cofreCod input{flex:1;min-width:0;height:44px;border:1.5px solid #ffffff55;border-radius:4px;background:#1c1c1c;color:#fff;text-align:center;font:400 18px Anton;letter-spacing:.22em;text-transform:uppercase;outline:none}
-.chave5 input::placeholder,.f5 .cofreCod input::placeholder{font:700 10px "Courier Prime";letter-spacing:.14em;color:#777}
-.chave5 input:focus,.f5 .cofreCod input:focus{border-color:var(--amarelo)}
-.chave5 .cp .btn,.f5 .cofreCod .btn{width:auto;margin:0;height:44px;padding:0 14px;font-size:15px}
+.chave5 input,.f5 .fimCod input{flex:1;min-width:0;height:44px;border:1.5px solid #ffffff55;border-radius:4px;background:#1c1c1c;color:#fff;text-align:center;font:400 18px Anton;letter-spacing:.22em;text-transform:uppercase;outline:none}
+.chave5 input::placeholder,.f5 .fimCod input::placeholder{font:700 10px "Courier Prime";letter-spacing:.14em;color:#777}
+.chave5 input:focus,.f5 .fimCod input:focus{border-color:var(--amarelo)}
+.chave5 .cp .btn,.f5 .fimCod .btn{width:auto;margin:0;height:44px;padding:0 14px;font-size:15px}
 .chave5 .palOk{margin-top:10px;height:44px;border-radius:4px;background:var(--amarelo);color:var(--preto);display:none;align-items:center;justify-content:center;font:400 22px Anton;letter-spacing:.34em}
 .chave5.pal .cp{display:none}.chave5.pal .palOk{display:flex}
 .chave5.pronta{border-style:solid;border-color:var(--amarelo);box-shadow:0 0 24px #fdc72f40}
 .f5 .btn{width:100%;margin-top:auto}
-.f5 .cofreCod{display:flex;gap:8px;margin-top:8px}.f5 .cofreCod[hidden]{display:none}
+.f5 .fimCod{display:flex;gap:8px;margin-top:8px}.f5 .fimCod[hidden]{display:none}
 .demo{display:block;margin:4px auto 0;font:600 11px Montserrat;color:#8a8a8a;text-decoration:underline;text-underline-offset:3px;padding:5px}
 
 /* etiqueta da capa */
@@ -362,43 +362,37 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 #lupa .pular,#lupa .som{position:absolute;z-index:3;display:none;height:40px;padding:0 16px;border-radius:20px;font:400 14px Anton;letter-spacing:.1em}
 #lupa.ar .pular{display:block;right:14px;bottom:calc(env(safe-area-inset-bottom) + 24px);background:#000a;color:#fff;border:1.5px solid #fff6}
 #lupa.ar.mudo .som{display:block;left:50%;top:calc(env(safe-area-inset-top) + 16px);transform:translateX(-50%);background:var(--amarelo);color:var(--preto)}
-/* abertura do cofre */
-#cofreAnim{position:fixed;inset:0;z-index:88;display:none;overflow:hidden;background:radial-gradient(90% 60% at 50% 36%,#232323,#070707);perspective:1100px;color:var(--off)}
-#cofreAnim.on{display:block}
-#cofreAnim .luzC{position:absolute;left:50%;top:36%;width:160vmax;height:160vmax;margin:-80vmax 0 0 -80vmax;border-radius:50%;background:radial-gradient(closest-side,#fdc72fcc,#fdc72f33 35%,#fdc72f00 70%);opacity:0;transform:scale(.2);transition:opacity .8s,transform 1.4s var(--ease)}
-#cofreAnim.brilha .luzC{opacity:1;transform:none}
-.porta3d{position:absolute;left:50%;top:36%;width:250px;height:250px;margin:-125px 0 0 -125px;transform-style:preserve-3d;transform:scale(.6);opacity:0;transition:transform .7s cubic-bezier(.3,1.4,.5,1),opacity .4s}
-#cofreAnim.vem .porta3d{transform:none;opacity:1}
-#cofreAnim.fim .porta3d{transform:translateY(-22vh) scale(.5);opacity:.2;transition:transform .9s var(--ease),opacity .9s}
-.porta3d .aroC{position:absolute;inset:-16px;border-radius:50%;background:conic-gradient(#3a3a3a,#1c1c1c,#3a3a3a,#1c1c1c,#3a3a3a);box-shadow:0 20px 50px #000,inset 0 0 0 3px #0008}
-.porta3d .vao{position:absolute;inset:0;border-radius:50%;background:radial-gradient(#fff8d6,#fdc72f 40%,#a87200 78%,#2a1d00);box-shadow:inset 0 0 40px #000b}
-.porta{position:absolute;inset:0;border-radius:50%;transform-origin:0 50%;transition:transform 1.2s cubic-bezier(.55,0,.2,1);
-  background:radial-gradient(circle at 34% 28%,#555,#262626 55%,#141414);box-shadow:inset 0 0 0 7px #2c2c2c,inset 0 0 0 10px var(--amarelo),inset 0 0 0 12px #111,0 10px 24px #000a}
-#cofreAnim.abre .porta{transform:rotateY(-115deg)}
-.porta .tr{position:absolute;left:50%;top:50%;width:30px;height:12px;margin:-6px 0 0 -15px;border-radius:3px;background:linear-gradient(#f2f2f2,#8a8a8a);box-shadow:0 2px 3px #0008;transform:rotate(var(--a)) translateX(126px);transition:transform .35s cubic-bezier(.6,0,.4,1)}
-#cofreAnim.solta .porta .tr{transform:rotate(var(--a)) translateX(100px)}
-.porta .roda{position:absolute;left:50%;top:50%;width:132px;height:132px;margin:-66px;border-radius:50%;border:7px solid var(--amarelo);box-shadow:0 4px 0 #0007;transition:transform 1.5s cubic-bezier(.45,0,.2,1)}
-#cofreAnim.gira .roda{transform:rotate(540deg)}
-.porta .roda i{position:absolute;left:50%;top:50%;width:170px;height:12px;margin:-6px 0 0 -85px;border-radius:6px;background:var(--amarelo);box-shadow:0 3px 0 #0007}
-.porta .roda i:nth-child(2){transform:rotate(60deg)}.porta .roda i:nth-child(3){transform:rotate(120deg)}
-.porta .roda b{position:absolute;left:50%;top:50%;width:42px;height:42px;margin:-21px;border-radius:50%;background:#111;border:4px solid var(--amarelo)}
-.porta .pl{position:absolute;left:50%;top:24px;transform:translateX(-50%);font:700 8px "Courier Prime";letter-spacing:.2em;color:var(--amarelo);white-space:nowrap}
-#cofreAnim .selo6{position:absolute;left:50%;top:36%;width:190px;height:190px;margin:-95px 0 0 -95px;z-index:3;display:none}
-#cofreAnim .selo6.on{display:block}
-#cofreAnim.fim .selo6{transition:transform .9s var(--ease),opacity .9s;transform:translateY(-22vh) scale(.5);opacity:0}
-.revela{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 20px);max-width:420px;margin:0 auto;padding:0 22px;text-align:center;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+/* final: a carta fica dourada e revela a digital do Bê */
+#fimAnim{position:fixed;inset:0;z-index:88;display:none;overflow:hidden;background:radial-gradient(90% 60% at 50% 32%,#232323,#070707);color:var(--off)}
+#fimAnim.on{display:block}
+#fimAnim .luzC{position:absolute;left:50%;top:32%;width:160vmax;height:160vmax;margin:-80vmax 0 0 -80vmax;border-radius:50%;background:radial-gradient(closest-side,#fdc72fcc,#fdc72f33 35%,#fdc72f00 70%);opacity:0;transform:scale(.2);transition:opacity .8s,transform 1.4s var(--ease)}
+#fimAnim.brilha .luzC{opacity:1;transform:none}
+.cartaF{position:absolute;left:50%;top:32%;width:200px;height:266px;margin:-133px 0 0 -100px;border-radius:3px;overflow:hidden;background:#ece4d2;box-shadow:0 24px 50px #000c;opacity:0;transform:translateY(40px) rotate(-9deg) scale(.8);transition:transform .7s cubic-bezier(.3,1.4,.5,1),opacity .4s}
+#fimAnim.vem .cartaF{opacity:1;transform:rotate(-3deg)}
+.cartaF .ouro{position:absolute;inset:0;background:linear-gradient(115deg,#a87200,#fdc72f 30%,#fff3c4 45%,#fdc72f 60%,#c48a00);background-size:260% 100%;background-position:100% 0;clip-path:inset(100% 0 0 0);transition:clip-path 1.1s cubic-bezier(.6,0,.3,1)}
+#fimAnim.ouro .cartaF .ouro{clip-path:inset(0);animation:brilhoOuro 2.2s 1s ease-in-out infinite alternate}
+@keyframes brilhoOuro{to{background-position:0 0}}
+.cartaF canvas{position:absolute;left:10px;top:12px;width:180px;height:240px;opacity:0;transform:scale(1.3);filter:blur(8px);transition:opacity 1s,transform 1.2s var(--ease),filter 1s}
+#fimAnim.dig .cartaF canvas{opacity:1;transform:none;filter:none}
+.cartaF .sl{position:absolute;left:0;right:0;bottom:9px;text-align:center;font:700 7.5px "Courier Prime";letter-spacing:.2em;color:#00000000;transition:color .6s .9s}
+#fimAnim.dig .cartaF .sl{color:#5c3408}
+#fimAnim.fim .cartaF{transform:translateY(-6vh) rotate(-3deg) scale(.66);transition:transform .9s var(--ease)}
+#fimAnim .selo6{position:absolute;left:50%;top:32%;width:120px;height:120px;margin:40px 0 0 20px;z-index:3;display:none}
+#fimAnim .selo6.on{display:block}
+#fimAnim.fim .selo6{transition:transform .9s var(--ease),opacity .9s;transform:translateY(-8vh) scale(.6);opacity:0}
+.revela{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 14px);max-width:420px;margin:0 auto;padding:0 22px;text-align:center;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .revela>*{opacity:0;transform:translateY(14px)}
-#cofreAnim.fim .revela{pointer-events:auto}
-#cofreAnim.fim .revela>*{opacity:1;transform:none;transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1)}
+#fimAnim.fim .revela{pointer-events:auto}
+#fimAnim.fim .revela>*{opacity:1;transform:none;transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1)}
 .revela .k{font:700 11px "Courier Prime";letter-spacing:.24em;color:#bdbdbd}
-.revela .beR{height:min(32vh,250px);width:auto;margin-top:6px;filter:drop-shadow(0 14px 20px #000c);transform:scale(.3) translateY(40px)}
-#cofreAnim.fim .revela .beR{transition:opacity .3s .5s,transform .7s cubic-bezier(.3,1.6,.5,1) .5s}
-.revela h3{font:400 54px/1 Anton;color:var(--amarelo);letter-spacing:.02em;margin-top:2px}
-.revela p{font-size:13.5px;line-height:1.5;color:#ddd;max-width:320px;margin-top:4px}
+.revela .beR{height:min(24vh,210px);width:auto;margin-top:4px;filter:drop-shadow(0 14px 20px #000c);transform:scale(.3) translateY(40px)}
+#fimAnim.fim .revela .beR{transition:opacity .3s .5s,transform .7s cubic-bezier(.3,1.6,.5,1) .5s}
+.revela h3{font:400 50px/1 Anton;color:var(--amarelo);letter-spacing:.02em;margin-top:2px}
+.revela p{font-size:13.5px;line-height:1.45;color:#ddd;max-width:320px;margin-top:4px}
 .revela p b{color:var(--amarelo)}
-.revela .btn{width:100%;max-width:320px;margin-top:14px}
-.revela .btn.alt{background:#f2f2f2;margin-top:12px}
-#cofreAnim.fim .revela h3{transition-delay:1s}#cofreAnim.fim .revela p{transition-delay:1.25s}#cofreAnim.fim .revela .btn{transition-delay:1.6s}#cofreAnim.fim .revela .btn.alt{transition-delay:1.75s}
+.revela .btn{width:100%;max-width:320px;margin-top:12px}
+.revela .btn.alt{background:#f2f2f2;margin-top:10px}
+#fimAnim.fim .revela h3{transition-delay:1s}#fimAnim.fim .revela p{transition-delay:1.25s}#fimAnim.fim .revela .btn{transition-delay:1.6s}#fimAnim.fim .revela .btn.alt,#fimAnim.fim .revela .demo{transition-delay:1.75s}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important;transition-delay:0s!important}}
 </style>
@@ -529,24 +523,24 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
             <div class="face verso"></div>
           </article>
 
-          <!-- 5 COFRE NA PAREDE -->
-          <article class="pag f5" data-nome="cofre">
+          <!-- 5 A ÚLTIMA PROVA: a digital na carta -->
+          <article class="pag f5" data-nome="final">
             <div class="face frente">
               <div class="fita t"><span></span></div>
-              <div class="cofreW">
-                <div class="k5">FOLHA 05 · ÚLTIMA ETAPA</div>
-                <h2>O cofre<br>na parede</h2>
-                <p>As ofertas estão trancadas num <b>cofre de papel</b> na parede do <b>lobby</b>. Ele só abre com a chave do caso.</p>
+              <div class="fimW">
+                <div class="k5">FOLHA 05 · ÚLTIMA PROVA</div>
+                <h2>A prova tá<br>na sua carta</h2>
+                <p>O suspeito pegou na <b>sua carta</b> e deixou a digital. Com as provas completas, aponte a lupa para o <b>selo do arquivo</b>, no verso dela.</p>
                 <div class="chave5" id="chave5">
-                  <div class="ck">A CHAVE<span id="chSt">0/5 CARIMBOS</span></div>
+                  <div class="ck">AS PROVAS<span id="chSt">0/5 CARIMBOS</span></div>
                   <div class="cs" id="chCar"></div>
                   <div class="cp"><input id="chPal" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PALAVRA DO RETRATO"><button class="btn" id="chPalOk">OK</button></div>
                   <div class="palOk" id="chPalV"></div>
                 </div>
-                <button class="btn" id="cofreLupa">Abrir o cofre</button>
-                <div class="cofreCod" id="cofreCodBox" hidden><input id="cofreIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="CÓDIGO DO CARTAZ"><button class="btn" id="cofreOk">Abrir</button></div>
-                <button class="demo" id="cofreCod">sem câmera? digite o código do cartaz</button>
-                <button class="demo" id="demoTudo">modo demonstração: completar a chave</button>
+                <button class="btn" id="fimLupa">Ler o selo da carta</button>
+                <div class="fimCod" id="fimCodBox" hidden><input id="fimIn" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="CÓDIGO DO SELO"><button class="btn" id="fimOk">Revelar</button></div>
+                <button class="demo" id="fimCod">sem câmera? digite o código do selo</button>
+                <button class="demo" id="demoTudo">modo demonstração: completar as provas</button>
               </div>
               <div class="fita b"><span></span></div>
               <div class="luz"></div>
@@ -585,20 +579,18 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 <button class="fab" id="lupaBtn" aria-label="Abrir a lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>LUPA</button>
 <div class="balao" id="balao" role="status"></div>
 
-<div id="cofreAnim" aria-hidden="true">
+<div id="fimAnim" aria-hidden="true">
   <div class="luzC"></div>
-  <div class="porta3d"><div class="aroC"></div><div class="vao"></div>
-    <div class="porta"><div class="pl">CASO 2026-BF · VILLAGE</div>
-      <i class="tr" style="--a:0deg"></i><i class="tr" style="--a:45deg"></i><i class="tr" style="--a:90deg"></i><i class="tr" style="--a:135deg"></i><i class="tr" style="--a:180deg"></i><i class="tr" style="--a:225deg"></i><i class="tr" style="--a:270deg"></i><i class="tr" style="--a:315deg"></i>
-      <div class="roda"><i></i><i></i><i></i><b></b></div></div></div>
+  <div class="cartaF"><div class="ouro"></div><canvas id="digF" width="150" height="200"></canvas><div class="sl">CASO 2026-BF · DIGITAL DO SUSPEITO</div></div>
   <div class="selo6 slotC" id="selo6"></div>
   <div class="revela">
-    <div class="k">O SUSPEITO ERA…</div>
+    <div class="k">A DIGITAL É DO…</div>
     <img class="beR" src="assets/be-detetive.png" alt="Bê" onerror="this.onerror=null;this.src='assets/be.png'">
-    <h3>O BÊ!</h3>
-    <p>Ele escondeu as ofertas só pra ver quem era bom de investigação. Você é. As ofertas são suas, <b>antes de todo mundo</b>.</p>
-    <button class="btn brilho" id="verVip">Ver meu acesso VIP</button>
-    <button class="btn alt" id="fotoDet">Foto de detetive</button>
+    <h3>BÊ!</h3>
+    <p>Ele escondeu as ofertas só pra ver quem era bom de investigação. Você é! Entre no <b>grupo VIP</b> e veja as ofertas antes de todo mundo.</p>
+    <button class="btn brilho" id="grupoVip">Entrar no grupo VIP</button>
+    <button class="btn alt" id="verVip">Ver as ofertas</button>
+    <button class="demo" id="fotoDet">foto de detetive</button>
   </div>
 </div>
 
@@ -670,7 +662,7 @@ const dois=n=>String(n).padStart(2,'0');
 $$('.fita span').forEach(s=>{const t='BLACK FRIDAY · CONFIDENCIAL · ';s.textContent=t.repeat(12)});
 
 /* ---------- rolagem contínua da pasta ---------- */
-const R=document.documentElement,pags=$$('.pag'),N=pags.length,FOLHAS=['RELATÓRIO','SUSPEITO','EVIDÊNCIAS','QUADRO','COFRE'];
+const R=document.documentElement,pags=$$('.pag'),N=pags.length,FOLHAS=['RELATÓRIO','SUSPEITO','EVIDÊNCIAS','QUADRO','A PROVA'];
 const cl=(v,a=0,b=1)=>v<a?a:v>b?b:v,ez=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 let L=600,Wv=0,k=-1,aberto=false;
 $('#slots').innerHTML='<i></i>'.repeat(5);
@@ -723,8 +715,8 @@ $('#viraA').onclick=()=>virar(-1);$('#viraP').onclick=()=>virar(1);
     irPara(cl(j,Math.floor(p0)-1,Math.ceil(p0)+1))};
   el.addEventListener('pointerup',solta);el.addEventListener('pointercancel',solta);
   el.addEventListener('click',e=>{if(bloq){e.stopPropagation();e.preventDefault()}},true);
-  let roda=0;addEventListener('wheel',e=>{if(e.target.closest('.ov,#lupa,#cofreAnim,#filtro'))return;const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;if(Math.abs(d)<12||performance.now()-roda<550)return;roda=performance.now();virar(d>0?1:-1)},{passive:true});
-  addEventListener('keydown',e=>{if(e.target.closest('input,textarea')||document.querySelector('.ov.on,#lupa.on,#cofreAnim.on,#filtro.on'))return;if(['ArrowRight','PageDown'].includes(e.key)){e.preventDefault();virar(1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();virar(-1)}})}
+  let roda=0;addEventListener('wheel',e=>{if(e.target.closest('.ov,#lupa,#fimAnim,#filtro'))return;const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;if(Math.abs(d)<12||performance.now()-roda<550)return;roda=performance.now();virar(d>0?1:-1)},{passive:true});
+  addEventListener('keydown',e=>{if(e.target.closest('input,textarea')||document.querySelector('.ov.on,#lupa.on,#fimAnim.on,#filtro.on'))return;if(['ArrowRight','PageDown'].includes(e.key)){e.preventDefault();virar(1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();virar(-1)}})}
 $('#rail').onclick=e=>{const b=e.target.closest('button');if(b)irPara(+b.dataset.j)};
 $('#abrir').onclick=()=>irPara(0);capa.onclick=()=>irPara(0);
 
@@ -733,7 +725,7 @@ let escreveu=false,primeira=true;const visto=new Set(['relatorio']);
 function aoMostrar(){const nome=pags[k].dataset.nome;vibra(6);
   if(nome==='relatorio'&&!escreveu){escreveu=true;escrever()}
   if(nome==='quadro')$('.f4').classList.add('liga');
-  if(nome==='cofre')pintarChave();
+  if(nome==='final')pintarChave();
   if(primeira){primeira=false;aberto=true;setTimeout(()=>pedirCadastro(()=>setTimeout(dicaLupa,600)),900);return}
   if(!visto.has(nome)&&window.Dados&&Dados.ficha()){visto.add(nome);clearTimeout(aoMostrar._b);aoMostrar._b=setTimeout(()=>{if(k>=0&&pags[k].dataset.nome===nome)beDica()},700)}
 }
@@ -785,50 +777,74 @@ function atualizar(novo=-1){
   pintarChave();
 }
 
-/* ---------- a chave (5 carimbos + palavra) e o cofre na parede ---------- */
-const COD_COFRE='TRANCA';
+/* ---------- as provas (5 carimbos + palavra) e a digital na carta ---------- */
+const COD_FIM='DIGITAL';            // impresso embaixo do selo, no verso da carta (quem está sem câmera)
+const LINK_GRUPO='';                // PENDENTE: link do grupo de WhatsApp (https://chat.whatsapp.com/...)
 function chave(){const f=window.Dados&&Dados.ficha(),c=f?Dados.carimbos():[];const n=new Set([...achadas.map(i=>i+1),...c.filter(x=>x<=5)]).size;
   let pal=false;try{pal=localStorage.getItem('cb-palavra')==='1'}catch(_){}pal=pal||!!(f&&f.resolvido);
   return{n,pal,ok:n>=5&&pal,feito:!!(f&&f.resolvido)}}
 function pintarChave(){if(typeof carimboSVG!=='function')return;const ch=chave(),c=Dados.carimbos();
   $('#chCar').innerHTML=[1,2,3,4,5].map(n=>(achadas.includes(n-1)||c.includes(n))?`<b class="tem">${carimboSVG(n,'ch'+n)}</b>`:`<b>${dois(n)}</b>`).join('');
-  $('#chSt').textContent=ch.ok?'CHAVE PRONTA':`${ch.n}/5 CARIMBOS${ch.pal?' · PALAVRA OK':''}`;
+  $('#chSt').textContent=ch.ok?'PROVAS COMPLETAS':`${ch.n}/5 CARIMBOS${ch.pal?' · PALAVRA OK':''}`;
   $('#chave5').classList.toggle('pal',ch.pal);$('#chave5').classList.toggle('pronta',ch.ok);$('#chPalV').textContent=ch.pal?PALAVRA:'';
-  $('#cofreLupa').textContent=ch.feito?'Ver o cofre aberto':ch.ok?'Abrir o cofre com a lupa':'Abrir o cofre';
-  $('#cofreLupa').classList.toggle('brilho',ch.ok&&!ch.feito)}
+  $('#fimLupa').textContent=ch.feito?'Ver a digital de novo':'Ler o selo da carta';
+  $('#fimLupa').classList.toggle('brilho',ch.ok&&!ch.feito)}
 function conferePalavra(v,erro){v=v.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s/g,'');
   if(v!==PALAVRA){erro&&erro(v?'Não é essa. Junte os 5 pedaços do retrato e leia a placa do suspeito.':'');vibra([20,30,20]);return false}
   try{localStorage.setItem('cb-palavra','1')}catch(_){}vibra(40);pintarChave();pintarFicha();return true}
 $('#chPalOk').onclick=()=>{if(conferePalavra($('#chPal').value,t=>t&&beFala(t))){$('#chPal').blur();
-  beFala(chave().ok?'Chave pronta! Agora vai até o lobby e aponta a lupa pro cofre.':`Palavra certa! Faltam ${5-chave().n} carimbos pra chave.`,'PALAVRA CERTA')}};
+  beFala(chave().ok?'Provas completas! Vira sua carta, abre a lupa e aponta pro selo do arquivo.':`Palavra certa! Faltam ${5-chave().n} carimbos.`,'PALAVRA CERTA')}};
 $('#chPal').addEventListener('keydown',e=>{if(e.key==='Enter')$('#chPalOk').click()});
-$('#cofreLupa').onclick=()=>{const ch=chave();if(ch.feito)return abrirCofre('rever');
-  if(!ch.ok)return beFala(ch.n<5?`A chave precisa dos 5 carimbos. Faltam ${5-ch.n}: olha o quadro do caso!`:'Falta a palavra: junte os 5 pedaços do retrato e leia a placa do suspeito.','A CHAVE NÃO TÁ PRONTA');
-  abrirLupa('cofre')};
-$('#cofreCod').onclick=()=>{const b=$('#cofreCodBox');b.hidden=!b.hidden;if(!b.hidden)$('#cofreIn').focus()};
-$('#cofreOk').onclick=()=>{const v=$('#cofreIn').value.trim().toUpperCase();
-  if(v!==COD_COFRE){vibra([20,30,20]);return beFala('Código errado. Ele tá escrito embaixo do cofre, no lobby.')}
-  if(!chave().ok)return $('#cofreLupa').click();$('#cofreIn').blur();abrirCofre('cofre-codigo')};
-$('#cofreIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('#cofreOk').click()});
+$('#fimLupa').onclick=()=>{const ch=chave();if(ch.feito)return abrirFim('rever');
+  if(!ch.ok)return beFala(ch.n<5?`Faltam ${5-ch.n} carimbos: olha o quadro do caso!`:'Falta a palavra: junte os 5 pedaços do retrato e leia a placa do suspeito.','AINDA FALTA PROVA');
+  abrirLupa('final')};
+$('#fimCod').onclick=()=>{const b=$('#fimCodBox');b.hidden=!b.hidden;if(!b.hidden)$('#fimIn').focus()};
+$('#fimOk').onclick=()=>{const v=$('#fimIn').value.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(v!==COD_FIM){vibra([20,30,20]);return beFala('Código errado. Ele tá impresso embaixo do selo, no verso da carta.')}
+  if(!chave().ok)return $('#fimLupa').click();$('#fimIn').blur();abrirFim('carta-codigo')};
+$('#fimIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('#fimOk').click()});
 $('#demoTudo').onclick=()=>{PISTAS.forEach((_,i)=>{if(!achadas.includes(i))achadas.push(i)});salvar();try{localStorage.setItem('cb-palavra','1')}catch(_){}
   if(Dados.ficha())PISTAS.forEach((_,i)=>Dados.carimbar(i+1,'demo'));atualizar(-2);pintarFicha()};
 
-/* abertura: roda gira, trincos soltam, porta abre, carimbo, revelação do Bê */
+/* digital do Bê: sulcos que contornam um B (campo de distância), máscara oval, falhas de tinta */
+const DIG=(()=>{const W=150,H=200;
+  const hs=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n)};
+  const vn=(x,y)=>{const i=Math.floor(x),j=Math.floor(y),f=x-i,g=y-j,u=f*f*(3-2*f),v=g*g*(3-2*g);
+    return(hs(i,j)*(1-u)+hs(i+1,j)*u)*(1-v)+(hs(i,j+1)*(1-u)+hs(i+1,j+1)*u)*v};
+  const fbm=(x,y)=>vn(x,y)*.6+vn(x*2.1,y*2.1)*.3+vn(x*4.3,y*4.3)*.1;
+  const ss=(a,b,t)=>{t=cl((t-a)/(b-a));return t*t*(3-2*t)};
+  const G=document.createElement('canvas');G.width=W;G.height=H;const g=G.getContext('2d');
+  g.font='900 64px "Arial Black",Arial,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('B',W/2,H*.52);
+  const D=g.getImageData(0,0,W,H).data,ins=new Uint8Array(W*H),ed=[];for(let i=0;i<W*H;i++)ins[i]=D[i*4+3]>128;
+  for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x;if(ins[i]&&(!ins[i-1]||!ins[i+1]||!ins[i-W]||!ins[i+W]))ed.push(x,y)}
+  const m=new Float32Array(W*H);
+  for(let py=0;py<H;py++)for(let px=0;px<W;px++){const x=(px-W/2)/(W*.38),y=(py-H*.52)/(H*.38);
+    const mask=1-ss(.78,1,Math.hypot(x,y/1.18)+(fbm(px*.05,py*.05)-.5)*.25);if(mask<=0)continue;
+    let b=1e9;for(let e=0;e<ed.length;e+=2){const d=(ed[e]-px)**2+(ed[e+1]-py)**2;if(d<b)b=d}
+    const i=py*W+px,p=(Math.sqrt(b)*(ins[i]?-1:1)+3)/(W*.38)+(fbm(px*.04+9,py*.04)-.5)*.06;
+    const r=.5+.5*Math.cos(2*Math.PI*p*10.5);
+    m[i]=Math.min(1,ss(.42,.62,r)*mask*(fbm(px*.18,py*.18)>.78?.15:1)*(.7+.5*fbm(px*.02+3,py*.02)))}
+  return{W,H,m}})();
+function pintaDig(c,cor,al=1){const{W,H,m}=DIG;c.width=W;c.height=H;const x=c.getContext('2d'),d=x.createImageData(W,H),a=d.data;
+  for(let i=0;i<W*H;i++){a[i*4]=cor[0];a[i*4+1]=cor[1];a[i*4+2]=cor[2];a[i*4+3]=m[i]*255*al}x.putImageData(d,0,0);return c}
+const digCam=pintaDig(document.createElement('canvas'),[92,52,8]);
+
+/* final: a carta fica dourada, a digital aparece, carimbo, revelação do Bê */
 let abrindo=false;
-async function abrirCofre(via){if(abrindo)return;abrindo=true;
-  const A=$('#cofreAnim'),S=$('#selo6'),ja=chave().feito,em=(ms,fn)=>setTimeout(fn,ms),add=c=>A.classList.add(c);
-  A.className='on';A.setAttribute('aria-hidden','false');S.classList.remove('on','bate');S.innerHTML=carimboSVG(6,'s6');
+async function abrirFim(via,daCam){if(abrindo)return;abrindo=true;
+  const A=$('#fimAnim'),S=$('#selo6'),ja=chave().feito,t=daCam?-1500:0,em=(ms,fn)=>setTimeout(fn,Math.max(0,ms)),add=c=>A.classList.add(c);
+  pintaDig($('#digF'),[92,52,8]);A.className='on'+(daCam?' vem ouro dig':'');A.setAttribute('aria-hidden','false');
+  S.classList.remove('on','bate');S.innerHTML=carimboSVG(6,'s6');
   requestAnimationFrame(()=>requestAnimationFrame(()=>add('vem')));
-  em(500,()=>{add('gira');vibra(20)});
-  em(2000,()=>{add('solta');baque(false);vibra([30,40,30])});
-  em(2500,()=>{add('abre');vibra(50)});
-  em(2900,()=>add('brilha'));
-  em(3500,()=>{S.classList.add('on','bate');em(330,()=>{baque(true);vibra([60,40,60,40,160])})});
-  em(4700,()=>{add('fim');abrindo=false});
+  em(t+600,()=>{add('ouro');vibra(20)});
+  em(t+1700,()=>{add('dig');vibra([30,40,30])});
+  em(Math.max(300,t+3000),()=>{add('brilha');S.classList.add('on','bate');em(330,()=>{baque(true);vibra([60,40,60,40,160])})});
+  em(Math.max(1400,t+4200),()=>{add('fim');abrindo=false});
   if(!ja&&Dados.ficha()){await Dados.carimbar(6,via);pintarFicha();pintarChave()}
 }
-const fechaCofre=()=>{const A=$('#cofreAnim');A.className='';A.setAttribute('aria-hidden','true')};
-$('#verVip').onclick=()=>{fechaCofre();liberar()};
+const fechaFim=()=>{const A=$('#fimAnim');A.className='';A.setAttribute('aria-hidden','true')};
+$('#grupoVip').onclick=()=>LINK_GRUPO?open(LINK_GRUPO,'_blank','noopener'):toast('Link do grupo VIP: em breve.');
+$('#verVip').onclick=()=>{fechaFim();liberar()};
 $('#fotoDet').onclick=()=>window.Filtro?Filtro.abrir():toast('Foto de detetive: em breve.');
 function liberar(){const v=$('#vip');v.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>v.classList.add('go')));chuva()}
 function chuva(){const v=$('#vip');v.querySelectorAll('.moeda').forEach(m=>m.remove());
@@ -844,22 +860,18 @@ const DICAS={relatorio:'Oi, eu sou o Bê! Vou te ajudar no caso. Arraste a folha
  quadro:'As 5 placas estão nesses lugares. Achou uma? Toque na LUPA e aponte pro quadriculado.'};
 function beFala(t,tit){const B=$('#balao'),be=$('#beBtn')||document.createElement('i');B.innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
-function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='cofre')return beFala(DICAS[nome]);
-  const ch=chave();beFala(ch.feito?'Caso fechado! Você me pegou, hein?':ch.ok?'Chave pronta! O cofre tá na parede do lobby. Toque em abrir e aponte a lupa.':ch.n<5?`Faltam ${5-ch.n} carimbos pra chave. Te espero no lobby...`:'Agora junte os 5 pedaços do retrato e leia a palavra da placa.')}
+function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
+  const ch=chave();beFala(ch.feito?'Caso fechado! Você me pegou, hein?':ch.ok?'Provas completas! Pega sua carta, abre a lupa e aponta pro selo no verso. Quero ver de quem é essa digital...':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra da placa.')}
 $('#balao').onclick=()=>$('#balao').classList.remove('on');
 function dicaLupa(){let v=0;try{v=localStorage.getItem('cbLupa')}catch(_){}if(v)return;beFala('É tinta invisível! Toque na LUPA e aponte a câmera pras manchas da carta.','MANCHAS NA CARTA?')}
 
-/* marcas de manuseio: digitais geradas + café + vinco */
-function digital(seed){let r=seed;const rnd=()=>(r=(r*9301+49297)%233280)/233280;let d='';
-  for(let k=0;k<13;k++){const rx=3+k*2.1,ry=rx*1.32,a0=rnd()*6.28,gap=.25+rnd()*.5,seg=4.6+rnd()*1.2;
-    for(let t=0;t<2;t++){const s0=a0+t*(seg/2+gap),s1=s0+seg/2;const p=a=>`${(29+rx*Math.cos(a)).toFixed(1)},${(40+ry*Math.sin(a)).toFixed(1)}`;
-      d+=`M${p(s0)}A${rx},${ry} 0 0 1 ${p(s1)}`}}
-  return`url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 58 80'><path d='${d}' fill='none' stroke='#3a2a18' stroke-width='1.05' stroke-linecap='round' opacity='.9'/></svg>`)}")`}
+/* marcas de manuseio: a digital do Bê (a mesma do final) + café + vinco */
+const digURL=`url("${pintaDig(document.createElement('canvas'),[58,42,24],.9).toDataURL()}")`,digital=()=>digURL;
 const MARCAS={
  relatorio:[['digital',{right:'26px',top:'178px',transform:'rotate(24deg)',opacity:.16},3],['digital',{left:'-14px',bottom:'120px',transform:'rotate(-40deg)',opacity:.12},8],['cafe',{right:'-34px',top:'-30px'}],['cafe pingo',{right:'78px',top:'92px'}],['durex',{left:'-16px',top:'8px',transform:'rotate(-38deg)'}]],
  suspeito:[['digital',{left:'150px',bottom:'34px',transform:'rotate(-12deg)',opacity:.15},5],['vinco',{top:'298px'}],['lapis',{right:'26px',top:'84px',transform:'rotate(-6deg)'},'quem será??']],
  evidencias:[['digital',{right:'30px',bottom:'52px',transform:'rotate(34deg)',opacity:.17},11],['digital',{left:'120px',top:'92px',transform:'rotate(-8deg)',opacity:.1},2],['cafe',{left:'-50px',bottom:'-46px'}],['lapis',{left:'24px',bottom:'22px',transform:'rotate(-2deg)'},'faltam 4 itens... ele levou tudo!']],
- cofre:[['digital',{left:'34px',bottom:'94px',transform:'rotate(-20deg)',opacity:.12},7],['digital',{right:'40px',top:'238px',transform:'rotate(30deg)',opacity:.09},4]],
+ final:[['digital',{left:'34px',bottom:'94px',transform:'rotate(-20deg)',opacity:.12},7],['digital',{right:'40px',top:'238px',transform:'rotate(30deg)',opacity:.09},4]],
 };
 pags.forEach(p=>{const f=p.querySelector('.face.frente');(MARCAS[p.dataset.nome]||[]).forEach(([c,st,x])=>{const e=document.createElement('i');e.className=c;Object.assign(e.style,st);
   if(c==='digital')e.style.backgroundImage=digital(x);if(c==='lapis')e.textContent=x;f.appendChild(e)})});
@@ -870,9 +882,9 @@ let notas={};try{notas=JSON.parse(localStorage.getItem('cb-notas')||'{}')}catch(
 $('#sNota').addEventListener('input',e=>{notas[atual]=e.target.value;try{localStorage.setItem('cb-notas',JSON.stringify(notas))}catch(e){}});
 
 /* lupa: câmera + filtro de canal vermelho (carta) · leitura das placas · Caca em AR */
-let fluxo=null,laco=0,modo='carta',ar=null,avisou=0;
+let fluxo=null,laco=0,modo='carta',ar=null,avisou=0,ouroC=null;
 const TXT={carta:['LUPA DE TINTA INVISÍVEL','Aponte para as <b style="display:inline;font:inherit;color:#fdc72f">manchas coloridas</b> da carta, a um palmo. Achou uma <b style="display:inline;font:inherit;color:#fdc72f">placa do caso</b>? Aponte pro quadriculado e ganhe o carimbo.'],
-  cofre:['O COFRE NA PAREDE','Aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">quadriculado do cofre</b>, na parede do lobby. A chave do caso faz o resto.']};
+  final:['O SELO DA CARTA','Vire a carta e aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
 const temVideo={};
 async function videoDe(e){const u=`assets/v/estacao${e+1}.mp4`;
   if(!(u in temVideo)){try{const r=await fetch(u,{method:'HEAD'});temVideo[u]=r.ok&&/video/.test(r.headers.get('content-type')||'video')}catch(_){temVideo[u]=false}}
@@ -884,7 +896,7 @@ async function abrirLupa(m='carta'){modo=m;ar=null;const L=$('#lupa');L.classNam
     const v=$('#lupaV');v.srcObject=fluxo;await v.play();const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
     const o=document.createElement('canvas'),ox=o.getContext('2d');let lo=90,hi=200,nq=0;
     (function quadro(){if(!fluxo)return;const vw=v.videoWidth||960,vh=v.videoHeight||1280,w=c.width=Math.min(960,vw),h=c.height=Math.round(w*vh/vw);
-      if(ar||modo==='cofre')x.drawImage(v,0,0,w,h);
+      if(ar||ouroC||modo==='final')x.drawImage(v,0,0,w,h);
       else{
       // desfoque barato: reduz e amplia (funde os traços finos)
       o.width=w>>2;o.height=h>>2;ox.imageSmoothingEnabled=true;ox.drawImage(v,0,0,o.width,o.height);
@@ -899,14 +911,27 @@ async function abrirLupa(m='carta'){modo=m;ar=null;const L=$('#lupa');L.classNam
       x.putImageData(d,0,0)}
       if(ar&&ar.u)desenhaCaca(x,w,h);
       if(++nq%5===0)for(const mk of Placa.lerTudo(v)){
-        if(mk.id===ARUCO0+5){const ch=chave();if(ch.ok){fecharLupa();vibra(40);abrirCofre('cofre-lupa');return}
-          if(performance.now()-avisou>4000){avisou=performance.now();toast(ch.n<5?`Esse é o cofre! Faltam ${5-ch.n} carimbos pra chave.`:'Esse é o cofre! Falta a palavra do retrato.')}}
-        else{const e=mk.id-ARUCO0;
+        if(mk.id===ARUCO0+5){const ch=chave();   // selo do arquivo, no verso da carta
+          if(ch.ok){if(!ouroC){ouroC={t0:performance.now()};vibra(40);setTimeout(()=>{fecharLupa();abrirFim('carta-lupa',true)},2300)}
+            const s=w/vw;ouroC.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}
+          else if(performance.now()-avisou>4000){avisou=performance.now();toast(ch.n<5?`Esse é o selo! Faltam ${5-ch.n} carimbos.`:'Esse é o selo! Falta a palavra do retrato.')}}
+        else if(!ouroC){const e=mk.id-ARUCO0;
           if(!ar){ar={e};videoDe(e).then(u=>{if(!ar||ar.e!==e)return;if(!u){fecharLupa();vibra(40);marcar(e,'placa');return}iniciarAR(u)})}
           if(ar&&ar.e===e){const s=w/vw;ar.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}}
+      if(ouroC)desenhaOuro(x,w,h);
       laco=requestAnimationFrame(quadro)})();
-  }catch(e){L.classList.add('semcam');$('#lupaTxt').textContent=m==='cofre'?'Sem câmera aqui. Use o código escrito no cartaz do cofre.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
+  }catch(e){L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
 }
+/* selo lido: a imagem fica dourada e a digital aparece em cima do selo */
+function desenhaOuro(x,w,h){const p=cl((performance.now()-ouroC.t0)/1400),q=ez(p),a=ouroC.alvo;
+  let cx=w/2,cy=h*.44,sz=Math.min(w,h)*.25;
+  if(a){cx=(a[0][0]+a[1][0]+a[2][0]+a[3][0])/4;cy=(a[0][1]+a[1][1]+a[2][1]+a[3][1])/4;
+    sz=(Math.hypot(a[1][0]-a[0][0],a[1][1]-a[0][1])+Math.hypot(a[2][0]-a[1][0],a[2][1]-a[1][1]))/2}
+  const g=ouroC.g||(ouroC.g={cx,cy,sz});g.cx+=(cx-g.cx)*.25;g.cy+=(cy-g.cy)*.25;g.sz+=(sz-g.sz)*.25;
+  x.save();x.globalCompositeOperation='multiply';x.fillStyle=`rgba(253,199,47,${.85*q})`;x.fillRect(0,0,w,h);x.restore();
+  const r=g.sz*1.5,gr=x.createRadialGradient(g.cx,g.cy,0,g.cx,g.cy,r);gr.addColorStop(0,'#fff3c4');gr.addColorStop(.55,'#fdc72f');gr.addColorStop(1,'#fdc72f00');
+  x.globalAlpha=q;x.fillStyle=gr;x.beginPath();x.ellipse(g.cx,g.cy,r,r*1.2,0,0,7);x.fill();
+  const dp=ez(cl((p-.35)/.65)),dh=g.sz*2.1*(1.25-.25*dp),dw=dh*.75;x.globalAlpha=dp;x.drawImage(digCam,g.cx-dw/2,g.cy-dh/2,dw,dh);x.globalAlpha=1}
 /* Caca (fundo verde) em pé em cima da placa */
 function iniciarAR(u){const V=$('#cacaV'),L=$('#lupa');ar.u=u;L.classList.add('ar');V.src=u;V.muted=false;
   V.play().catch(()=>{V.muted=true;L.classList.add('mudo');V.play().catch(()=>{})});V.onended=fimAR}
@@ -923,21 +948,21 @@ function desenhaCaca(x,w,h){const V=$('#cacaV');if(V.readyState<2||!V.videoWidth
   const g=ar.g||(ar.g={cx,base,sz});g.cx+=(cx-g.cx)*.25;g.base+=(base-g.base)*.25;g.sz+=(sz-g.sz)*.25;
   const dh=Math.min(h*.78,Math.max(h*.35,g.sz*3.4)),dw=dh*kw/kh;x.drawImage(kc,g.cx-dw/2,Math.max(0,g.base-dh+g.sz*.1),dw,dh)}
 function fecharLupa(){const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}
-  const V=$('#cacaV');V.pause();V.onended=null;ar=null}
+  const V=$('#cacaV');V.pause();V.onended=null;ar=null;ouroC=null}
 $('#lupaX').onclick=()=>ar&&ar.u?fimAR():fecharLupa();
 $('#lupaPular').onclick=fimAR;
 $('#lupaSom').onclick=()=>{const V=$('#cacaV');V.muted=false;V.play().catch(()=>{});$('#lupa').classList.remove('mudo')};
-$('#lupaBtn').onclick=()=>{try{localStorage.setItem('cbLupa','1')}catch(_){}$('#balao').classList.remove('on');abrirLupa(k===N-1&&chave().ok?'cofre':'carta')};
+$('#lupaBtn').onclick=()=>{try{localStorage.setItem('cbLupa','1')}catch(_){}$('#balao').classList.remove('on');abrirLupa(k===N-1&&chave().ok?'final':'carta')};
 
 /* início */
 montarQuadro();atualizar();medir();render();
-const atalho={'#r':0,'#suspeito':1,'#evidencias':2,'#quadro':3,'#cofre':4,'#vip':4,'#revela':4}[location.hash];
-if(atalho!==undefined){irPara(atalho,false);if(location.hash==='#vip')setTimeout(liberar,300);if(location.hash==='#revela')setTimeout(()=>abrirCofre('demo'),300)}
+const atalho={'#r':0,'#suspeito':1,'#evidencias':2,'#quadro':3,'#final':4,'#vip':4,'#revela':4}[location.hash];
+if(atalho!==undefined){irPara(atalho,false);if(location.hash==='#vip')setTimeout(liberar,300);if(location.hash==='#revela')setTimeout(()=>abrirFim('demo'),300)}
 if(location.hash==='#lupa'){irPara(0,false);abrirLupa()}
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{medir();pedir();document.body.classList.add('pronto')});
 setTimeout(()=>document.body.classList.add('pronto'),2500);
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=3"></script>
-<script src="filtro.js?v=3"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=4"></script>
+<script src="filtro.js?v=4"></script>
 </body>
 </html>
