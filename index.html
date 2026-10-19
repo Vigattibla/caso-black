@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Caso Black · Arquivo secreto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@500;700&family=Courier+Prime:wght@400;700&family=Montserrat:wght@400;600;800&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root{
+  --preto:#111;--amarelo:#FDC72F;--off:#EFEFEF;--verm:#C8102E;
+  --kraft:#c99a5b;--kraft2:#d9ae70;--kraft3:#b5843f;--manila:#e6c27a;--papel:#f1efe9;--cortica:#b98a55;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#15110d;color:var(--preto);font-family:Montserrat,sans-serif;overflow:hidden;height:100%}
+.mesa{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse 80% 55% at 50% 30%,#4a3a28 0%,#241a11 55%,#120d09 100%)}
+.mesa::after{content:"";position:absolute;inset:0;background-image:var(--noise);opacity:.35;mix-blend-mode:overlay}
+
+/* ---------- INTRO / PASTA FECHADA ---------- */
+#intro{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px;transition:opacity .6s;z-index:5}
+#intro.sai{opacity:0;pointer-events:none}
+.topo{font-family:"Special Elite",monospace;color:#d9c7a6;font-size:11px;letter-spacing:.18em;text-align:center;opacity:.8}
+.cena{perspective:1400px;width:min(78vw,320px);aspect-ratio:3/3.9;position:relative;cursor:pointer}
+.pasta{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1.2s cubic-bezier(.6,.05,.2,1);animation:respira 3.2s ease-in-out infinite}
+@keyframes respira{50%{transform:translateY(-6px) rotate(-.6deg)}}
+.pasta.aberta{animation:none;transform:translateX(16%) rotateX(14deg) scale(.94)}
+.fundo{position:absolute;inset:0;border-radius:4px 10px 10px 10px;background:linear-gradient(160deg,var(--kraft3),#9c6f33);box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.fundo::before{content:"";position:absolute;top:-16px;right:0;width:42%;height:22px;border-radius:8px 8px 0 0;background:var(--kraft3)}
+.folha{position:absolute;left:5%;right:4%;top:3%;bottom:4%;background:var(--papel);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.folha.f2{transform:rotate(2.2deg) translate(4px,-3px);background:#e7e3d8}
+.folha.f3{transform:rotate(-1.6deg);background:#fff}
+.folha.f3::before{content:"";position:absolute;inset:14% 12% auto;height:52%;background:repeating-linear-gradient(#0000 0 9px,#0002 9px 10px)}
+.capa{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;transition:transform 1.25s cubic-bezier(.7,0,.25,1)}
+.pasta.aberta .capa{transform:rotateY(-172deg)}
+.face{position:absolute;inset:0;border-radius:4px 10px 10px 10px;backface-visibility:hidden;overflow:hidden}
+.face.frente{background:linear-gradient(150deg,var(--kraft2),var(--kraft) 60%,#bb8c4c);box-shadow:inset 0 0 0 1px #0002,inset -10px 0 18px #0002}
+.face.verso{transform:rotateY(180deg);background:linear-gradient(200deg,#b98945,#a27434)}
+.face::after{content:"";position:absolute;inset:0;background-image:var(--noise);opacity:.5;mix-blend-mode:multiply;pointer-events:none}
+.etiqueta{position:absolute;left:12%;right:12%;top:13%;background:var(--papel);padding:10px 12px;font-family:"Special Elite",monospace;font-size:11px;line-height:1.7;box-shadow:0 1px 2px #0003;transform:rotate(-1deg)}
+.etiqueta b{font-family:Anton;font-weight:400;font-size:13px;letter-spacing:.06em;display:block}
+.etiqueta .linha{border-bottom:1px solid #0005;display:inline-block;width:46%}
+.logo-capa{position:absolute;left:50%;top:50%;width:78%;transform:translate(-50%,-30%) rotate(-3deg);filter:drop-shadow(0 3px 0 #0003)}
+.carimbo{position:absolute;right:6%;bottom:9%;width:52%;transform:rotate(-11deg);opacity:.9;mix-blend-mode:multiply}
+.fio{position:absolute;right:-6px;top:46%;width:34px;height:34px;border-radius:50%;background:#7a5226;box-shadow:inset 0 0 0 5px #5e3c18}
+.btn{font-family:Anton;font-size:18px;letter-spacing:.06em;background:var(--amarelo);color:var(--preto);border:0;padding:15px 30px;border-radius:2px;box-shadow:4px 4px 0 var(--preto),0 0 0 2px var(--preto);cursor:pointer;text-transform:uppercase}
+.btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--preto),0 0 0 2px var(--preto)}
+.btn.pulsa{animation:pulsa 1.6s ease-in-out infinite}
+@keyframes pulsa{50%{transform:scale(1.05)}}
+.btn[disabled]{filter:grayscale(1);opacity:.45;cursor:not-allowed}
+.dica{font-family:Caveat;font-size:20px;color:#e9d9b8;opacity:.85}
+#intro.abrindo .btn,#intro.abrindo .dica,#intro.abrindo .topo{opacity:0;transition:opacity .3s}
+
+/* ---------- PASTA ABERTA: FOLHEAR ---------- */
+#caso{position:fixed;inset:0;display:none;flex-direction:column;max-width:460px;margin:0 auto;padding:12px 12px 10px}
+#caso.on{display:flex;animation:entra .7s ease}
+@keyframes entra{from{opacity:0;transform:scale(.94)}}
+.cab{display:flex;align-items:center;justify-content:space-between;color:#e9d9b8;font-family:"Special Elite";font-size:11px;padding:2px 4px 10px}
+.cab img{width:112px}
+.progresso{display:flex;gap:5px;align-items:center}
+.progresso i{width:12px;height:12px;border:1.5px solid #e9d9b8;border-radius:50%}
+.progresso i.ok{background:var(--amarelo);border-color:var(--amarelo)}
+.manila{flex:1;position:relative;background:linear-gradient(170deg,#ecca86,var(--manila) 50%,#d7b067);border-radius:6px;box-shadow:0 20px 50px #000a;padding:14px 26px 14px 12px;perspective:1600px}
+.manila::before{content:"";position:absolute;inset:0;background-image:var(--noise);opacity:.35;mix-blend-mode:multiply;border-radius:6px;pointer-events:none}
+.manila::after{content:"CASO Nº 2026-BF";position:absolute;right:-2px;top:38%;width:26px;height:150px;background:#dfb96f;border-radius:0 8px 8px 0;writing-mode:vertical-rl;font-family:"Courier Prime";font-weight:700;font-size:10px;letter-spacing:.15em;display:flex;align-items:center;justify-content:center;color:#5a4320;box-shadow:inset 3px 0 4px #0002}
+.pilha{position:relative;height:100%;transform-style:preserve-3d}
+.pag{position:absolute;inset:0;background:var(--papel);box-shadow:0 2px 6px #0004,0 12px 22px #0002;transform-origin:left center;transition:transform .85s cubic-bezier(.55,.05,.25,1),box-shadow .85s;backface-visibility:hidden;overflow:hidden;display:flex;flex-direction:column}
+.pag::after{content:"";position:absolute;inset:0;background-image:var(--noise);opacity:.18;mix-blend-mode:multiply;pointer-events:none;z-index:9}
+.pag .corpo{flex:1;overflow-y:auto;padding:22px 20px 16px;position:relative;-webkit-overflow-scrolling:touch}
+.pag.virada{transform:rotateY(-178deg);box-shadow:-20px 10px 30px #0000}
+.pag.debaixo{transform:rotate(var(--r,0deg)) translate(var(--dx,0),var(--dy,0))}
+.pag .sombraVira{position:absolute;inset:0;background:linear-gradient(90deg,#0000 40%,#0003);opacity:0;transition:opacity .85s;pointer-events:none;z-index:8}
+.pag.virando .sombraVira{opacity:1}
+.rodape{display:flex;align-items:center;justify-content:space-between;padding:12px 4px 2px;color:#e9d9b8;font-family:"Special Elite";font-size:12px;letter-spacing:.08em}
+.seta{background:none;border:1.5px solid #e9d9b8;color:#e9d9b8;font-family:Anton;font-size:14px;letter-spacing:.08em;padding:8px 14px;border-radius:2px;cursor:pointer}
+.seta.forte{background:var(--amarelo);border-color:var(--amarelo);color:var(--preto)}
+.seta[disabled]{opacity:.25}
+.arraste{position:absolute;right:22px;top:12px;font-family:Caveat;font-size:18px;color:#0008;z-index:7;pointer-events:none;animation:cutuca 1.8s ease-in-out infinite}
+@keyframes cutuca{50%{transform:translateX(-8px)}}
+
+/* elementos de ficha (ref. character file) */
+.tit{font-family:"Courier Prime",monospace;font-weight:700;font-size:23px;letter-spacing:.04em;border-bottom:2px solid var(--preto);display:inline-block;padding-bottom:4px;margin-bottom:8px}
+.lab{font-family:"Courier Prime",monospace;font-weight:700;font-size:11.5px;letter-spacing:.06em;margin-top:7px}
+.val{font-family:Caveat;font-size:21px;line-height:1.1;border-bottom:1.5px solid var(--preto);padding:2px 0 3px}
+.box{background:#faf8f2;border:1px solid #0001;padding:12px 14px;margin-top:14px;font-family:"Courier Prime",monospace;font-size:13px;line-height:1.55;box-shadow:0 1px 2px #0001}
+.box h5{font-family:"Courier Prime";font-weight:700;font-size:13px;text-align:center;letter-spacing:.08em;margin-bottom:6px}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.duas .box{text-align:center}
+.estrelas{font-size:24px;letter-spacing:3px}
+.topoFicha{display:grid;grid-template-columns:1fr 46%;gap:12px;align-items:start}
+.pol{background:#fff;padding:7px 7px 28px;box-shadow:0 6px 14px #0005;position:relative}
+.pol img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;filter:grayscale(1) sepia(.35) contrast(1.15) brightness(.9)}
+.pol p{position:absolute;left:6px;right:6px;bottom:4px;font-family:Caveat;font-size:16px;line-height:1;text-align:center}
+.clip{position:absolute;top:-16px;right:18px;width:14px;height:50px;border:2.5px solid #9ba1a7;border-radius:8px;z-index:4;transform:rotate(8deg)}
+.clip::after{content:"";position:absolute;left:2px;right:2px;top:7px;bottom:-4px;border:2.5px solid #9ba1a7;border-radius:6px;border-top-color:transparent}
+.fita{position:absolute;width:70px;height:22px;background:#f2e6a8cc;top:-10px;left:50%;transform:translateX(-50%) rotate(-4deg);z-index:3;box-shadow:0 1px 2px #0002}
+.silh{aspect-ratio:3/4;background:#2a2622;position:relative;overflow:hidden;display:grid;place-items:center}
+.silh::before{content:"";position:absolute;bottom:-20%;width:90%;aspect-ratio:1;border-radius:50% 50% 0 0;background:#0e0e0e}
+.silh .cab2{position:absolute;top:26%;width:40%;aspect-ratio:1;border-radius:50%;background:#0e0e0e}
+.silh .chap{position:absolute;top:17%;width:66%;height:9%;background:#0e0e0e;border-radius:40% 40% 6px 6px}
+.silh .chap::before{content:"";position:absolute;left:20%;right:20%;bottom:60%;height:150%;background:#0e0e0e;border-radius:12px 12px 0 0}
+.silh b{position:relative;z-index:2;font-family:Anton;font-weight:400;font-size:40px;color:var(--amarelo);margin-top:18%}
+.carimbo2{position:absolute;width:150px;mix-blend-mode:multiply;transform:rotate(-14deg);opacity:0;transition:opacity .2s,transform .35s cubic-bezier(.3,1.6,.5,1);z-index:6;pointer-events:none}
+.carimbo2.bate{opacity:.85;transform:rotate(-14deg) scale(1)}
+.carimbo2:not(.bate){transform:rotate(-14deg) scale(2.2)}
+.maquina{font-family:"Courier Prime",monospace;font-size:13px;line-height:1.5;white-space:pre-wrap;min-height:9em}
+.maquina::after{content:"▌";animation:pisca 1s steps(1) infinite}
+.maquina.fim::after{content:""}
+@keyframes pisca{50%{opacity:0}}
+.assin{font-family:Caveat;font-size:26px;margin-top:6px}
+.grifo{background:linear-gradient(transparent 55%,#fdc72faa 55%)}
+
+/* evidências */
+.evid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+.evid .pol img{aspect-ratio:1;filter:sepia(.2) contrast(1.05)}
+.evid .a{transform:rotate(-4deg)}.evid .b{transform:rotate(3deg);margin-top:20px}
+.saco{grid-column:1/-1;justify-self:center;width:74%;position:relative;padding:24px 16px 14px;background:linear-gradient(180deg,#ffffff70,#ffffff30);border:1.5px solid #0002;border-radius:6px;transform:rotate(-2deg);box-shadow:0 8px 18px #0003;margin-top:6px}
+.saco::before{content:"";position:absolute;left:0;right:0;top:9px;height:6px;background:var(--verm);opacity:.85}
+.saco img{width:66%;display:block;margin:0 auto;filter:drop-shadow(0 6px 6px #0004)}
+.saco .tag{position:absolute;right:-8px;bottom:12px;background:#fff;font-family:"Courier Prime";font-size:10px;padding:5px 8px;transform:rotate(6deg);box-shadow:0 2px 4px #0004;line-height:1.45}
+
+.notas{margin-top:18px;font-family:Caveat;font-size:21px;line-height:1.35;white-space:pre-line;background:repeating-linear-gradient(#0000 0 27px,#3a6fb055 27px 28px);padding:4px 6px 6px 30px;border-left:2px solid #e0606088}
+.notas b{font-family:"Courier Prime";font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+/* quadro */
+.pag.cortica{background:var(--cortica)}
+.pag.cortica .corpo::before{content:"";position:absolute;inset:0;background-image:radial-gradient(#0002 1px,transparent 1.5px);background-size:7px 7px;pointer-events:none}
+.pag.cortica .tit{background:var(--papel);padding:4px 10px;border:0;transform:rotate(-2deg);position:relative}
+.inst{font-family:Caveat;font-size:19px;margin:0 0 6px;position:relative}
+.cards{position:relative;height:430px}
+.cards svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible}
+.cards svg path{fill:none;stroke:#b3121d;stroke-width:2;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);transition:stroke-dashoffset 1.4s ease}
+.cards.liga svg path{stroke-dashoffset:0}
+.pista{position:absolute;width:112px;background:var(--papel);padding:14px 8px 9px;box-shadow:0 8px 16px #0006;z-index:2;cursor:pointer;text-align:center}
+.pista::before{content:"";position:absolute;top:-6px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff6b6b,#a50d1a);box-shadow:0 2px 3px #0007}
+.pista .n{font-family:Anton;font-size:28px;line-height:1}
+.pista .st{font-family:"Courier Prime";font-weight:700;font-size:9.5px;letter-spacing:.05em;opacity:.6;margin-top:4px}
+.pista .dig{display:none;font-family:Anton;font-size:28px;color:var(--verm)}
+.pista.ok{background:#fff6d6}.pista.ok .dig{display:block}.pista.ok .st{color:#1d7a35;opacity:1}
+
+/* cofre */
+.pag.preta{background:#1b1b1b;color:var(--off)}
+.pag.preta .corpo{text-align:center;display:flex;flex-direction:column;justify-content:center}
+.pag.preta h3{font-family:Anton;font-weight:400;font-size:28px;letter-spacing:.05em;color:var(--amarelo)}
+.pag.preta p.s{font-size:13px;opacity:.8;margin:6px 0 18px}
+.cadeado{width:150px;height:150px;padding:14px;margin:0 auto 14px;display:block;transition:transform .5s;background:var(--amarelo);border-radius:50%;box-shadow:0 0 0 6px #1b1b1b,0 0 0 9px var(--amarelo),0 0 40px #fdc72f66}
+.cadeado.treme{animation:treme .45s}
+@keyframes treme{20%,60%{transform:translateX(-7px) rotate(-4deg)}40%,80%{transform:translateX(7px) rotate(4deg)}}
+.digitos{display:flex;justify-content:center;gap:7px;margin-bottom:18px}
+.digitos span{width:44px;height:56px;background:var(--off);color:var(--preto);font-family:Anton;font-size:30px;display:grid;place-items:center;border-radius:3px;box-shadow:inset 0 -4px 0 #0003}
+.digitos span.vazio{background:#2c2c2c;color:#666}
+.demo{display:block;margin:14px auto 0;background:none;border:0;color:#999;font-size:11px;text-decoration:underline;cursor:pointer;font-family:Montserrat}
+
+/* overlays */
+#liberado{position:fixed;inset:0;z-index:60;background:#000d;display:none;align-items:center;justify-content:center;padding:24px;overflow:hidden}
+#liberado.on{display:flex}
+.premio{max-width:380px;text-align:center;color:var(--off);animation:surge .8s cubic-bezier(.2,1.4,.4,1)}
+@keyframes surge{from{transform:scale(.4);opacity:0}}
+.premio img.ac{width:92%;margin:0 auto 10px;display:block;transform:rotate(-3deg)}
+.premio img.sg{width:70%;margin:6px auto 14px;display:block}
+.premio p{font-size:14px;line-height:1.55;margin-bottom:20px}
+.premio p b{color:var(--amarelo)}
+.moeda{position:absolute;top:-80px;width:56px;animation:cai linear forwards;z-index:-1}
+@keyframes cai{to{transform:translateY(115vh) rotate(540deg)}}
+#folhaPista{position:fixed;inset:0;z-index:50;display:none}
+#folhaPista.on{display:block}
+#folhaPista .veu{position:absolute;inset:0;background:#000a}
+#folhaPista .sheet{position:absolute;left:0;right:0;bottom:0;max-width:460px;margin:0 auto;background:var(--papel);padding:26px 22px 30px;border-radius:14px 14px 0 0;animation:sobe .4s cubic-bezier(.2,.9,.3,1);font-family:"Courier Prime"}
+@keyframes sobe{from{transform:translateY(100%)}}
+.sheet h4{font-family:Anton;font-weight:400;font-size:30px}
+.sheet .enig{font-family:Caveat;font-size:24px;line-height:1.15;margin:10px 0 14px}
+.sheet .loc{font-size:12px;opacity:.7;border-top:1px dashed #0004;padding-top:10px;margin-bottom:16px}
+.sheet label{font-size:12px;font-weight:700;display:block;margin-bottom:6px}
+.sheet .linhaIn{display:flex;gap:8px}
+.sheet input{flex:1;min-width:0;font-family:Anton;font-size:22px;letter-spacing:.25em;text-align:center;padding:10px;border:2px solid var(--preto);background:#fff;border-radius:2px;text-transform:uppercase}
+.sheet .btn{font-size:15px;padding:10px 14px}
+.sheet .erro{color:var(--verm);font-size:12px;height:16px;margin-top:6px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(140px);background:var(--amarelo);color:var(--preto);font-weight:800;font-size:13px;padding:12px 18px;border:2px solid var(--preto);z-index:80;transition:transform .35s;max-width:90vw;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0)}
+.voo{position:fixed;left:50%;top:50%;width:140px;z-index:20;pointer-events:none;opacity:0}
+.voo.vai{animation:voa 1.1s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes voa{0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(0)}15%{opacity:1}100%{opacity:1;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(1) rotate(var(--r))}}
+.voo img{width:100%;display:block}
+.voo .pol{padding:6px 6px 22px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div class="mesa"></div>
+
+<section id="intro">
+  <div class="topo">VILLAGE RESORT · DEPTO. DE INVESTIGAÇÃO<br>ACESSO RESTRITO</div>
+  <div class="cena" id="cena">
+    <div class="pasta" id="pasta">
+      <div class="fundo"></div>
+      <div class="folha f2"></div><div class="folha"></div><div class="folha f3"></div>
+      <div class="capa">
+        <div class="face frente">
+          <div class="etiqueta"><b>CASO Nº 2026-BF</b>Investigador(a): <span class="linha">&nbsp;</span><br>Status: EM ABERTO</div>
+          <img class="logo-capa" src="assets/cb-logo.png" alt="Caso Black">
+          <img class="carimbo" src="assets/cb-confidencial.png" alt="">
+          <div class="fio"></div>
+        </div>
+        <div class="face verso"></div>
+      </div>
+    </div>
+  </div>
+  <button class="btn pulsa" id="abrir">Abrir o caso</button>
+  <div class="dica">chame a família e abra junto 🔎</div>
+</section>
+
+<main id="caso">
+  <div class="cab"><img src="assets/cb-logo.png" alt="Caso Black"><div class="progresso" id="prog"><i></i><i></i><i></i><i></i><i></i></div></div>
+  <div class="manila"><div class="pilha" id="pilha">
+
+    <!-- 1 RELATÓRIO -->
+    <article class="pag" data-nome="relatorio"><div class="sombraVira"></div><div class="corpo">
+      <div class="topoFicha">
+        <div>
+          <div class="tit">RELATÓRIO<br>Nº 01</div>
+          <div class="lab">OCORRÊNCIA:</div><div class="val">Sumiço das ofertas</div>
+          <div class="lab">LOCAL:</div><div class="val">Village Resort</div>
+          <div class="lab">DATA:</div><div class="val">Novembro de 2026</div>
+        </div>
+        <div class="pol" style="transform:rotate(3deg);margin-top:8px"><div class="clip"></div><img src="assets/foto-piscina.jpg" alt=""><p>cena do crime</p></div>
+      </div>
+      <div class="box"><h5>DEPOIMENTO DA GERÊNCIA</h5><div class="maquina" id="texto"></div></div>
+      <div class="assin">— A Gerência</div>
+      <img class="carimbo2" id="selo" src="assets/cb-confidencial.png" alt="" style="right:6px;bottom:40px">
+    </div></article>
+
+    <!-- 2 SUSPEITO -->
+    <article class="pag" data-nome="suspeito"><div class="sombraVira"></div><div class="corpo">
+      <div class="topoFicha">
+        <div>
+          <div class="tit">FICHA DO<br>SUSPEITO</div>
+          <div class="lab">NOME:</div><div class="val">"O Desconto"</div>
+          <div class="lab">IDADE:</div><div class="val">Desconhecida</div>
+          <div class="lab">OCUPAÇÃO:</div><div class="val">Ladrão de ofertas</div>
+          <div class="lab">VISTO POR ÚLTIMO:</div><div class="val">Perto da recepção</div>
+        </div>
+        <div class="pol" style="transform:rotate(-3deg);margin-top:8px"><div class="clip"></div><div class="silh"><div class="chap"></div><div class="cab2"></div><b>?</b></div><p>retrato falado</p></div>
+      </div>
+      <div class="box"><h5>MARCAS REGISTRADAS</h5>Usa chapéu. Conhece o resort como ninguém. <span class="grifo">Esconde um número em cada pista</span> e some no check-out.</div>
+      <div class="box"><h5>DEPOIMENTO DE TESTEMUNHA</h5>"Vi um vulto de chapéu correndo com uma sacola amarela. Ele riu e disse: quem achar as pistas, leva tudo antes da Black."</div>
+      <div class="duas">
+        <div class="box"><h5>PERIGO P/ O BOLSO</h5><div class="estrelas">★★★★★</div></div>
+        <div class="box"><h5>RECOMPENSA</h5><b style="font-size:12px">ACESSO ANTECIPADO À BLACK</b></div>
+      </div>
+    </div></article>
+
+    <!-- 3 EVIDÊNCIAS -->
+    <article class="pag" data-nome="evidencias"><div class="sombraVira"></div><div class="corpo">
+      <div class="tit">EVIDÊNCIAS</div>
+      <div class="evid">
+        <div class="pol a"><div class="fita"></div><img src="assets/foto-piscina.jpg" alt=""><p>visto perto da água</p></div>
+        <div class="pol b"><div class="fita" style="transform:translateX(-50%) rotate(6deg)"></div><img src="assets/foto-familia.png" alt="" style="object-position:50% 20%"><p>testemunhas</p></div>
+        <div class="saco"><img src="assets/moeda.png" alt="Moeda"><div class="tag">EVIDÊNCIA Nº 3<br>moeda deixada<br>na recepção</div></div>
+      </div>
+      <div class="notas"><b>anotações do investigador</b>
+• o suspeito gosta de lugares cheios
+• cada pista tem um código na placa
+• <span class="grifo">o cofre só abre com os 5 números</span></div>
+    </div></article>
+
+    <!-- 4 QUADRO -->
+    <article class="pag cortica" data-nome="quadro"><div class="sombraVira"></div><div class="corpo">
+      <div class="tit">QUADRO DO CASO</div>
+      <div class="inst">achou a placa no resort? toque na pista</div>
+      <div class="cards" id="cards"><svg id="fios" preserveAspectRatio="none"></svg></div>
+    </div></article>
+
+    <!-- 5 COFRE -->
+    <article class="pag preta" data-nome="cofre"><div class="sombraVira"></div><div class="corpo">
+      <img class="cadeado" id="cadeado" src="assets/cadeado.png" alt="">
+      <h3>O COFRE DAS OFERTAS</h3>
+      <p class="s">Junte os 5 números das pistas para destravar.</p>
+      <div class="digitos" id="digitos"></div>
+      <button class="btn" id="destravar" disabled>Destravar</button>
+      <button class="demo" id="demoTudo">modo demonstração: preencher as 5 pistas</button>
+    </div></article>
+
+  </div></div>
+  <div class="rodape"><button class="seta" id="ant">◀</button><span id="num">FOLHA 1 / 5</span><button class="seta forte" id="prox">PRÓXIMA ▶</button></div>
+</main>
+
+<div id="folhaPista"><div class="veu" id="veu"></div>
+  <div class="sheet">
+    <h4 id="pTit">PISTA ?1</h4>
+    <div class="enig" id="pEnig"></div>
+    <div class="loc" id="pLoc"></div>
+    <label for="pIn">CÓDIGO ESCRITO NA PLACA</label>
+    <div class="linhaIn"><input id="pIn" maxlength="6" autocomplete="off"><button class="btn" id="pOk">Registrar</button></div>
+    <div class="erro" id="pErro"></div>
+    <button class="demo" id="pDemo" style="color:#666">modo demonstração: simular placa encontrada</button>
+  </div>
+</div>
+
+<div id="liberado">
+  <div class="premio">
+    <img class="ac" src="assets/acesso.png" alt="Acesso antecipado">
+    <img class="sg" src="assets/segredos.png" alt="Quais segredos te esperam?">
+    <p>Caso resolvido, investigador(a). Você entrou na <b>lista VIP da Black Friday Village</b> e vai ver as ofertas <b>antes de todo mundo</b>.</p>
+    <button class="btn" id="vip">Garantir meu acesso</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const PISTAS=[
+ {cod:'AGUA',dig:2,enig:'Onde a água esconde o amarelo, alguém deixou cair um segredo.',x:3,y:2},
+ {cod:'SABOR',dig:7,enig:'Onde a fome encontra o sabor, procure o que ninguém pede no cardápio.',x:55,y:12},
+ {cod:'BRINCA',dig:1,enig:'Onde as crianças mandam, o suspeito virou criança também.',x:6,y:38},
+ {cod:'VERDE',dig:1,enig:'Onde a natureza fica quieta, a pista grita.',x:56,y:50},
+ {cod:'PASSA',dig:5,enig:'Por onde todo mundo passa, ninguém repara.',x:26,y:74},
+];
+const RELATO='Na madrugada de ontem, o cofre com as ofertas da Black Friday foi esvaziado.\n\nO suspeito deixou 5 pistas pelo resort. Cada uma guarda um número.\n\nSua missão: achar as 5, abrir o cofre e salvar a Black antes do check-out.';
+let achadas=[];try{achadas=JSON.parse(localStorage.getItem('cb-achadas')||'[]')}catch(e){}
+const salvar=()=>{try{localStorage.setItem('cb-achadas',JSON.stringify(achadas))}catch(e){}};
+const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2600)};
+const vibra=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+
+/* abrir pasta */
+function abrir(){
+  const intro=$('#intro');if(intro.classList.contains('abrindo'))return;
+  intro.classList.add('abrindo');$('#pasta').classList.add('aberta');vibra(20);
+  const docs=[
+    {h:'<div class="pol"><img src="assets/foto-piscina.jpg" style="aspect-ratio:1"></div>',x:-105,y:-220,r:-12},
+    {h:'<img src="assets/moeda.png">',x:100,y:-170,r:14},
+    {h:'<div class="pol"><img src="assets/foto-familia.png" style="aspect-ratio:1"></div>',x:-95,y:200,r:7},
+    {h:'<img src="assets/cb-confidencial.png">',x:95,y:220,r:-10},
+  ];
+  docs.forEach((d,i)=>setTimeout(()=>{
+    const el=document.createElement('div');el.className='voo';el.innerHTML=d.h;
+    el.style.setProperty('--x',d.x+'px');el.style.setProperty('--y',d.y+'px');el.style.setProperty('--r',d.r+'deg');
+    document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('vai'));
+  },900+i*170));
+  setTimeout(()=>{
+    intro.classList.add('sai');document.querySelectorAll('.voo').forEach(v=>{v.style.transition='opacity .5s';v.style.opacity=0});
+    setTimeout(()=>{intro.style.display='none';document.querySelectorAll('.voo').forEach(v=>v.remove());mostrarCaso();},500);
+  },3000);
+}
+$('#abrir').onclick=abrir;$('#cena').onclick=abrir;
+
+/* folhear */
+const pags=[...document.querySelectorAll('.pag')];let k=0;
+const giros=[[-.8,'0px','0px'],[1.4,'3px','4px'],[-1.8,'-3px','6px'],[1,'2px','8px'],[-1.2,'0px','10px']];
+function arrumar(){
+  pags.forEach((p,i)=>{
+    p.style.zIndex=pags.length-i;
+    p.classList.toggle('virada',i<k);
+    p.classList.toggle('debaixo',i>k);
+    const g=giros[i];p.style.setProperty('--r',g[0]+'deg');p.style.setProperty('--dx',g[1]);p.style.setProperty('--dy',g[2]);
+  });
+  $('#num').textContent=`FOLHA ${k+1} / ${pags.length}`;
+  $('#ant').disabled=k===0;$('#prox').disabled=k===pags.length-1;
+  $('#prox').style.visibility=k===pags.length-1?'hidden':'visible';
+  aoMostrar(pags[k].dataset.nome);
+}
+function ir(d){
+  const n=k+d;if(n<0||n>=pags.length)return;
+  const p=d>0?pags[k]:pags[n];
+  if(d<0)p.style.zIndex=99;               // página voltando passa por cima
+  p.classList.add('virando');setTimeout(()=>p.classList.remove('virando'),850);
+  k=n;arrumar();vibra(8);
+  if(d<0)setTimeout(()=>arrumar(),860);
+}
+$('#prox').onclick=()=>ir(1);$('#ant').onclick=()=>ir(-1);
+let x0=null,y0=0;
+$('#pilha').addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+$('#pilha').addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3)ir(dx<0?1:-1)});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')ir(1);if(e.key==='ArrowLeft')ir(-1)});
+
+function mostrarCaso(){$('#caso').classList.add('on');arrumar();}
+
+let escreveu=false,ligou=false;
+function aoMostrar(nome){
+  if(nome==='relatorio'&&!escreveu){escreveu=true;setTimeout(escrever,500)}
+  if(nome==='quadro'){setTimeout(()=>{desenharFios();requestAnimationFrame(()=>$('#cards').classList.add('liga'))},700)}
+}
+function escrever(){
+  const el=$('#texto');let i=0;
+  (function passo(){el.textContent=RELATO.slice(0,++i);if(i<RELATO.length)setTimeout(passo,RELATO[i-1]==='\n'?160:16);else{el.classList.add('fim');setTimeout(()=>{$('#selo').classList.add('bate');vibra([30,40,30])},300)}})();
+}
+
+/* quadro */
+function montarCards(){
+  const c=$('#cards');
+  PISTAS.forEach((p,i)=>{
+    const d=document.createElement('div');d.className='pista';d.style.left=p.x+'%';d.style.top=p.y+'%';
+    d.style.transform=`rotate(${[-4,3,-2,5,-3][i]}deg)`;d.dataset.i=i;
+    d.innerHTML=`<div class="n">?${i+1}</div><div class="dig">${p.dig}</div><div class="st">NÃO ENCONTRADA</div>`;
+    d.onclick=()=>abrirPista(i);c.appendChild(d);
+  });
+  atualizar();
+}
+function desenharFios(){
+  const svg=$('#fios'),c=$('#cards'),W=c.offsetWidth,H=c.offsetHeight;
+  const pts=[...c.querySelectorAll('.pista')].map(e=>[e.offsetLeft+e.offsetWidth/2,e.offsetTop+2]);
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  for(let i=0;i<pts.length-1;i++){const[a,b]=[pts[i],pts[i+1]];const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',`M${a[0]},${a[1]} Q${(a[0]+b[0])/2},${Math.max(a[1],b[1])+30} ${b[0]},${b[1]}`);svg.appendChild(p);
+    p.style.setProperty('--len',p.getTotalLength());p.style.transitionDelay=(i*.3)+'s';}
+}
+let atual=0;
+function abrirPista(i){
+  atual=i;const p=PISTAS[i];$('#pTit').textContent='PISTA ?'+(i+1);$('#pEnig').textContent='“'+p.enig+'”';
+  $('#pLoc').textContent=achadas.includes(i)?'✔ Pista registrada. Número: '+p.dig:'Local: a definir (mockup). No resort, a placa terá um código escrito.';
+  $('#pIn').value='';$('#pErro').textContent='';$('#folhaPista').classList.add('on');
+}
+const fecharPista=()=>$('#folhaPista').classList.remove('on');
+$('#veu').onclick=fecharPista;
+function registrar(i){
+  if(!achadas.includes(i)){achadas.push(i);salvar();}
+  fecharPista();atualizar();vibra(40);
+  toast(achadas.length===5?'5 pistas! Vire a folha e abra o cofre.':'Pista ?'+(i+1)+' registrada · número '+PISTAS[i].dig);
+}
+$('#pOk').onclick=()=>{const v=$('#pIn').value.trim().toUpperCase();if(v===PISTAS[atual].cod)registrar(atual);else{$('#pErro').textContent='Código não confere. Olhe a placa de novo.';vibra([20,30,20])}};
+$('#pIn').onkeydown=e=>{if(e.key==='Enter')$('#pOk').click()};
+$('#pDemo').onclick=()=>registrar(atual);
+$('#demoTudo').onclick=()=>{PISTAS.forEach((_,i)=>{if(!achadas.includes(i))achadas.push(i)});salvar();atualizar()};
+function atualizar(){
+  document.querySelectorAll('.pista').forEach(d=>{const ok=achadas.includes(+d.dataset.i);d.classList.toggle('ok',ok);d.querySelector('.st').textContent=ok?'ENCONTRADA':'NÃO ENCONTRADA'});
+  document.querySelectorAll('#prog i').forEach((e,i)=>e.classList.toggle('ok',i<achadas.length));
+  $('#digitos').innerHTML=PISTAS.map((p,i)=>achadas.includes(i)?`<span>${p.dig}</span>`:'<span class="vazio">?</span>').join('');
+  $('#destravar').disabled=achadas.length<5;
+}
+
+/* cofre */
+$('#destravar').onclick=()=>{
+  const c=$('#cadeado');c.classList.add('treme');vibra([40,60,40,60,120]);
+  setTimeout(()=>{c.classList.remove('treme');c.style.transform='translateY(-14px) scale(1.15)'},450);
+  setTimeout(()=>{$('#liberado').classList.add('on');chuva()},900);
+};
+function chuva(){
+  for(let i=0;i<26;i++){const m=document.createElement('img');m.src='assets/moeda.png';m.className='moeda';
+    m.style.left=Math.random()*100+'%';m.style.width=(36+Math.random()*34)+'px';m.style.animationDuration=(2.2+Math.random()*2)+'s';m.style.animationDelay=(Math.random()*1.2)+'s';
+    $('#liberado').appendChild(m);}
+}
+$('#vip').onclick=()=>toast('Mockup: aqui entra o cadastro VIP (nome + WhatsApp).');
+
+montarCards();
+if(location.hash){$('#intro').style.display='none';const m={'#suspeito':1,'#evidencias':2,'#quadro':3,'#cofre':4}[location.hash];k=m||0;mostrarCaso();}
+</script>
+</body>
+</html>
