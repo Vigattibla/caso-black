@@ -323,8 +323,13 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
 .topo{gap:8px;padding:0 12px}.topo img{margin-right:auto}.prog small{display:none}.prog i{width:20px;height:24px;font-size:13px}.prog .slots{gap:3px}
 .assin{bottom:10px!important}.f1 .box{margin-top:14px!important}.f1 .box .mono{font-size:11px!important;line-height:1.45!important}
 .f5 .fita.b{bottom:2px!important}.f5 .cofre{top:92px!important}.f5 h2{margin-top:22px!important}
-.lupaBtn{height:30px;padding:0 10px;border:1.5px solid var(--amarelo);border-radius:15px;color:var(--amarelo);display:flex;align-items:center;gap:6px;font:400 12px Anton;letter-spacing:.12em}
-.lupaBtn svg{width:14px;height:14px}
+.lupaBtn{position:relative;height:32px;padding:0 12px;border-radius:16px;background:var(--amarelo);color:var(--preto);display:flex;align-items:center;gap:6px;font:400 13px Anton;letter-spacing:.12em;box-shadow:0 0 0 0 #fdc72f99;animation:pulsa 1.8s infinite}
+.lupaBtn svg{width:15px;height:15px}
+@keyframes pulsa{70%{box-shadow:0 0 0 10px #fdc72f00}100%{box-shadow:0 0 0 0 #fdc72f00}}
+.dicaLupa{position:fixed;z-index:80;top:calc(env(safe-area-inset-top) + 58px);right:12px;max-width:230px;background:#fffdf6;color:var(--preto);border:2px solid var(--preto);box-shadow:3px 3px 0 var(--preto);border-radius:4px;padding:10px 12px;font:700 12px/1.35 Montserrat;display:none}
+.dicaLupa.on{display:block}
+.dicaLupa b{font:400 15px Anton;letter-spacing:.05em;display:block;color:#c8102e}
+.dicaLupa::before{content:"";position:absolute;top:-9px;right:var(--seta,90px);width:14px;height:14px;background:#fffdf6;border-left:2px solid var(--preto);border-top:2px solid var(--preto);transform:rotate(45deg)}
 #sheet textarea{width:100%;border:1.5px dashed #0005;border-radius:4px;background:repeating-linear-gradient(#fff0 0 23px,#0000001a 23px 24px),#fffdf6;padding:2px 10px;font:700 19px/24px Caveat;color:#1b2a6b;resize:none;outline:none}
 #sheet textarea:focus{border-color:var(--preto)}
 /* lupa */
@@ -566,12 +571,13 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
   </div>
   <div class="fita b"><span></span></div>
 </div>
+<div class="dicaLupa" id="dicaLupa" role="note"><b>MANCHAS NA CARTA?</b>É tinta invisível. Toque em <u>LUPA</u> e aponte a câmera pra elas.</div>
 <div id="lupa" aria-hidden="true">
   <video id="lupaV" playsinline muted style="display:none"></video><canvas id="lupaC"></canvas>
   <div class="falso">QUEM ACHAR<br>AS 5 PISTAS<br>LEVA TUDO</div>
   <div class="aro"></div>
   <button class="x" id="lupaX" aria-label="Fechar lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  <div class="info"><b>LUPA DE TINTA INVISÍVEL</b><p id="lupaTxt">Passe a lente pelas rasuras vermelhas da carta, frente e verso. Ela apaga o vermelho e revela o que está escondido.</p></div>
+  <div class="info"><b>LUPA DE TINTA INVISÍVEL</b><p id="lupaTxt">Aponte para as <b style="display:inline;font:inherit;color:#fdc72f">manchas coloridas</b> da carta (frente e verso) a um palmo de distância. A lente apaga o vermelho e o roxo e as letras escondidas aparecem.</p></div>
 </div>
 <div id="toast" role="status"></div>
 
@@ -610,7 +616,7 @@ function abrir(){
   const c=$('#capa');c.classList.add('rasga');
   setTimeout(()=>{c.classList.add('aberta')},420);
   setTimeout(()=>{document.body.classList.remove('fechado')},780);
-  setTimeout(()=>{c.style.display='none';document.body.classList.remove('abrindo');aoMostrar()},1750);
+  setTimeout(()=>{c.style.display='none';document.body.classList.remove('abrindo');aoMostrar();setTimeout(dicaLupa,1200)},1750);
 }
 $('#abrir').onclick=abrir;$('#capa').onclick=abrir;
 
@@ -754,16 +760,28 @@ $('#sNota').addEventListener('input',e=>{notas[atual]=e.target.value;try{localSt
 /* lupa: câmera + filtro de canal vermelho (lente decodificadora) */
 let fluxo=null,laco=0;
 async function abrirLupa(){const L=$('#lupa');L.classList.add('on');L.classList.remove('semcam');L.setAttribute('aria-hidden','false');
-  try{fluxo=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:960}},audio:false});
+  try{fluxo=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280}},audio:false});
+    try{const t=fluxo.getVideoTracks()[0],cp=t.getCapabilities?t.getCapabilities():{};if(cp.zoom)await t.applyConstraints({advanced:[{zoom:Math.min(cp.zoom.max,2)}]})}catch(_){}
     const v=$('#lupaV');v.srcObject=fluxo;await v.play();const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
-    (function quadro(){if(!fluxo)return;const w=c.width=Math.min(480,v.videoWidth||480),h=c.height=Math.round(w*(v.videoHeight||640)/(v.videoWidth||480));
-      x.drawImage(v,0,0,w,h);const d=x.getImageData(0,0,w,h),a=d.data;
-      for(let i=0;i<a.length;i+=4){let r=a[i];r=(r-130)*3+128;r=r<0?0:r>255?255:r;a[i]=a[i+1]=a[i+2]=r}
+    const o=document.createElement('canvas'),ox=o.getContext('2d');let lo=90,hi=200;
+    (function quadro(){if(!fluxo)return;const vw=v.videoWidth||960,vh=v.videoHeight||1280,w=c.width=Math.min(960,vw),h=c.height=Math.round(w*vh/vw);
+      // desfoque barato: reduz e amplia (funde os traços finos)
+      o.width=w>>2;o.height=h>>2;ox.imageSmoothingEnabled=true;ox.drawImage(v,0,0,o.width,o.height);
+      x.imageSmoothingEnabled=true;x.drawImage(o,0,0,w,h);const d=x.getImageData(0,0,w,h),a=d.data;
+      // auto-contraste pelo miolo da lente (percentis 3/97)
+      // histograma só da tinta (pixel colorido: G bem abaixo de R/B); papel fica de fora
+      const H=new Uint32Array(256),T=new Uint32Array(256),cx=w>>1,cy=Math.round(h*.44),R=Math.min(w,h)*.3;let n=0,nt=0;
+      for(let y=cy-R|0;y<cy+R;y+=3)for(let k=cx-R|0;k<cx+R;k+=3){if(y<0||y>=h||k<0||k>=w)continue;const j=(y*w+k)*4,r=a[j];T[r]++;nt++;if(a[j+1]<.8*Math.max(r,a[j+2])){H[r]++;n++}}
+      if(n<nt*.08){H.set(T);n=nt}
+      let s=0,p3=0,p97=255;for(let i=0;i<256;i++){s+=H[i];if(s<n*.03)p3=i;if(s<n*.97)p97=i}
+      lo+=(p3-lo)*.2;hi+=(Math.max(p97,lo+20)-hi)*.2;const g=255/(hi-lo);
+      for(let i=0;i<a.length;i+=4){let r=((a[i]-lo)*g-128)*1.6+128;r=r<0?0:r>255?255:r;a[i]=a[i+1]=a[i+2]=r}
       x.putImageData(d,0,0);laco=requestAnimationFrame(quadro)})();
   }catch(e){L.classList.add('semcam');$('#lupaTxt').textContent='Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
 }
 function fecharLupa(){const L=$('#lupa');L.classList.remove('on');L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}}
-$('#lupaBtn').onclick=abrirLupa;$('#lupaX').onclick=fecharLupa;
+$('#lupaBtn').onclick=()=>{try{localStorage.setItem('cbLupa','1')}catch(_){}$('#dicaLupa').classList.remove('on');abrirLupa()};
+function dicaLupa(){let v=0;try{v=localStorage.getItem('cbLupa')}catch(_){}if(v)return;const b=$('#lupaBtn').getBoundingClientRect(),D=$('#dicaLupa');D.style.setProperty('--seta',Math.max(10,innerWidth-12-(b.left+b.width/2)-7)+'px');D.classList.add('on');setTimeout(()=>D.classList.remove('on'),9000)}$('#lupaX').onclick=fecharLupa;
 
 /* início */
 montarQuadro();atualizar();arrumar(false);
