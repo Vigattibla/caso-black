@@ -134,18 +134,20 @@ h2.tit{font:400 33px/0.98 Anton;letter-spacing:.01em;margin:14px 0 2px;text-tran
 .duas .rec{font:400 15px/1.05 Anton;letter-spacing:.03em}
 
 /* folha 3 */
-.f3 .linha1{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px;align-items:start}
-.f3 .pol{transform:rotate(-3deg)}
-.saco{position:relative;margin-top:6px;transform:rotate(2.5deg);border:1.5px solid #0002;border-radius:4px;background:linear-gradient(160deg,#ffffff90,#ffffff30 50%,#ffffff70);padding:26px 10px 34px;box-shadow:0 6px 14px #0002}
-.saco::before{content:"";position:absolute;left:0;right:0;top:8px;height:7px;background:repeating-linear-gradient(90deg,var(--verm) 0 6px,#0000 6px 9px);opacity:.75}
-.saco img{width:78%;margin:0 auto;filter:drop-shadow(0 5px 5px #0004)}
-.saco .tag{position:absolute;left:8px;right:8px;bottom:6px;font:700 8.5px/1.3 "Courier Prime";letter-spacing:.06em;text-align:center}
-.roubados{margin-top:22px}
-.roubados .grade{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;padding-top:6px}
-.roubados .it{position:relative;height:64px;display:grid;place-items:center}
-.roubados .it img{max-height:58px;width:auto;filter:blur(2.5px) grayscale(.6);opacity:.75}
-.roubados .it::after{content:"CONFIDENCIAL";position:absolute;left:-2px;right:-2px;top:50%;height:22px;margin-top:-11px;background:var(--preto);color:var(--papel);font:400 11px/22px Anton;letter-spacing:.24em;text-align:center;transform:rotate(-2deg)}
-.roubados .it:nth-child(2)::after{transform:rotate(1.5deg)}.roubados .it:nth-child(3)::after{transform:rotate(1deg)}.roubados .it:nth-child(4)::after{transform:rotate(-1.5deg)}
+.evid{display:grid;grid-template-columns:1fr 1fr;gap:14px 14px;margin-top:14px}
+.sc{position:relative;height:104px;border:1.5px solid #0002;border-radius:4px;background:linear-gradient(160deg,#ffffff90,#ffffff30 50%,#ffffff70);box-shadow:0 5px 12px #0002;transform:rotate(var(--r,0deg))}
+.sc:nth-child(5){grid-column:1/-1;justify-self:center;width:54%}
+.sc::before{content:"";position:absolute;left:0;right:0;top:6px;height:6px;background:repeating-linear-gradient(90deg,var(--verm) 0 6px,#0000 6px 9px);opacity:.75}
+.sc .ofe{position:absolute;inset:16px 6px 18px;display:grid;place-items:center}
+.sc .ofe img{max-height:62px;max-width:92%;width:auto;filter:drop-shadow(0 4px 4px #0004);transition:filter .5s,opacity .5s}
+.sc.lac .ofe img{filter:blur(5px) grayscale(1);opacity:.3}
+.sc .tag{position:absolute;left:4px;right:4px;bottom:4px;font:700 8px/1.2 "Courier Prime";letter-spacing:.06em;text-align:center}
+.sc .lacre{position:absolute;inset:16px 6px 18px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;pointer-events:none}
+.sc.lac .lacre{display:flex}
+.sc .lacre b{font:400 15px/1 Anton;letter-spacing:.2em;color:var(--verm);border:2px solid var(--verm);border-radius:3px;padding:3px 7px 2px;transform:rotate(-8deg);opacity:.85}
+.sc .lacre i{font:700 15px/1 Caveat;color:#2b3a8f;font-style:normal}
+.sc canvas{position:absolute;left:6px;top:16px;width:calc(100% - 12px);height:calc(100% - 34px);border-radius:3px;touch-action:none;display:none;cursor:grab;transition:opacity .6s}
+.sc.abre canvas{display:block}.sc.rev canvas{opacity:0;pointer-events:none}
 
 /* marcas de manuseio */
 .face.frente{box-shadow:0 1px 2px #0003,0 6px 16px #0002,inset 0 0 34px #8a6a3a1f}
@@ -473,19 +475,8 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
             <div class="face frente"><div class="in">
               <div class="cab"><span>VILLAGE RESORT · DEPTO. DE INVESTIGAÇÃO</span><b>FOLHA 03</b></div>
               <h2 class="tit">Evidências</h2>
-              <div class="sub">MATERIAL RECOLHIDO NO LOCAL</div>
-              <div class="linha1">
-                <div class="pol"><div class="fitinha"></div><img src="assets/foto-familia.png" alt="" style="object-position:50% 18%"><p>testemunhas</p></div>
-                <div class="saco"><img src="assets/moeda.png" alt="Moeda"><div class="tag">EVIDÊNCIA Nº 03<br>MOEDA DEIXADA NA RECEPÇÃO</div></div>
-              </div>
-              <div class="box roubados"><h5>OFERTAS ROUBADAS</h5>
-                <div class="grade">
-                  <div class="it"><img src="assets/selo-60.png" alt=""></div>
-                  <div class="it"><img src="assets/selo-criancas.png" alt=""></div>
-                  <div class="it"><img src="assets/selo-12x.png" alt=""></div>
-                  <div class="it"><img src="assets/selo-diaria.png" alt=""></div>
-                </div>
-              </div>
+              <div class="sub">5 SACOS LACRADOS · 1 POR ESTAÇÃO</div>
+              <div class="evid" id="evid"></div>
             </div><div class="luz"></div><div class="dobra"></div></div>
             <div class="face verso"></div>
           </article>
@@ -778,8 +769,31 @@ function atualizar(novo=-1){
   $$('.pista').forEach(d=>{const i=+d.dataset.i,ok=achadas.includes(i);d.classList.toggle('ok',ok);d.classList.toggle('novo',i===novo);
     d.querySelector('.dig').textContent=ok?'✓':'?';d.querySelector('.st i').textContent=ok?'ENCONTRADA':'A ENCONTRAR'});
   $$('#slots i').forEach((e,i)=>{const ok=achadas.includes(i);e.classList.toggle('ok',ok);e.textContent=ok?'✓':'';e.classList.toggle('novo',i===novo)});
-  pintarChave();
+  pintarChave();pintarEvid();
 }
+
+/* ---------- folha 03: sacos lacrados (abre com a placa) + raspadinha ---------- */
+const EVID=[['selo-60','ÁGUA'],['selo-criancas','SABOR'],['selo-12x','KIDS'],['selo-diaria','NATUREZA'],['moeda','LOBBY']];
+let raspou=[];try{raspou=JSON.parse(localStorage.getItem('cb-raspou')||'[]')}catch(_){}
+$('#evid').innerHTML=EVID.map(([a,n],i)=>`<div class="sc lac" data-n="${i+1}" style="--r:${[-2.5,2,1.5,-2,1][i]}deg"><div class="ofe"><img src="assets/${a}.png" alt=""></div><div class="lacre"><b>LACRADA</b><i>ache a placa ${dois(i+1)}</i></div><canvas></canvas><div class="tag">EVIDÊNCIA Nº ${dois(i+1)} · ${n}</div></div>`).join('');
+function tinta(cv){const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);if(!r.width)return false;cv.width=r.width*d;cv.height=r.height*d;
+  const x=cv.getContext('2d'),g=x.createLinearGradient(0,0,cv.width,cv.height);g.addColorStop(0,'#b9b9b9');g.addColorStop(.5,'#e6e6e6');g.addColorStop(1,'#9d9d9d');
+  x.fillStyle=g;x.fillRect(0,0,cv.width,cv.height);x.fillStyle='#0003';for(let i=0;i<cv.width;i+=5*d)x.fillRect(i,0,1,cv.height);
+  x.fillStyle='#333';x.font=`400 ${15*d}px Anton`;x.textAlign='center';x.textBaseline='middle';x.fillText('RASPE AQUI',cv.width/2,cv.height/2);cv._ok=1;return true}
+function raspa(sc){const cv=sc.querySelector('canvas'),x=cv.getContext('2d'),n=+sc.dataset.n;let on=false,cnt=0;
+  const para=e=>e.stopPropagation();['pointerdown','pointermove','pointerup','touchstart','touchmove','click'].forEach(t=>cv.addEventListener(t,para));
+  const pt=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+  const furo=e=>{const[a,b]=pt(e);x.globalCompositeOperation='destination-out';x.beginPath();x.arc(a,b,cv.width*.09,0,7);x.fill();
+    if(++cnt%6)return;const px=x.getImageData(0,0,cv.width,cv.height).data;let z=0,t=0;for(let i=3;i<px.length;i+=64){t++;if(px[i]<20)z++}
+    if(z/t>.5&&!sc.classList.contains('rev')){sc.classList.add('rev');if(!raspou.includes(n)){raspou.push(n);try{localStorage.setItem('cb-raspou',JSON.stringify(raspou))}catch(_){}}
+      vibra([30,40,30]);toast('Oferta recuperada! Evidência '+dois(n)+' de 05')}};
+  cv.addEventListener('pointerdown',e=>{if(!cv._ok)tinta(cv);on=true;cv.setPointerCapture(e.pointerId);furo(e)});
+  cv.addEventListener('pointermove',e=>{if(on)furo(e)});cv.addEventListener('pointerup',()=>on=false);cv.addEventListener('pointercancel',()=>on=false)}
+$$('.sc').forEach(raspa);
+function pintarEvid(){const c=window.Dados&&Dados.ficha()?Dados.carimbos():[];
+  $$('.sc').forEach(sc=>{const n=+sc.dataset.n,ab=achadas.includes(n-1)||c.includes(n),rv=ab&&raspou.includes(n);
+    sc.classList.toggle('lac',!ab);sc.classList.toggle('abre',ab&&!rv);sc.classList.toggle('rev',rv);
+    if(ab&&!rv){const cv=sc.querySelector('canvas');if(!cv._ok)requestAnimationFrame(()=>tinta(cv))}})}
 
 /* ---------- as provas (5 carimbos + palavra) e a digital na carta ---------- */
 const COD_FIM='DIGITAL';            // impresso embaixo do selo, no verso da carta (quem está sem câmera)
@@ -860,7 +874,7 @@ $('#garantir').onclick=()=>{const f=Dados.ficha();if(!f)return pedirCadastro(()=
 /* ---------- Bê, o assistente (e suspeito) ---------- */
 const DICAS={relatorio:'Oi, eu sou o Bê! Vou te ajudar no caso. Arraste a folha pro lado pra virar a página.',
  suspeito:'Cada placa que você achar desenha um pedaço desse retrato. Quem será esse aí, hein?',
- evidencias:'Ele levou as 4 ofertas da Black! Bora recuperar tudo antes do check-out.',
+ evidencias:'Ele lacrou as ofertas da Black em 5 sacos. Cada placa que vocês acharem abre um. Aí é só raspar!',
  quadro:'As 5 placas estão nesses lugares. Achou uma? Toque na LUPA e aponte pro quadriculado.'};
 function beFala(t,tit){const B=$('#balao'),be=$('#beBtn')||document.createElement('i');$('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
@@ -874,7 +888,7 @@ const digURL=`url("${pintaDig(document.createElement('canvas'),[58,42,24],.9).to
 const MARCAS={
  relatorio:[['digital',{right:'26px',top:'178px',transform:'rotate(24deg)',opacity:.16},3],['digital',{left:'-14px',bottom:'120px',transform:'rotate(-40deg)',opacity:.12},8],['cafe',{right:'-34px',top:'-30px'}],['cafe pingo',{right:'78px',top:'92px'}],['durex',{left:'-16px',top:'8px',transform:'rotate(-38deg)'}]],
  suspeito:[['digital',{left:'150px',bottom:'34px',transform:'rotate(-12deg)',opacity:.15},5],['vinco',{top:'298px'}],['lapis',{right:'26px',top:'84px',transform:'rotate(-6deg)'},'quem será??']],
- evidencias:[['digital',{right:'30px',bottom:'52px',transform:'rotate(34deg)',opacity:.17},11],['digital',{left:'120px',top:'92px',transform:'rotate(-8deg)',opacity:.1},2],['cafe',{left:'-50px',bottom:'-46px'}],['lapis',{left:'24px',bottom:'22px',transform:'rotate(-2deg)'},'faltam 4 itens... ele levou tudo!']],
+ evidencias:[['digital',{right:'30px',bottom:'52px',transform:'rotate(34deg)',opacity:.17},11],['digital',{left:'120px',top:'92px',transform:'rotate(-8deg)',opacity:.1},2],['cafe',{left:'-50px',bottom:'-46px'}],['lapis',{left:'24px',bottom:'22px',transform:'rotate(-2deg)'},'cada placa abre um saco!']],
  final:[['digital',{left:'34px',bottom:'94px',transform:'rotate(-20deg)',opacity:.12},7],['digital',{right:'40px',top:'238px',transform:'rotate(30deg)',opacity:.09},4]],
 };
 pags.forEach(p=>{const f=p.querySelector('.face.frente');(MARCAS[p.dataset.nome]||[]).forEach(([c,st,x])=>{const e=document.createElement('i');e.className=c;Object.assign(e.style,st);
