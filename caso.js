@@ -70,7 +70,7 @@ document.body.insertAdjacentHTML('beforeend', `
 <div id="cad" class="ov" aria-hidden="true"><div class="ovc papel">
   <div class="k">VILLAGE RESORT · DEPTO. DE INVESTIGAÇÃO</div>
   <h3>Abra sua ficha de investigador</h3>
-  <p class="mono">Cada placa que você achar no resort vira um <b>carimbo</b> na sua ficha. Com os 5, você monta a chave do cofre e entra na <b>lista VIP da Black</b>.</p>
+  <p class="mono">Cada placa que você achar no resort vira um <b>carimbo</b> na sua ficha. Com os 5, você descobre de quem é a digital na sua carta e entra no <b>grupo VIP da Black</b>.</p>
   <label for="cNome">NOME DO INVESTIGADOR</label><input id="cNome" maxlength="60" autocomplete="name" placeholder="como te chamamos?">
   <label for="cCont">E-MAIL OU WHATSAPP</label><input id="cCont" maxlength="120" autocomplete="email" inputmode="email" placeholder="voce@email.com ou (31) 9...">
   <label class="lgpd"><input type="checkbox" id="cLgpd"><span>Aceito que o Village Resort use esses dados para me avisar do Caso Black e das ofertas da Black Friday. Posso pedir pra sair quando quiser (LGPD).</span></label>
@@ -93,7 +93,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <div class="cgrade" id="fGrade"></div>
   <div class="k" style="margin-top:12px">RETRATO FALADO DO SUSPEITO</div>
   <div class="rf" id="fRet"></div>
-  <p class="mono pq">Copie cada pedaço no verso da carta. Juntos, revelam quem é o suspeito e a palavra da chave do cofre.</p>
+  <p class="mono pq">Copie cada pedaço no verso da carta. Juntos, revelam a palavra da última prova.</p>
   <div class="campo"><input id="fPal" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PALAVRA"><button class="btn" id="fOk">Conferir</button></div>
   <div class="erro" id="fErro"></div>
 </div></div>`);
@@ -128,8 +128,8 @@ function mostrarCarimbo(n, novo) {
   $('#kSlot').innerHTML = carimboSVG(n, 'k' + n);
   $('#kFrag').innerHTML = fim ? '' : `<div class="frag"><div class="nq">QUADRO ${dois(n)}</div>${retratoSVG({faixas: [i], letras: true, so: i})}</div>`;
   const falta = 5 - Dados.carimbos().filter(x => x <= 5).length;
-  $('#kTxt').innerHTML = fim ? `O cofre abriu e o suspeito foi desmascarado. Você está na <b>lista VIP da Black</b>.`
-    : `Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.` + (falta ? ` Faltam <b>${falta}</b>.` : ` <b>Retrato completo!</b> Leia a palavra da placa e vá ao cofre do lobby.`);
+  $('#kTxt').innerHTML = fim ? `A digital na carta entregou o suspeito. Você está no <b>grupo VIP da Black</b>.`
+    : `Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.` + (falta ? ` Faltam <b>${falta}</b>.` : ` <b>Retrato completo!</b> Leia a palavra da placa e digite na folha 05.`);
   $('#carimbo').classList.toggle('fim', fim);
   abreOv('#carimbo'); const s = $('#kSlot'); s.classList.remove('bate'); void s.offsetWidth; s.classList.add('bate');
   setTimeout(() => { baque(fim); vibra(fim ? [60, 40, 60, 40, 160] : [70]) }, 330);
@@ -166,7 +166,7 @@ $('#fOk').onclick = async () => {
   if (v !== PALAVRA) { $('#fErro').textContent = v ? 'Não é essa. Junte os 5 quadros e leia a placa do suspeito.' : ''; vibra([20, 30, 20]); return }
   $('#fErro').textContent = ''; conferePalavra(v); fechaOv('#ficha');
   if (Dados.carimbos().filter(x => x <= 5).length < 5) return beFala('Palavra certa! Agora falta completar os carimbos da chave.', 'PALAVRA CERTA');
-  irPara(N - 1); setTimeout(() => beFala('Chave pronta! O cofre tá na parede do lobby. Aponte a lupa pra ele.', 'VAI PRO LOBBY'), 700);
+  irPara(N - 1); setTimeout(() => beFala('Provas completas! Vira sua carta, abre a lupa e aponta pro selo do arquivo.', 'ÚLTIMA PROVA'), 700);
 };
 $('#fPal').addEventListener('keydown', e => { if (e.key === 'Enter') $('#fOk').click() });
 $('.prog').addEventListener('click', abrirFicha); $('.prog').style.cursor = 'pointer';
