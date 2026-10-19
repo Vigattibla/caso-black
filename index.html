@@ -134,6 +134,30 @@ h2.tit{font:400 33px/0.98 Anton;letter-spacing:.01em;margin:14px 0 2px;text-tran
 .duas .rec{font:400 15px/1.05 Anton;letter-spacing:.03em}
 
 /* folha 3 */
+/* folha 02: quadro de suspeitos (cara a cara) */
+.f2 .sus{margin-top:12px;padding:10px 8px 8px}
+.f2 .linha1{grid-template-columns:100px 1fr}
+.susG{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 7px;margin-top:4px}
+.su{position:relative;background:#fff;padding:4px 4px 5px;box-shadow:0 1px 1px #0002,0 4px 8px #0002;text-align:center;transform:rotate(var(--r,0deg));transition:filter .4s}
+.su svg{display:block;width:100%;height:54px;background:#ECE7DB}
+.su b{display:block;font:400 11px/1.1 Anton;letter-spacing:.03em;margin-top:3px}
+.su i{display:block;font:700 7.5px/1.2 "Courier Prime";letter-spacing:.04em;color:#666;font-style:normal;min-height:18px}
+.su .x{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s}
+.su .x::before,.su .x::after{content:"";position:absolute;left:8%;right:8%;top:38%;height:4px;background:var(--verm);border-radius:2px;transform:rotate(38deg);transform-origin:center;opacity:.9}
+.su .x::after{transform:rotate(-38deg)}
+.su.fora{filter:grayscale(1)}.su.fora svg{opacity:.45}.su.fora .x{opacity:1}
+.su.fora i{color:var(--verm)}
+.su.novo .x{animation:risca .6s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes risca{0%{opacity:0;transform:scale(1.8)}100%{opacity:1;transform:none}}
+.su.ultimo{box-shadow:0 0 0 2.5px var(--amarelo),0 4px 10px #0004}
+.su .culp{position:absolute;left:-4px;right:-4px;top:30%;font:400 12px/1 Anton;letter-spacing:.12em;color:var(--verm);border:2px solid var(--verm);background:#fffc;padding:3px 0 2px;transform:rotate(-14deg);display:none}
+.su.culpado .culp{display:block}
+/* álbum: foto da equipe em cada evidência */
+.sc .fz{position:absolute;z-index:3;right:-8px;top:-12px;width:44px;background:#fff;padding:3px 3px 9px;box-shadow:0 3px 6px #0004;transform:rotate(7deg)}
+.sc .fz img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
+.sc .cam{position:absolute;z-index:3;right:-6px;top:-10px;height:26px;padding:0 9px;border-radius:13px;background:var(--preto);color:#fff;font:400 10px/26px Anton;letter-spacing:.08em;display:none;cursor:pointer}
+.sc:not(.lac) .cam{display:block}.sc.tem .cam{display:none}.sc:not(.tem) .fz{display:none}
+.sc .cam input,#kFoto input{display:none}
 .evid{display:grid;grid-template-columns:1fr 1fr;gap:14px 14px;margin-top:14px}
 .sc{position:relative;height:104px;border:1.5px solid #0002;border-radius:4px;background:linear-gradient(160deg,#ffffff90,#ffffff30 50%,#ffffff70);box-shadow:0 5px 12px #0002;transform:rotate(var(--r,0deg))}
 .sc:nth-child(5){grid-column:1/-1;justify-self:center;width:54%}
@@ -406,7 +430,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important;transition-delay:0s!important}}
 </style>
-<link rel="stylesheet" href="caso.css?v=4">
+<link rel="stylesheet" href="caso.css?v=5">
 </head>
 <body>
 <div class="fundo"><div class="fita fx a parada"><span></span></div><div class="fita fx b parada"><span></span></div></div>
@@ -465,11 +489,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
                   <div class="lab">VISTO POR ÚLTIMO</div><div class="val">Perto do lobby</div>
                 </div>
               </div>
-              <div class="box q"><h5>DEPOIMENTO DE TESTEMUNHA</h5><div class="mono">Vi um vulto de chapéu correndo com uma sacola amarela. Ele riu e disse: <span class="grifo">quem achar as 5 pistas, leva tudo antes da Black.</span></div></div>
-              <div class="duas">
-                <div class="box"><h5>PERIGO</h5><div class="estrelas">★★★★★</div><div class="sub" style="margin-top:4px">PARA O BOLSO</div></div>
-                <div class="box"><h5>RECOMPENSA</h5><div class="rec">ACESSO ANTECIPADO<br>À BLACK</div></div>
-              </div>
+              <div class="box sus"><h5>SUSPEITOS · RISQUE COM AS PISTAS</h5><div class="susG" id="susG"></div></div>
             </div><div class="luz"></div><div class="dobra"></div></div>
             <div class="face verso"></div>
           </article>
@@ -589,6 +609,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
     <p>Ele escondeu as ofertas só pra ver quem era bom de investigação. Você é! Entre no <b>grupo VIP</b> e veja as ofertas antes de todo mundo.</p>
     <button class="btn brilho" id="grupoVip">Entrar no grupo VIP</button>
     <button class="btn alt" id="verVip">Ver as ofertas</button>
+    <button class="btn alt" id="baixaDossie">Baixar o dossiê (PDF)</button>
     <button class="demo" id="fotoDet">foto de detetive</button>
   </div>
 </div>
@@ -768,7 +789,7 @@ function atualizar(novo=-1){
   $$('.pista').forEach(d=>{const i=+d.dataset.i,ok=achadas.includes(i);d.classList.toggle('ok',ok);d.classList.toggle('novo',i===novo);
     d.querySelector('.dig').textContent=ok?'✓':'?';d.querySelector('.st i').textContent=ok?'ENCONTRADA':'A ENCONTRAR'});
   $$('#slots i').forEach((e,i)=>{const ok=achadas.includes(i);e.classList.toggle('ok',ok);e.textContent=ok?'✓':'';e.classList.toggle('novo',i===novo)});
-  pintarChave();pintarEvid();
+  pintarChave();pintarEvid();pintarSus(novo);
 }
 
 /* ---------- folha 03: sacos lacrados (abre com a placa) + raspadinha ---------- */
@@ -776,7 +797,7 @@ const EVID=['ÁGUA','SABOR','KIDS','NATUREZA','LOBBY'];
 const OFERTAS=['','','','',''];      // PENDENTE: ofertas da Black 2026 (texto curto ou 'assets/arquivo.png'); vazio = cupom "a revelar"
 const cupom=(i,t)=>t&&/\.(png|webp|jpe?g|svg)$/.test(t)?`<img src="${t}" alt="">`:`<div class="cupom"><small>OFERTA</small><b>${t||dois(i+1)}</b><i>${t?'':'a revelar'}</i></div>`;
 let raspou=[];try{raspou=JSON.parse(localStorage.getItem('cb-raspou')||'[]')}catch(_){}
-$('#evid').innerHTML=EVID.map((n,i)=>`<div class="sc lac" data-n="${i+1}" style="--r:${[-2.5,2,1.5,-2,1][i]}deg"><div class="ofe">${cupom(i,OFERTAS[i])}</div><div class="lacre"><b>LACRADA</b><i>ache a placa ${dois(i+1)}</i></div><canvas></canvas><div class="tag">EVIDÊNCIA Nº ${dois(i+1)} · ${n}</div></div>`).join('');
+$('#evid').innerHTML=EVID.map((n,i)=>`<div class="sc lac" data-n="${i+1}" style="--r:${[-2.5,2,1.5,-2,1][i]}deg"><div class="ofe">${cupom(i,OFERTAS[i])}</div><div class="lacre"><b>LACRADA</b><i>ache a placa ${dois(i+1)}</i></div><label class="cam">+ FOTO<input type="file" accept="image/*" capture="user"></label><div class="fz"><img alt=""></div><canvas></canvas><div class="tag">EVIDÊNCIA Nº ${dois(i+1)} · ${n}</div></div>`).join('');
 function tinta(cv){const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);if(!r.width)return false;cv.width=r.width*d;cv.height=r.height*d;
   const x=cv.getContext('2d'),g=x.createLinearGradient(0,0,cv.width,cv.height);g.addColorStop(0,'#b9b9b9');g.addColorStop(.5,'#e6e6e6');g.addColorStop(1,'#9d9d9d');
   x.fillStyle=g;x.fillRect(0,0,cv.width,cv.height);x.fillStyle='#0003';for(let i=0;i<cv.width;i+=5*d)x.fillRect(i,0,1,cv.height);
@@ -795,6 +816,94 @@ function pintarEvid(){const c=window.Dados&&Dados.ficha()?Dados.carimbos():[];
   $$('.sc').forEach(sc=>{const n=+sc.dataset.n,ab=achadas.includes(n-1)||c.includes(n),rv=ab&&raspou.includes(n);
     sc.classList.toggle('lac',!ab);sc.classList.toggle('abre',ab&&!rv);sc.classList.toggle('rev',rv);
     if(ab&&!rv){const cv=sc.querySelector('canvas');if(!cv._ok)requestAnimationFrame(()=>tinta(cv))}})}
+
+/* ---------- folha 02: quadro de suspeitos · cada estação descarta um ---------- */
+const CHAPEU={
+  chef:'<path d="M27 30h26v-6c6 0 9-5 7-10s-8-6-11-3c-2-5-6-6-9-6s-7 1-9 6c-3-3-9-2-11 3s1 10 7 10z" fill="#fff" stroke="#111" stroke-width="2"/><path d="M27 26h26" stroke="#111" stroke-width="1.5"/>',
+  lu:'<path d="M22 34c0-12 8-18 18-18s18 6 18 18z" fill="#e8462f" stroke="#111" stroke-width="2"/><path d="M40 34h24" stroke="#111" stroke-width="4" stroke-linecap="round"/><path d="M40 54l-8 18" stroke="#111" stroke-width="1.5"/><circle cx="31" cy="73" r="3.5" fill="#FDC72F" stroke="#111" stroke-width="1.5"/>',
+  rafa:'<rect x="25" y="38" width="13" height="8" rx="3" fill="#111"/><rect x="42" y="38" width="13" height="8" rx="3" fill="#111"/><path d="M38 41h4" stroke="#111" stroke-width="2"/><path d="M58 26c3 4 3 7 0 8M22 30c-3 3-2 6 0 7" stroke="#3a7bd5" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  ze:'<ellipse cx="40" cy="31" rx="30" ry="6" fill="#e3c27a" stroke="#111" stroke-width="2"/><path d="M27 31c0-11 6-15 13-15s13 4 13 15" fill="#e3c27a" stroke="#111" stroke-width="2"/><path d="M27 27h26" stroke="#b0121c" stroke-width="3"/>',
+  cida:'<circle cx="40" cy="16" r="8" fill="#5a3d17" stroke="#111" stroke-width="2"/><path d="M22 40c0-14 8-20 18-20s18 6 18 20c-4-8-10-11-18-11s-14 3-18 11z" fill="#5a3d17" stroke="#111" stroke-width="2"/><circle cx="64" cy="66" r="5" fill="none" stroke="#8d949b" stroke-width="2.5"/><path d="M64 71v8m0-3h3" stroke="#8d949b" stroke-width="2.5"/>',
+  be:'<path d="M14 33c8 3 44 3 52 0" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M24 32c0-12 4-18 16-18s16 6 16 18" fill="#222" stroke="#111" stroke-width="2"/><path d="M24 28h32" stroke="#FDC72F" stroke-width="3"/><circle cx="33" cy="43" r="5" fill="none" stroke="#111" stroke-width="2"/><circle cx="47" cy="43" r="5" fill="none" stroke="#111" stroke-width="2"/><path d="M38 43h4" stroke="#111" stroke-width="2"/>'};
+const rosto=k=>`<svg viewBox="0 0 80 80"><path d="M14 80c2-14 12-20 26-20s24 6 26 20z" fill="${k==='be'?'#2b2b2b':'#cfc7b6'}" stroke="#111" stroke-width="2"/><ellipse cx="40" cy="42" rx="15" ry="17" fill="#f1c9a5" stroke="#111" stroke-width="2"/><path d="M35 51q5 4 10 0" stroke="#111" stroke-width="1.6" fill="none"/>${k==='be'?'':'<circle cx="34" cy="42" r="1.6"/><circle cx="46" cy="42" r="1.6"/>'}${CHAPEU[k]}</svg>`;
+// est = estação (0-based) que dá o álibi; o culpado (Bê) não tem álibi
+const SUS=[
+  {k:'chef',n:'Chef Tonico',t:'chapéu de chef',est:1,ali:'tava no fogão o tempo todo'},
+  {k:'lu',n:'Recreadora Lu',t:'apito e tênis',est:4,ali:'na foto da recreação às 10h'},
+  {k:'rafa',n:'Salva-vidas Rafa',t:'sempre molhado',est:0,ali:'o ladrão passou seco'},
+  {k:'ze',n:'Seu Zé',t:'jardineiro · bota 44',est:2,ali:'a pegada é de pé pequeno'},
+  {k:'cida',n:'Dona Cida',t:'camareira · chaves',est:3,ali:'pularam o portão, sem chave'},
+  {k:'be',n:'Hóspede misterioso',t:'chapéu e óculos',est:-1,ali:''}];
+window.SUS=SUS;
+$('#susG').innerHTML=SUS.map((p,i)=>`<div class="su" data-i="${i}" style="--r:${[-2,1.5,-1,2,-1.5,1][i]}deg">${rosto(p.k)}<b>${p.n}</b><i>${p.t}</i><div class="x"></div><div class="culp">CULPADO</div></div>`).join('');
+const feitas=()=>{const c=window.Dados&&Dados.ficha()?Dados.carimbos():[];return new Set([...achadas,...c.filter(x=>x<=5).map(x=>x-1)])};
+const resolvido=()=>{if(window.Dados&&Dados.ficha()&&Dados.ficha().resolvido)return true;try{return localStorage.getItem('cb-resolvido')==='1'}catch(_){return false}};
+function pintarSus(novo=-1){const f=feitas(),todos=f.size>=5,fim=resolvido();
+  $$('.su').forEach(d=>{const p=SUS[+d.dataset.i],fora=p.est>=0&&f.has(p.est);
+    d.classList.toggle('fora',fora);d.classList.toggle('novo',fora&&p.est===novo);
+    d.classList.toggle('ultimo',p.est<0&&todos&&!fim);d.classList.toggle('culpado',p.est<0&&fim);
+    d.querySelector('i').textContent=fora?'álibi: '+p.ali:p.est<0&&todos?(fim?'era o Bê!':'só sobrou ele!'):p.t})}
+window.pintarSus=pintarSus;
+
+/* ---------- álbum: foto da equipe em cada estação (fica só no aparelho) ---------- */
+const fotoKey=n=>'cb-foto-'+n;
+const fotoDe=n=>{try{return localStorage.getItem(fotoKey(n))}catch(_){return null}};
+function salvarFoto(n,arq){return new Promise(ok=>{if(!arq)return ok(false);const im=new Image();
+  im.onload=()=>{const m=640,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(im.src);
+    try{localStorage.setItem(fotoKey(n),c.toDataURL('image/jpeg',.72))}catch(_){toast('Sem espaço pra guardar a foto.');return ok(false)}
+    pintarAlbum();vibra(30);toast('Foto colada na evidência '+dois(n)+'!');ok(true)};
+  im.onerror=()=>ok(false);im.src=URL.createObjectURL(arq)})}
+window.salvarFoto=salvarFoto;
+function pintarAlbum(){$$('.sc').forEach(sc=>{const f=fotoDe(+sc.dataset.n);sc.classList.toggle('tem',!!f);if(f)sc.querySelector('.fz img').src=f})}
+$$('.sc .cam').forEach(l=>{['pointerdown','touchstart','click'].forEach(t=>l.addEventListener(t,e=>e.stopPropagation()));
+  l.querySelector('input').onchange=e=>{salvarFoto(+l.closest('.sc').dataset.n,e.target.files[0]);e.target.value=''}});
+$$('.sc .fz').forEach(z=>z.addEventListener('pointerdown',e=>e.stopPropagation()));
+pintarAlbum();
+
+/* ---------- dossiê em PDF: o que a família guarda ---------- */
+function carregaJsPDF(){return window.jspdf?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+const imgDe=src=>new Promise(ok=>{if(!src)return ok(null);const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src});
+async function folhaDossie(){
+  const W=1240,H=1754,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),f=window.Dados&&Dados.ficha(),fd=feitas(),fim=resolvido();
+  const txt=(t,X,Y,font,cor='#111',al='left')=>{x.font=font;x.fillStyle=cor;x.textAlign=al;x.fillText(t,X,Y)};
+  x.fillStyle='#F4F1EA';x.fillRect(0,0,W,H);
+  txt('VILLAGE RESORT · DEPTO. DE INVESTIGAÇÃO',90,110,'700 24px "Courier Prime"','#555');
+  x.fillStyle='#111';x.fillRect(1010,78,140,46);txt('DOSSIÊ',1080,110,'700 24px "Courier Prime"','#fff','center');x.fillStyle='#111';x.fillRect(90,140,1060,4);
+  txt('CASO Nº 2026-BF',90,250,'400 96px Anton');txt('O sumiço das ofertas',90,320,'700 52px Caveat','#2b3a8f');
+  txt('INVESTIGADORES',90,400,'700 22px "Courier Prime"','#666');txt(f?f.nome:'A família detetive',90,450,'400 46px Anton');
+  txt('DATA',880,400,'700 22px "Courier Prime"','#666');txt(new Date().toLocaleDateString('pt-BR'),880,450,'400 46px Anton');
+  txt('EVIDÊNCIAS · ÁLBUM DA INVESTIGAÇÃO',90,540,'700 22px "Courier Prime"','#666');
+  const fotos=await Promise.all([1,2,3,4,5].map(n=>imgDe(fotoDe(n))));
+  fotos.forEach((im,i)=>{const cx=90+i*214,cy=570,w=190,h=240,r=[-3,2,-1.5,2.5,-2][i]*Math.PI/180;x.save();x.translate(cx+w/2,cy+h/2);x.rotate(r);
+    x.shadowColor='#0004';x.shadowBlur=14;x.shadowOffsetY=6;x.fillStyle='#fff';x.fillRect(-w/2,-h/2,w,h);x.shadowColor='transparent';
+    const s=w-20;x.fillStyle='#ddd6c6';x.fillRect(-w/2+10,-h/2+10,s,s);
+    if(im){const k=Math.max(s/im.width,s/im.height),iw=im.width*k,ih=im.height*k;x.save();x.beginPath();x.rect(-w/2+10,-h/2+10,s,s);x.clip();x.drawImage(im,-w/2+10+(s-iw)/2,-h/2+10+(s-ih)/2,iw,ih);x.restore()}
+    else txt(fd.has(i)?'sem foto':'—',0,-h/2+10+s/2,'700 30px Caveat','#777','center');
+    txt(dois(i+1)+' · '+EVID[i],0,h/2-18,'400 22px Anton','#111','center');x.restore()});
+  txt('QUADRO DE SUSPEITOS',90,890,'700 22px "Courier Prime"','#666');
+  for(const [i,p] of SUS.entries()){const col=i%3,row=i/3|0,X=90+col*360,Y=920+row*300,fora=p.est>=0&&fd.has(p.est),cul=p.est<0&&fim;
+    const sv=await imgDe('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(rosto(p.k).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ')));
+    x.fillStyle='#fff';x.fillRect(X,Y,330,270);x.fillStyle='#ECE7DB';x.fillRect(X+15,Y+15,150,150);if(sv){x.globalAlpha=fora?.4:1;x.drawImage(sv,X+15,Y+15,150,150);x.globalAlpha=1}
+    txt(p.n.split(' ')[0],X+180,Y+55,'400 30px Anton');txt(p.n.split(' ').slice(1).join(' '),X+180,Y+92,'400 30px Anton');
+    txt(fora?'DESCARTADO':cul?'CULPADO!':'suspeito',X+180,Y+135,'700 22px "Courier Prime"',fora||cul?'#C8102E':'#666');
+    const nota=fora?p.ali:cul?'a digital na carta era do Bê!':'';
+    if(nota){x.font='700 27px Caveat';x.fillStyle='#2b3a8f';x.textAlign='left';let l='',yy=Y+205;for(const pa of nota.split(' ')){if(x.measureText(l+pa).width>300){x.fillText(l,X+15,yy);l='';yy+=30}l+=pa+' '}x.fillText(l,X+15,yy)}
+    if(fora){x.strokeStyle='#C8102E';x.lineWidth=8;x.lineCap='round';x.beginPath();x.moveTo(X+25,Y+25);x.lineTo(X+155,Y+155);x.moveTo(X+155,Y+25);x.lineTo(X+25,Y+155);x.stroke()}
+    if(cul){x.strokeStyle='#FDC72F';x.lineWidth=6;x.strokeRect(X-3,Y-3,336,276)}}
+  x.save();x.translate(930,1590);x.rotate(-12*Math.PI/180);x.globalAlpha=.88;x.strokeStyle='#C8102E';x.lineWidth=7;x.strokeRect(-190,-70,380,140);
+  txt(fim?'CASO':'CASO EM',0,-10,'400 52px Anton','#C8102E','center');txt(fim?'RESOLVIDO':'ABERTO',0,48,'400 46px Anton','#C8102E','center');x.restore();
+  txt(fd.size+' de 5 pistas · '+(fim?'caso encerrado':'continue investigando'),90,1590,'700 36px Caveat','#2b3a8f');
+  txt('VILLAGE RESORT · BLACK FRIDAY 2026',90,1680,'700 20px "Courier Prime"','#555');
+  return c}
+async function dossie(){toast('Montando o dossiê...');
+  try{await carregaJsPDF();await document.fonts.ready}catch(_){return toast('Sem internet pra gerar o PDF agora.')}
+  const c=await folhaDossie(),pdf=new jspdf.jsPDF({unit:'mm',format:'a4'});pdf.addImage(c.toDataURL('image/jpeg',.88),'JPEG',0,0,210,297);
+  const nome='dossie-caso-black.pdf',arq=new File([pdf.output('blob')],nome,{type:'application/pdf'});
+  try{if(navigator.canShare&&navigator.canShare({files:[arq]}))return await navigator.share({files:[arq],title:'Dossiê Caso Black'})}catch(e){if(e.name==='AbortError')return}
+  pdf.save(nome)}
+window.dossie=dossie;window.folhaDossie=folhaDossie;
 
 $('#vipSelos').innerHTML=OFERTAS.slice(0,4).map((t,i)=>cupom(i,t)).join('');
 
@@ -854,6 +963,7 @@ const digCam=pintaDig(document.createElement('canvas'),[92,52,8]);
 let abrindo=false;
 async function abrirFim(via,daCam){if(abrindo)return;abrindo=true;
   const A=$('#fimAnim'),S=$('#selo6'),ja=chave().feito,t=daCam?-1500:0,em=(ms,fn)=>setTimeout(fn,Math.max(0,ms)),add=c=>A.classList.add(c);
+  try{localStorage.setItem('cb-resolvido','1')}catch(_){}pintarSus();
   pintaDig($('#digF'),[92,52,8]);A.className='on'+(daCam?' vem ouro dig':'');A.setAttribute('aria-hidden','false');
   S.classList.remove('on','bate');S.innerHTML=carimboSVG(6,'s6');
   em(40,()=>add('vem'));
@@ -865,6 +975,7 @@ async function abrirFim(via,daCam){if(abrindo)return;abrindo=true;
 }
 const fechaFim=()=>{const A=$('#fimAnim');A.className='';A.setAttribute('aria-hidden','true')};
 $('#grupoVip').onclick=()=>LINK_GRUPO?open(LINK_GRUPO,'_blank','noopener'):toast('Link do grupo VIP: em breve.');
+$('#baixaDossie').onclick=()=>dossie();
 $('#verVip').onclick=()=>{fechaFim();liberar()};
 $('#fotoDet').onclick=()=>window.Filtro?Filtro.abrir():toast('Foto de detetive: em breve.');
 function liberar(){const v=$('#vip');v.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>v.classList.add('go')));chuva()}
@@ -993,7 +1104,7 @@ if(location.hash==='#lupa'){irPara(0,false);abrirLupa()}
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{medir();pedir();document.body.classList.add('pronto')});
 setTimeout(()=>document.body.classList.add('pronto'),2500);
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=4"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=5"></script>
 <script src="filtro.js?v=5"></script>
 </body>
 </html>

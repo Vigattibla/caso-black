@@ -24,6 +24,9 @@
 .slotC.bate .selo{animation:bate .6s cubic-bezier(.3,1.4,.5,1) both}
 @keyframes bate{0%{transform:scale(2.6) rotate(8deg);opacity:0}45%{opacity:1}55%{transform:scale(.92) rotate(-12deg)}100%{transform:rotate(-12deg)}}
 #carimbo .ovc.papel{animation:none}
+#carimbo .ali:not(:empty){font:700 20px/1.15 Caveat;color:#2b3a8f;margin:0 0 12px}
+#carimbo .ali b{display:block;font:400 13px Anton;letter-spacing:.12em;color:var(--verm);margin-bottom:2px}
+#kFoto{display:flex;align-items:center;justify-content:center;margin:0 0 8px;font:400 17px Anton;letter-spacing:.08em;cursor:pointer}#kFoto[hidden]{display:none}#kFoto input{display:none}
 #carimbo.on .slotC.bate~*{animation:sobe .4s .5s both}
 @keyframes sobe{from{opacity:0;transform:translateY(8px)}}
 #carimbo.on .ovc{animation:tranco .25s .33s}
@@ -61,3 +64,4 @@
 .fiBar .btn.alt{background:#f2f2f2}
 .fiDisp{width:76px;height:76px;border-radius:50%;background:var(--amarelo);border:5px solid #fff;box-shadow:0 0 0 3px #0008}
 .fiDisp:active{transform:scale(.92)}
+.ovc .btn.alt{background:#e6e1d4;color:var(--preto);display:flex;align-items:center;justify-content:center}

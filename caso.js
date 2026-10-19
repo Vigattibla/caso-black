@@ -83,6 +83,8 @@ document.body.insertAdjacentHTML('beforeend', `
   <h3 id="kTit">Carimbo conquistado!</h3>
   <div id="kFrag"></div>
   <p class="mono" id="kTxt"></p>
+  <div class="ali" id="kAli"></div>
+  <label class="btn alt" id="kFoto">Foto da equipe aqui<input type="file" accept="image/*" capture="user"></label>
   <button class="btn" id="kOk">Continuar</button>
 </div></div>
 <div id="ficha" class="ov" aria-hidden="true"><div class="ovc papel">
@@ -130,12 +132,17 @@ function mostrarCarimbo(n, novo) {
   const falta = 5 - Dados.carimbos().filter(x => x <= 5).length;
   $('#kTxt').innerHTML = fim ? `A digital na carta entregou o suspeito. Você está no <b>grupo VIP da Black</b>.`
     : `Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.` + (falta ? ` Faltam <b>${falta}</b>.` : ` <b>Retrato completo!</b> Leia a palavra da placa e digite na folha 05.`);
+  const su = !fim && window.SUS ? SUS.find(p => p.est === i) : null;
+  $('#kAli').innerHTML = su ? `<b>SUSPEITO DESCARTADO</b>${su.n}: ${su.ali}` : '';
+  $('#kFoto').hidden = fim; $('#kFoto').dataset.n = n;
   $('#carimbo').classList.toggle('fim', fim);
   abreOv('#carimbo'); const s = $('#kSlot'); s.classList.remove('bate'); void s.offsetWidth; s.classList.add('bate');
   setTimeout(() => { baque(fim); vibra(fim ? [60, 40, 60, 40, 160] : [70]) }, 330);
 }
 $('#kOk').onclick = () => { fechaOv('#carimbo'); pintarFicha(); if ($('#carimbo').classList.contains('fim')) return setTimeout(liberar, 250);
   if (Dados.carimbos().filter(x => x <= 5).length >= 5 && typeof irPara === 'function') setTimeout(() => { irPara(N - 1); beDica() }, 350) };
+
+$('#kFoto input').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f && window.salvarFoto) salvarFoto(+$('#kFoto').dataset.n, f) };
 
 /* chamado pelo registrar() do index: estação 1..5 */
 async function carimbarEstacao(i, via) {
