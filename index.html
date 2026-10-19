@@ -778,7 +778,7 @@ $('#veu').onclick=fecharPista;$('#sFechar').onclick=fecharPista;
 function marcar(i,via){const novo=!achadas.includes(i);if(novo){achadas.push(i);salvar()}atualizar(novo?i:-1);carimbarEstacao(i,via)}
 function registrar(i,via='codigo'){
   $('#sErro').textContent='Código confere!';$('#sErro').className='erro ok';vibra(40);
-  setTimeout(()=>{fecharPista();marcar(i,via)},650);
+  setTimeout(()=>{fecharPista();resolver(i,via)},650);
 }
 $('#sOk').onclick=()=>{const v=$('#sIn').value.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
   if(v===PISTAS[atual].cod)registrar(atual);
@@ -1048,7 +1048,7 @@ async function abrirLupa(m='carta'){modo=m;ar=null;const L=$('#lupa');L.classNam
             const s=w/vw;ouroC.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}
           else if(performance.now()-avisou>4000){avisou=performance.now();toast(ch.n<5?`Esse é o selo! Faltam ${5-ch.n} carimbos.`:'Esse é o selo! Falta a palavra do retrato.')}}
         else if(!ouroC){const e=mk.id-ARUCO0;
-          if(!ar){ar={e,onda:ONDA[e]};(ONDA[e]?Promise.resolve(ONDA[e].u):videoDe(e)).then(u=>{if(!ar||ar.e!==e)return;if(!u){fecharLupa();vibra(40);marcar(e,'placa');return}iniciarAR(u)})}
+          if(!ar){ar={e,onda:ONDA[e]};(ONDA[e]?Promise.resolve(ONDA[e].u):videoDe(e)).then(u=>{if(!ar||ar.e!==e)return;if(!u){fecharLupa();vibra(40);resolver(e,'placa');return}iniciarAR(u)})}
           if(ar&&ar.e===e){const s=w/vw;ar.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}}
       if(ouroC)desenhaOuro(x,w,h);
       laco=requestAnimationFrame(quadro)})();
@@ -1077,7 +1077,7 @@ function desenhaOnda(x,w,h){const o=ar.onda,V=$('#cacaV'),pr=V.duration?V.curren
 /* Caca (fundo verde) em pé em cima da placa */
 function iniciarAR(u){const V=$('#cacaV'),L=$('#lupa');ar.u=u;L.classList.add('ar');V.src=u;V.muted=false;
   V.play().catch(()=>{V.muted=true;L.classList.add('mudo');V.play().catch(()=>{})});V.onended=fimAR}
-function fimAR(){if(!ar)return;const e=ar.e;fecharLupa();vibra(40);marcar(e,'placa')}
+function fimAR(){if(!ar)return;const e=ar.e;fecharLupa();vibra(40);resolver(e,'placa')}
 const kc=document.createElement('canvas'),kx=kc.getContext('2d',{willReadFrequently:true});
 function desenhaCaca(x,w,h){const V=$('#cacaV');if(V.readyState<2||!V.videoWidth)return;
   const kw=kc.width=240,kh=kc.height=Math.round(kw*V.videoHeight/V.videoWidth);
@@ -1104,7 +1104,7 @@ if(location.hash==='#lupa'){irPara(0,false);abrirLupa()}
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{medir();pedir();document.body.classList.add('pronto')});
 setTimeout(()=>document.body.classList.add('pronto'),2500);
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=5"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=6"></script><script src="prova.js?v=1"></script>
 <script src="filtro.js?v=5"></script>
 </body>
 </html>

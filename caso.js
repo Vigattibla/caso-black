@@ -134,7 +134,7 @@ function mostrarCarimbo(n, novo) {
     : `Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.` + (falta ? ` Faltam <b>${falta}</b>.` : ` <b>Retrato completo!</b> Leia a palavra da placa e digite na folha 05.`);
   const su = !fim && window.SUS ? SUS.find(p => p.est === i) : null;
   $('#kAli').innerHTML = su ? `<b>SUSPEITO DESCARTADO</b>${su.n}: ${su.ali}` : '';
-  $('#kFoto').hidden = fim; $('#kFoto').dataset.n = n;
+  $('#kFoto').hidden = fim || (typeof fotoDe === 'function' && !!fotoDe(n)); $('#kFoto').dataset.n = n;
   $('#carimbo').classList.toggle('fim', fim);
   abreOv('#carimbo'); const s = $('#kSlot'); s.classList.remove('bate'); void s.offsetWidth; s.classList.add('bate');
   setTimeout(() => { baque(fim); vibra(fim ? [60, 40, 60, 40, 160] : [70]) }, 330);
