@@ -1,0 +1,43 @@
+/* Caso Black · ficha, cadastro, carimbos */
+.ov{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:#000c;visibility:hidden;opacity:0;transition:opacity .25s,visibility 0s .25s}
+.ov.on{visibility:visible;opacity:1;transition:opacity .25s}
+.ovc{position:relative;width:100%;max-width:400px;max-height:calc(100dvh - 32px);overflow:auto;background:var(--papel);border-radius:6px;padding:20px 20px 22px;color:var(--preto);
+  box-shadow:0 20px 50px #000a;transform:translateY(14px) rotate(-.6deg);transition:transform .35s cubic-bezier(.2,.9,.25,1)}
+.ov.on .ovc{transform:none}
+.ovc .k{font:700 9.5px "Courier Prime",monospace;letter-spacing:.18em;color:#666}
+.ovc h3{font:400 27px/1.02 Anton;margin:6px 0 8px;letter-spacing:.01em}
+.ovc .mono{font:13px/1.45 "Courier Prime",monospace;color:#222;margin:0 0 10px}
+.ovc label{display:block;font:700 9.5px "Courier Prime",monospace;letter-spacing:.16em;margin:12px 0 5px}
+.ovc input[type=text],.ovc input:not([type]){width:100%;height:46px;border:1.5px solid var(--preto);border-radius:4px;background:#fffdf7;padding:0 12px;font:16px "Courier Prime",monospace;color:var(--preto)}
+.ovc .lgpd{display:flex;gap:9px;align-items:flex-start;font:400 11.5px/1.4 "Courier Prime",monospace;letter-spacing:0;color:#333;margin-top:14px;cursor:pointer}
+.ovc .lgpd input{width:20px;height:20px;flex:none;accent-color:#111;margin:0}
+.ovc .erro{min-height:18px;font:700 12px "Courier Prime",monospace;color:var(--verm);margin:8px 0 4px}
+.ovc .btn{width:100%}
+.ovc .fechar{position:absolute;right:8px;top:8px;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:none;border:0;color:var(--preto)}
+.ovc .fechar svg{width:18px;height:18px}
+.ovc .campo{display:flex;gap:8px}.ovc .campo input{flex:1;text-transform:uppercase;letter-spacing:.2em}.ovc .campo .btn{width:auto;padding:0 14px;font-size:15px}
+
+/* carimbo conquistado */
+#carimbo .ovc{text-align:center}
+.slotC{width:150px;height:150px;margin:6px auto 0}
+.slotC .selo{width:100%;height:100%;transform:rotate(-12deg)}
+.slotC.bate .selo{animation:bate .6s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes bate{0%{transform:scale(2.6) rotate(8deg);opacity:0}45%{opacity:1}55%{transform:scale(.92) rotate(-12deg)}100%{transform:rotate(-12deg)}}
+#carimbo .ovc.papel{animation:none}
+#carimbo.on .slotC.bate~*{animation:sobe .4s .5s both}
+@keyframes sobe{from{opacity:0;transform:translateY(8px)}}
+#carimbo.on .ovc{animation:tranco .25s .33s}
+@keyframes tranco{40%{transform:translateY(4px) scale(.99)}}
+.frag{display:inline-flex;flex-direction:column;align-items:center;background:#fffdf7;border:1.5px solid var(--preto);padding:6px 10px 8px;margin:4px 0 10px;transform:rotate(1.2deg)}
+.frag .nq{font:700 9px "Courier Prime",monospace;letter-spacing:.16em;margin-bottom:4px}
+.frag .retrato{width:66px;height:auto}
+#carimbo.fim h3{color:var(--verm)}
+
+/* ficha */
+.cgrade{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
+.cgrade .cel{aspect-ratio:1;border:1.5px dashed #0005;border-radius:50%;display:grid;place-items:center;background:none;padding:0;font:400 15px Anton;color:#0006}
+.cgrade .cel.tem{border-color:transparent}.cgrade .cel .selo{width:118%;height:118%;transform:rotate(-10deg)}
+.cgrade .cel.f6{border-color:#c8102e66;color:#c8102e88}
+.rf{background:#fffdf7;border:1.5px solid var(--preto);padding:6px;margin-top:6px}.rf .retrato{display:block;width:100%;height:auto}
+.pq{font-size:11.5px!important;margin-top:8px!important}
+.prog i.car{box-shadow:0 0 0 2px #1d3f8f}

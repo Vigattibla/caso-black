@@ -348,6 +348,7 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important;transition-delay:0s!important}}
 </style>
+<link rel="stylesheet" href="caso.css">
 </head>
 <body class="fechado">
 <div class="fundo"><div class="fita fx a parada"><span></span></div><div class="fita fx b parada"><span></span></div></div>
@@ -544,7 +545,7 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
     <h3 id="sTit">PISTA 01</h3>
     <div class="enig" id="sEnig"></div>
     <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span id="sLoc"></span></div>
-    <label for="sIn">CÓDIGO ESCRITO NA PLACA</label>
+    <label for="sIn">CÓDIGO DA PLACA · ou aponte a LUPA para ela</label>
     <div class="campo"><input id="sIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="······"><button class="btn" id="sOk">Registrar</button></div>
     <div class="erro" id="sErro"></div>
     <label for="sNota" style="margin-top:6px">ANOTAÇÕES DO INVESTIGADOR</label>
@@ -577,7 +578,7 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
   <div class="falso">QUEM ACHAR<br>AS 5 PISTAS<br>LEVA TUDO</div>
   <div class="aro"></div>
   <button class="x" id="lupaX" aria-label="Fechar lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  <div class="info"><b>LUPA DE TINTA INVISÍVEL</b><p id="lupaTxt">Aponte para as <b style="display:inline;font:inherit;color:#fdc72f">manchas coloridas</b> da carta (frente e verso) a um palmo de distância. A lente apaga o vermelho e o roxo e as letras escondidas aparecem.</p></div>
+  <div class="info"><b>LUPA DE TINTA INVISÍVEL</b><p id="lupaTxt">Aponte para as <b style="display:inline;font:inherit;color:#fdc72f">manchas coloridas</b> da carta, a um palmo. Achou uma <b style="display:inline;font:inherit;color:#fdc72f">placa do caso</b> no resort? Aponte pro símbolo quadriculado e ganhe o carimbo.</p></div>
 </div>
 <div id="toast" role="status"></div>
 
@@ -616,7 +617,7 @@ function abrir(){
   const c=$('#capa');c.classList.add('rasga');
   setTimeout(()=>{c.classList.add('aberta')},420);
   setTimeout(()=>{document.body.classList.remove('fechado')},780);
-  setTimeout(()=>{c.style.display='none';document.body.classList.remove('abrindo');aoMostrar();setTimeout(dicaLupa,1200)},1750);
+  setTimeout(()=>{c.style.display='none';document.body.classList.remove('abrindo');aoMostrar();pedirCadastro(()=>setTimeout(dicaLupa,700))},1750);
 }
 $('#abrir').onclick=abrir;$('#capa').onclick=abrir;
 
@@ -704,17 +705,17 @@ function abrirPista(i){atual=i;const p=PISTAS[i],ok=achadas.includes(i);
 }
 function fecharPista(){$('#sheet').classList.remove('on');$('#sheet').setAttribute('aria-hidden','true');$('#sIn').blur()}
 $('#veu').onclick=fecharPista;$('#sFechar').onclick=fecharPista;
-function registrar(i){const novo=!achadas.includes(i);if(novo){achadas.push(i);salvar()}
+function marcar(i,via){const novo=!achadas.includes(i);if(novo){achadas.push(i);salvar()}atualizar(novo?i:-1);carimbarEstacao(i,via)}
+function registrar(i,via='codigo'){
   $('#sErro').textContent='Código confere. Número revelado: '+PISTAS[i].dig;$('#sErro').className='erro ok';vibra(40);
-  setTimeout(()=>{fecharPista();atualizar(novo?i:-1);
-    toast(achadas.length===5?'5 pistas! Vire a folha e abra o cofre.':`Pista ${dois(i+1)} registrada · número ${PISTAS[i].dig}`)},650);
+  setTimeout(()=>{fecharPista();marcar(i,via)},650);
 }
 $('#sOk').onclick=()=>{const v=$('#sIn').value.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
   if(v===PISTAS[atual].cod)registrar(atual);
   else{$('#sErro').textContent='Código não confere. Olhe a placa de novo.';$('#sErro').className='erro';const s=$('#sheet');s.classList.remove('trem');void s.offsetWidth;s.classList.add('trem');vibra([20,30,20])}};
 $('#sIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('#sOk').click()});
-$('#sDemo').onclick=()=>registrar(atual);
-$('#demoTudo').onclick=()=>{PISTAS.forEach((_,i)=>{if(!achadas.includes(i))achadas.push(i)});salvar();atualizar(-2)};
+$('#sDemo').onclick=()=>registrar(atual,'demo');
+$('#demoTudo').onclick=()=>{PISTAS.forEach((_,i)=>{if(!achadas.includes(i))achadas.push(i)});salvar();atualizar(-2);if(Dados.ficha())PISTAS.forEach((_,i)=>Dados.carimbar(i+1,'demo'));pintarFicha()};
 
 function atualizar(novo=-1){
   $$('.pista').forEach(d=>{const i=+d.dataset.i,ok=achadas.includes(i);d.classList.toggle('ok',ok);d.classList.toggle('novo',i===novo);
@@ -729,13 +730,13 @@ function atualizar(novo=-1){
 /* cofre + liberado */
 $('#destravar').onclick=()=>{const d=$('#disco');d.classList.add('treme');$('#digitos').classList.add('certo');vibra([40,60,40,60,120]);
   setTimeout(()=>{d.classList.remove('treme');d.classList.add('abre')},520);
-  setTimeout(liberar,950)};
+  setTimeout(()=>{const f=Dados.ficha();if(f&&f.resolvido)return liberar();abrirFicha();toast('O cofre pede a palavra do retrato falado.')},950)};
 function liberar(){const v=$('#vip');v.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>v.classList.add('go')));chuva()}
 function chuva(){const v=$('#vip');v.querySelectorAll('.moeda').forEach(m=>m.remove());
   for(let i=0;i<22;i++){const m=document.createElement('img');m.src='assets/moeda.png';m.className='moeda';m.alt='';
     const w=30+Math.random()*30;m.style.cssText=`left:${Math.random()*100}%;width:${w}px;--r:${(Math.random()*2-1)*540}deg;animation-duration:${2.4+Math.random()*1.8}s;animation-delay:${.4+Math.random()*1.4}s`;v.appendChild(m)}}
 $('#voltar').onclick=()=>{const v=$('#vip');v.classList.remove('go','on');$('#disco').classList.remove('abre')};
-$('#garantir').onclick=()=>toast('Mockup: aqui entra o cadastro VIP (nome + WhatsApp).');
+$('#garantir').onclick=()=>{const f=Dados.ficha();if(!f)return pedirCadastro(()=>toast('Pronto: você está na lista VIP.'));toast(`${f.nome.split(' ')[0]}, você já está na lista VIP. Avisamos em ${f.tipo==='email'?'seu e-mail':'seu WhatsApp'}.`)};
 
 /* marcas de manuseio: digitais geradas + café + vinco */
 function digital(seed){let r=seed;const rnd=()=>(r=(r*9301+49297)%233280)/233280;let d='';
@@ -763,7 +764,7 @@ async function abrirLupa(){const L=$('#lupa');L.classList.add('on');L.classList.
   try{fluxo=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280}},audio:false});
     try{const t=fluxo.getVideoTracks()[0],cp=t.getCapabilities?t.getCapabilities():{};if(cp.zoom)await t.applyConstraints({advanced:[{zoom:Math.min(cp.zoom.max,2)}]})}catch(_){}
     const v=$('#lupaV');v.srcObject=fluxo;await v.play();const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
-    const o=document.createElement('canvas'),ox=o.getContext('2d');let lo=90,hi=200;
+    const o=document.createElement('canvas'),ox=o.getContext('2d');let lo=90,hi=200,nq=0;
     (function quadro(){if(!fluxo)return;const vw=v.videoWidth||960,vh=v.videoHeight||1280,w=c.width=Math.min(960,vw),h=c.height=Math.round(w*vh/vw);
       // desfoque barato: reduz e amplia (funde os traços finos)
       o.width=w>>2;o.height=h>>2;ox.imageSmoothingEnabled=true;ox.drawImage(v,0,0,o.width,o.height);
@@ -776,7 +777,9 @@ async function abrirLupa(){const L=$('#lupa');L.classList.add('on');L.classList.
       let s=0,p3=0,p97=255;for(let i=0;i<256;i++){s+=H[i];if(s<n*.03)p3=i;if(s<n*.97)p97=i}
       lo+=(p3-lo)*.2;hi+=(Math.max(p97,lo+20)-hi)*.2;const g=255/(hi-lo);
       for(let i=0;i<a.length;i+=4){let r=((a[i]-lo)*g-128)*1.6+128;r=r<0?0:r>255?255:r;a[i]=a[i+1]=a[i+2]=r}
-      x.putImageData(d,0,0);laco=requestAnimationFrame(quadro)})();
+      x.putImageData(d,0,0);
+      if(++nq%5===0){const e=Placa.ler(v);if(e>=0){fecharLupa();vibra(40);marcar(e,'placa');return}}
+      laco=requestAnimationFrame(quadro)})();
   }catch(e){L.classList.add('semcam');$('#lupaTxt').textContent='Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
 }
 function fecharLupa(){const L=$('#lupa');L.classList.remove('on');L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}}
@@ -791,5 +794,6 @@ if(location.hash==='#lupa'){aberto=true;$('#capa').style.display='none';document
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{escala();document.body.classList.add('pronto')});
 setTimeout(()=>document.body.classList.add('pronto'),2500);
 </script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js"></script><script src="caso.js"></script>
 </body>
 </html>
