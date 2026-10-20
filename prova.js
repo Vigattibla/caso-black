@@ -1,7 +1,7 @@
 /* Caso Black · rodada de cada placa: pista física achada → foto da equipe com o molde da prova → álbum.
    Índices 0-based (0 Água · 1 Sabor · 2 Kids · 3 Natureza · 4 Lobby). Sprites provisórios (vêm do Turma do Bê 2D.ai). */
 const Prova = (() => {
-  const W = 1080, H = 1350, F = {x: 44, y: 44, w: 992, h: 1116};   // molde 4:5 · janela da foto
+  const W = 1080, H = 1350, F = {x: 24, y: 24, w: 1032, h: 1212};   // molde 4:5 · janela da foto
   const LU = 'assets/lucas.webp', GA = 'assets/gabi.webp', PI = 'assets/pipoca.webp', BE = 'assets/be-cabeca.png';
   const AJ = {
     0: {nome: 'Lucas', imgs: [LU], lugar: 'ÁGUA'},
@@ -71,9 +71,9 @@ const Prova = (() => {
   /* ---------- molde da prova ---------- */
   function ajudantes(x) {   // sprites no canto de baixo à direita, pequenos
     const gs = AJ[est].imgs.map(img).filter(g => g.complete && g.naturalWidth); if (!gs.length) return;
-    const um = gs.length === 1, mh = um ? 400 : 250, mw = um ? 320 : 210; let dir = W - 10;
+    const um = gs.length === 1, mh = um ? 230 : 170, mw = um ? 190 : 130; let dir = W - 18;
     [...gs].reverse().forEach(g => { const s = Math.min(mw / g.naturalWidth, mh / g.naturalHeight), w = g.naturalWidth * s, h = g.naturalHeight * s;
-      x.drawImage(g, dir - w, H - h - 8, w, h); dir -= w * .72 });
+      x.drawImage(g, dir - w, H - h - 6, w, h); dir -= w * .74 });
   }
   function molde(x, src, sw, sh, espelho) {
     const a = AJ[est];
@@ -84,8 +84,8 @@ const Prova = (() => {
       if (espelho) { x.translate(F.x * 2 + F.w, 0); x.scale(-1, 1) }
       x.drawImage(src, F.x + (F.w - w) / 2, F.y + Math.min(0, (F.h - h) * .3), w, h); x.restore() }   // corta mais embaixo: cabeça fica
     x.fillStyle = '#111'; x.textBaseline = 'alphabetic'; x.textAlign = 'left';
-    x.font = '400 50px Anton'; x.fillText(`PROVA ${dois(est + 1)} · ${a.lugar}`, F.x + 12, H - 66);
-    x.font = '700 24px "Courier Prime"'; x.fillStyle = '#555'; x.fillText('CASO BLACK · VILLAGE RESORT', F.x + 14, H - 30);
+    x.font = '400 46px Anton'; const t1 = `PROVA ${dois(est + 1)} · ${a.lugar}`; x.fillText(t1, F.x + 4, H - 38);
+    const w1 = x.measureText(t1).width; x.font = '700 22px "Courier Prime"'; x.fillStyle = '#777'; x.fillText('— CASO BLACK · VILLAGE RESORT', F.x + w1 + 22, H - 40);
     ajudantes(x);
   }
   const cv = () => q('#pvC'), cx = () => cv().getContext('2d');
@@ -129,9 +129,11 @@ const Prova = (() => {
   function fechar(ok) { const b = q('#balao'); b.classList.remove('on'); document.body.append(b); pararCam(); P.classList.remove('on'); P.setAttribute('aria-hidden', 'true'); const f = fim; fim = null; if (ok && f) f() }
   function abrir(i, depois) {
     est = i; fim = depois; foto = null; q('#pvK').textContent = `PROVA ${dois(i + 1)} · ${AJ[i].lugar}`;
-    P.classList.add('on'); P.setAttribute('aria-hidden', 'false'); document.fonts && document.fonts.load('400 50px Anton'); passoFoto();
+    P.classList.add('on'); P.setAttribute('aria-hidden', 'false'); document.fonts && document.fonts.load('400 46px Anton'); passoFoto();
   }
-  return {tem: i => !!AJ[i], abrir, foto: i => { est = i; fim = null; P.classList.add('on'); passoFoto() }};
+  return {tem: i => !!AJ[i], aj: i => AJ[i], abrir, foto: i => abrir(i, null)};
 })();
 /* chamado no lugar de marcar(): achou a pista, a equipe tira a foto no molde antes do carimbo */
 function resolver(i, via) { if (Prova.tem(i) && !achadas.includes(i)) Prova.abrir(i, () => marcar(i, via)); else marcar(i, via) }
+/* a folha pode ter pintado antes da turma carregar */
+if (typeof pintarEstacoes === "function") { pintarEstacoes(); pintarAlbum() }

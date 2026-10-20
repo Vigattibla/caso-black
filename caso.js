@@ -83,7 +83,6 @@ document.body.insertAdjacentHTML('beforeend', `
   <h3 id="kTit">Carimbo conquistado!</h3>
   <div id="kFrag"></div>
   <p class="mono" id="kTxt"></p>
-  <div class="ali" id="kAli"></div>
   <label class="btn alt" id="kFoto">Foto da equipe aqui<input type="file" accept="image/*" capture="user"></label>
   <button class="btn" id="kOk">Continuar</button>
 </div></div>
@@ -93,7 +92,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <h3 id="fNome">—</h3>
   <div class="sub mono" id="fProg">0/5 carimbos</div>
   <div class="cgrade" id="fGrade"></div>
-  <div class="k" style="margin-top:12px">RETRATO FALADO DO SUSPEITO</div>
+  <div class="k" style="margin-top:12px">RETRATO MISTERIOSO</div>
   <div class="rf" id="fRet"></div>
   <p class="mono pq">Copie cada pedaço no verso da carta. Juntos, revelam a palavra da última prova.</p>
   <div class="campo"><input id="fPal" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PALAVRA"><button class="btn" id="fOk">Conferir</button></div>
@@ -130,17 +129,16 @@ function mostrarCarimbo(n, novo) {
   $('#kSlot').innerHTML = carimboSVG(n, 'k' + n);
   $('#kFrag').innerHTML = fim ? '' : `<div class="frag"><div class="nq">QUADRO ${dois(n)}</div>${retratoSVG({faixas: [i], letras: true, so: i})}</div>`;
   const falta = 5 - Dados.carimbos().filter(x => x <= 5).length;
-  $('#kTxt').innerHTML = fim ? `A digital na carta entregou o suspeito. Você está no <b>grupo VIP da Black</b>.`
-    : `Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.` + (falta ? ` Faltam <b>${falta}</b>.` : ` <b>Retrato completo!</b> Leia a palavra da placa e digite na folha 05.`);
-  const su = !fim && window.SUS ? SUS.find(p => p.est === i) : null;
-  $('#kAli').innerHTML = su ? `<b>SUSPEITO DESCARTADO</b>${su.n}: ${su.ali}` : '';
+  $('#kTxt').innerHTML = fim ? `A digital na carta era do <b>Bê</b>! Você está no <b>grupo VIP da Black</b>.`
+    : `Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.` + (falta ? ` Faltam <b>${falta}</b>.` : ` <b>Retrato completo!</b> Leia a palavra e digite na folha 04.`);
   $('#kFoto').hidden = fim || (typeof fotoDe === 'function' && !!fotoDe(n)); $('#kFoto').dataset.n = n;
   $('#carimbo').classList.toggle('fim', fim);
   abreOv('#carimbo'); const s = $('#kSlot'); s.classList.remove('bate'); void s.offsetWidth; s.classList.add('bate');
   setTimeout(() => { baque(fim); vibra(fim ? [60, 40, 60, 40, 160] : [70]) }, 330);
 }
 $('#kOk').onclick = () => { fechaOv('#carimbo'); pintarFicha(); if ($('#carimbo').classList.contains('fim')) return setTimeout(liberar, 250);
-  if (Dados.carimbos().filter(x => x <= 5).length >= 5 && typeof irPara === 'function') setTimeout(() => { irPara(N - 1); beDica() }, 350) };
+  if (Dados.carimbos().filter(x => x <= 5).length >= 5 && typeof irPara === 'function') setTimeout(() => { irPara(N - 1); beDica() }, 350);
+  else if (window.proxima) setTimeout(proxima, 450) };
 
 $('#kFoto input').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f && window.salvarFoto) salvarFoto(+$('#kFoto').dataset.n, f) };
 
@@ -170,15 +168,15 @@ $('#fX').onclick = () => fechaOv('#ficha');
 $('#ficha').addEventListener('click', e => { if (e.target.id === 'ficha') fechaOv('#ficha') });
 $('#fOk').onclick = async () => {
   const v = $('#fPal').value.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s/g, '');
-  if (v !== PALAVRA) { $('#fErro').textContent = v ? 'Não é essa. Junte os 5 quadros e leia a placa do suspeito.' : ''; vibra([20, 30, 20]); return }
+  if (v !== PALAVRA) { $('#fErro').textContent = v ? 'Não é essa. Junte os 5 quadros e leia a palavra que aparece.' : ''; vibra([20, 30, 20]); return }
   $('#fErro').textContent = ''; conferePalavra(v); fechaOv('#ficha');
   if (Dados.carimbos().filter(x => x <= 5).length < 5) return beFala('Palavra certa! Agora falta completar os carimbos da chave.', 'PALAVRA CERTA');
-  irPara(N - 1); setTimeout(() => beFala('Provas completas! Vira sua carta, abre a lupa e aponta pro selo do arquivo.', 'ÚLTIMA PROVA'), 700);
+  irPara(N - 1); setTimeout(() => beFala('Provas completas! Vira sua carta, abre a luneta e aponta pro selo do arquivo.', 'ÚLTIMA PROVA'), 700);
 };
 $('#fPal').addEventListener('keydown', e => { if (e.key === 'Enter') $('#fOk').click() });
 $('.prog').addEventListener('click', abrirFicha); $('.prog').style.cursor = 'pointer';
 
-/* ---------- leitura da placa pela lupa ---------- */
+/* ---------- leitura da placa pela luneta ---------- */
 const Placa = (() => {
   let det = null; const cv = document.createElement('canvas'), cx = cv.getContext('2d', {willReadFrequently: true});
   return {
