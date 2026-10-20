@@ -338,6 +338,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 #lupa.semcam .falso{display:flex}
 #lupa .aro{position:absolute;left:50%;top:44%;width:min(78vw,340px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 0 0 14px #1a1a1a,0 0 0 18px var(--amarelo),0 0 0 100vmax #000d;pointer-events:none}
 #lupa .aro::after{content:"";position:absolute;left:50%;top:50%;width:25%;height:11%;margin-top:-5.5%;background:linear-gradient(#2a2a2a,#111);border:3px solid var(--amarelo);border-radius:8px;transform:rotate(45deg) translateX(calc(min(39vw,170px) + 15px));transform-origin:0 50%}
+#lupa.ouro .aro,#lupa.ouro .info{opacity:0;transition:opacity .6s}
 #lupa .info{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 24px);text-align:center;padding:0 24px;color:#ddd}
 #lupa .info b{display:block;font:400 22px Anton;letter-spacing:.06em;color:var(--amarelo)}
 #lupa .info p{font-size:12.5px;line-height:1.45;margin:6px auto 14px;max-width:300px}
@@ -856,14 +857,14 @@ const DIG=(()=>{const W=150,H=200;
   g.font='900 64px "Arial Black",Arial,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('B',W/2,H*.52);
   const D=g.getImageData(0,0,W,H).data,ins=new Uint8Array(W*H),ed=[];for(let i=0;i<W*H;i++)ins[i]=D[i*4+3]>128;
   for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x;if(ins[i]&&(!ins[i-1]||!ins[i+1]||!ins[i-W]||!ins[i+W]))ed.push(x,y)}
-  const m=new Float32Array(W*H);
+  const m=new Float32Array(W*H),bd=new Float32Array(W*H);
   for(let py=0;py<H;py++)for(let px=0;px<W;px++){const x=(px-W/2)/(W*.38),y=(py-H*.52)/(H*.38);
     const mask=1-ss(.78,1,Math.hypot(x,y/1.18)+(fbm(px*.05,py*.05)-.5)*.25);if(mask<=0)continue;
     let b=1e9;for(let e=0;e<ed.length;e+=2){const d=(ed[e]-px)**2+(ed[e+1]-py)**2;if(d<b)b=d}
-    const i=py*W+px,p=(Math.sqrt(b)*(ins[i]?-1:1)+3)/(W*.38)+(fbm(px*.04+9,py*.04)-.5)*.06;
+    const i=py*W+px;bd[i]=Math.sqrt(b);const p=(Math.sqrt(b)*(ins[i]?-1:1)+3)/(W*.38)+(fbm(px*.04+9,py*.04)-.5)*.06;
     const r=.5+.5*Math.cos(2*Math.PI*p*10.5);
     m[i]=Math.min(1,ss(.42,.62,r)*mask*(fbm(px*.18,py*.18)>.78?.15:1)*(.7+.5*fbm(px*.02+3,py*.02)))}
-  return{W,H,m}})();
+  return{W,H,m,bd,fbm}})();
 function pintaDig(c,cor,al=1){const{W,H,m}=DIG;c.width=W;c.height=H;const x=c.getContext('2d'),d=x.createImageData(W,H),a=d.data;
   for(let i=0;i<W*H;i++){a[i*4]=cor[0];a[i*4+1]=cor[1];a[i*4+2]=cor[2];a[i*4+3]=m[i]*255*al}x.putImageData(d,0,0);return c}
 const digCam=pintaDig(document.createElement('canvas'),[92,52,8]);
@@ -953,9 +954,9 @@ async function abrirLupa(m='carta'){modo=m;ar=null;const L=$('#lupa');L.classNam
       for(let i=0;i<a.length;i+=4){let r=((a[i]-lo)*g-128)*1.6+128;r=r<0?0:r>255?255:r;a[i]=a[i+1]=a[i+2]=r}
       x.putImageData(d,0,0)}
       if(ar&&ar.u)ar.onda?desenhaOnda(x,w,h):desenhaCaca(x,w,h);
-      if(++nq%5===0)for(const mk of Placa.lerTudo(v)){
+      if(++nq%(ouroC?2:5)===0)for(const mk of Placa.lerTudo(v)){
         if(mk.id===ARUCO0+5){const ch=chave();   // selo do arquivo, no verso da carta
-          if(ch.ok){if(!ouroC){ouroC={t0:performance.now()};vibra(40);setTimeout(()=>{fecharLupa();abrirFim('carta-lupa',true)},2300)}
+          if(ch.ok){if(!ouroC){ouroC={t0:performance.now()};L.classList.add('ouro');vibra(40);setTimeout(()=>vibra([30,40,30]),3500);setTimeout(()=>{fecharLupa();abrirFim('carta-lupa',true)},6600)}
             const s=w/vw;ouroC.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}
           else if(performance.now()-avisou>4000){avisou=performance.now();toast(ch.n<5?`Esse é o selo! Faltam ${5-ch.n} carimbos.`:'Esse é o selo! Falta a palavra do retrato.')}}
         else if(!ouroC){const e=mk.id-ARUCO0;
@@ -965,16 +966,74 @@ async function abrirLupa(m='carta'){modo=m;ar=null;const L=$('#lupa');L.classNam
       laco=requestAnimationFrame(quadro)})();
   }catch(e){L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
 }
-/* selo lido: a imagem fica dourada e a digital aparece em cima do selo */
-function desenhaOuro(x,w,h){const p=cl((performance.now()-ouroC.t0)/1400),q=ez(p),a=ouroC.alvo;
-  let cx=w/2,cy=h*.44,sz=Math.min(w,h)*.25;
-  if(a){cx=(a[0][0]+a[1][0]+a[2][0]+a[3][0])/4;cy=(a[0][1]+a[1][1]+a[2][1]+a[3][1])/4;
-    sz=(Math.hypot(a[1][0]-a[0][0],a[1][1]-a[0][1])+Math.hypot(a[2][0]-a[1][0],a[2][1]-a[1][1]))/2}
-  const g=ouroC.g||(ouroC.g={cx,cy,sz});g.cx+=(cx-g.cx)*.25;g.cy+=(cy-g.cy)*.25;g.sz+=(sz-g.sz)*.25;
-  x.save();x.globalCompositeOperation='multiply';x.fillStyle=`rgba(253,199,47,${.85*q})`;x.fillRect(0,0,w,h);x.restore();
-  const r=g.sz*1.5,gr=x.createRadialGradient(g.cx,g.cy,0,g.cx,g.cy,r);gr.addColorStop(0,'#fff3c4');gr.addColorStop(.55,'#fdc72f');gr.addColorStop(1,'#fdc72f00');
-  x.globalAlpha=q;x.fillStyle=gr;x.beginPath();x.ellipse(g.cx,g.cy,r,r*1.2,0,0,7);x.fill();
-  const dp=ez(cl((p-.35)/.65)),dh=g.sz*2.1*(1.25-.25*dp),dw=dh*.75;x.globalAlpha=dp;x.drawImage(digCam,g.cx-dw/2,g.cy-dh/2,dw,dh);x.globalAlpha=1}
+/* selo lido: AR presa ao selo; a folha vira ouro, as digitais do Bê andam pelo papel e a última acende o B */
+const FOLHA={x0:-9.4,x1:1.65,y0:-.45,y1:15.2,px:40};   // verso da carta em lados do selo (selo de 19 mm no canto superior direito)
+const DIGB={x:-3.7,y:5.6,h:3.4};                       // a digital grande, no meio das pistas
+const TRILHA=(()=>{const P=[[.2,1.6],[-1,6.4],[-3.2,5.2]],n=6,o=[];
+  for(let i=0;i<n;i++){const t=(i+.4)/(n+.4),u=1-t,x=u*u*P[0][0]+2*u*t*P[1][0]+t*t*P[2][0],y=u*u*P[0][1]+2*u*t*P[1][1]+t*t*P[2][1],
+    dx=2*u*(P[1][0]-P[0][0])+2*t*(P[2][0]-P[1][0]),dy=2*u*(P[1][1]-P[0][1])+2*t*(P[2][1]-P[1][1]),L=Math.hypot(dx,dy),s=i%2?1:-1;
+    o.push({x:x-dy/L*.42*s,y:y+dx/L*.42*s,r:Math.atan2(dy,dx)+Math.PI/2+s*.35,t:1300+i*290,a:.5+.2*DIG.fbm(i*3.1,i)})}
+  return o})();
+const OURO=(()=>{const F=FOLHA,TW=Math.round((F.x1-F.x0)*F.px),TH=Math.round((F.y1-F.y0)*F.px),NW=TW>>1,NH=TH>>1;
+  const mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+  const tm=mk(TW,TH),ts=mk(TW,TH),sm=mk(NW,NH),xm=tm.getContext('2d'),xs=ts.getContext('2d'),xn=sm.getContext('2d'),sd=xn.createImageData(NW,NH);
+  const N=new Float32Array(NW*NH);   // campo da tinta: distância ao selo + ruído (a borda avança irregular, como líquido no papel)
+  for(let j=0;j<NH;j++)for(let i=0;i<NW;i++){const u=F.x0+(i+.5)/NW*(F.x1-F.x0),v=F.y0+(j+.5)/NH*(F.y1-F.y0);
+    N[j*NW+i]=Math.hypot(u-.5,v-.5)+(DIG.fbm(u*.55+7,v*.55)-.5)*3.2+(DIG.fbm(u*2.2,v*2.2)-.5)*.6}
+  const{W,H,m,bd}=DIG,dc=mk(W,H),dx=dc.getContext('2d'),dd=dx.createImageData(W,H),gc=mk(W,H),gx=gc.getContext('2d'),gd=gx.createImageData(W,H);
+  const rr=new Float32Array(W*H);for(let y=0;y<H;y++)for(let x=0;x<W;x++)rr[y*W+x]=Math.hypot(x-W/2,(y-H*.52)*.8);
+  for(let i=0;i<W*H;i++){gd.data[i*4]=255;gd.data[i*4+1]=243;gd.data[i*4+2]=196;gd.data[i*4+3]=m[i]*255*Math.exp(-bd[i]/4.5)}gx.putImageData(gd,0,0);
+  const P=(u,v)=>[(u-F.x0)*F.px,(v-F.y0)*F.px];
+  function marca(x,img,u,v,h,r,s,a){const[px,py]=P(u,v),hh=h*F.px*s,ww=hh*img.width/img.height;x.save();x.translate(px,py);x.rotate(r);x.globalAlpha=a;x.drawImage(img,-ww/2,-hh/2,ww,hh);x.restore()}
+  function anel(x,u,v,r,lw,cor,a){if(a<=0)return;const[px,py]=P(u,v);x.globalAlpha=a;x.strokeStyle=cor;x.lineWidth=lw*F.px;x.beginPath();x.arc(px,py,r*F.px,0,7);x.stroke();x.globalAlpha=1}
+  // desenha as duas camadas do papel no tempo t (ms): tm = tinta (multiply), ts = luz (screen)
+  function quadro(t){
+    const R=ez(cl((t-300)/2700))*21,sec=1-cl((t-3000)/900),a=sd.data;
+    for(let i=0;i<NW*NH;i++){const k=R-N[i],v=cl(k/1.3),rim=k>0?Math.exp(-((k-.3)**2)/.06)*sec:0,j=i*4;
+      a[j]=253-55*rim;a[j+1]=199-70*rim;a[j+2]=47-30*rim;a[j+3]=255*Math.max(v*.82,rim*.9)}
+    xn.putImageData(sd,0,0);
+    xm.clearRect(0,0,TW,TH);xm.imageSmoothingEnabled=true;xm.drawImage(sm,0,0,TW,TH);
+    for(const p of TRILHA){const q=cl((t-p.t)/160);if(q>0)marca(xm,digCam,p.x,p.y,.95,p.r,1.25-.25*ez(q),q*p.a)}
+    const tb=t-3500,pb=cl(tb/220);
+    if(pb>0){const Rb=ez(cl((tb-40)/1300))*120,o=dd.data;   // a digital grande se revela do centro pra fora, como tinta absorvendo
+      for(let i=0;i<W*H;i++){const j=i*4;o[j]=92;o[j+1]=52;o[j+2]=8;o[j+3]=m[i]*255*cl((Rb-rr[i])/10)}
+      dx.putImageData(dd,0,0);marca(xm,dc,DIGB.x,DIGB.y,DIGB.h,-.18,1.14-.14*ez(pb),.95)}
+    xs.clearRect(0,0,TW,TH);
+    const sw=(t-1900)/1300;if(sw>0&&sw<1){const g=xs.createLinearGradient(0,0,TW,TH*.6),c=sw*1.4-.2;
+      g.addColorStop(cl(c-.12),'#fff3c400');g.addColorStop(cl(c),'#fff3c4cc');g.addColorStop(cl(c+.12),'#fff3c400');
+      xs.fillStyle=g;xs.fillRect(0,0,TW,TH);xs.globalCompositeOperation='destination-in';xs.drawImage(sm,0,0,TW,TH);xs.globalCompositeOperation='source-over'}
+    for(let k=0;k<3;k++){const q=cl((t-k*260)/1100);anel(xs,.5,.5,.75+q*3.4,.12*(1-q),'#fdc72f',1-q)}
+    if(pb>0){const q=cl(tb/900);anel(xs,DIGB.x,DIGB.y,.6+q*3.6,.16*(1-q),'#fff3c4',1-q);
+      const gl=cl((tb-1200)/700);if(gl>0)marca(xs,gc,DIGB.x,DIGB.y,DIGB.h,-.18,1,gl*(.75+.25*Math.sin(t/160)))}
+    return{tm,ts}}
+  // projeção: WebGL com textura em perspectiva correta presa ao selo; sem WebGL, afim pelos 3 cantos
+  const gc2=document.createElement('canvas');let gl=null,pr,bv,bt,tx;
+  try{gl=gc2.getContext('webgl',{premultipliedAlpha:true,preserveDrawingBuffer:true})}catch(_){}
+  if(gl){const sh=(ty,s)=>{const o=gl.createShader(ty);gl.shaderSource(o,s);gl.compileShader(o);return o};pr=gl.createProgram();
+    gl.attachShader(pr,sh(gl.VERTEX_SHADER,'attribute vec3 p;attribute vec2 uv;uniform vec2 sz;varying vec2 v;void main(){v=uv;gl_Position=vec4((p.x/sz.x*2.-1.)*p.z,(1.-p.y/sz.y*2.)*p.z,0.,p.z);}'));
+    gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,'precision mediump float;varying vec2 v;uniform sampler2D t;void main(){gl_FragColor=texture2D(t,v);}'));
+    gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))gl=null}
+  if(gl){bv=gl.createBuffer();bt=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bt);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,1,1,0,1]),gl.STATIC_DRAW);
+    tx=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tx);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,true);
+    [[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE],[gl.TEXTURE_MIN_FILTER,gl.LINEAR],[gl.TEXTURE_MAG_FILTER,gl.LINEAR]].forEach(([k,v])=>gl.texParameteri(gl.TEXTURE_2D,k,v))}
+  function homog(q){const[[x0,y0],[x1,y1],[x2,y2],[x3,y3]]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,den=(dx1*dy2-dx2*dy1)||1e-9,
+    g=(dx3*dy2-dx2*dy3)/den,h=(dx1*dy3-dx3*dy1)/den,a=x1-x0+g*x1,b=x3-x0+h*x3,d=y1-y0+g*y1,e=y3-y0+h*y3;
+    return(u,v)=>{const w=g*u+h*v+1;return[(a*u+b*v+x0)/w,(d*u+e*v+y0)/w,w]}}
+  function projeta(x,img,cs,w,h,op){x.save();x.globalCompositeOperation=op;
+    if(gl){if(gc2.width!==w||gc2.height!==h){gc2.width=w;gc2.height=h}gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(pr);
+      gl.bindTexture(gl.TEXTURE_2D,tx);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
+      gl.bindBuffer(gl.ARRAY_BUFFER,bv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(cs.flatMap(c=>[c[0]*c[2],c[1]*c[2],c[2]])),gl.DYNAMIC_DRAW);
+      const lp=gl.getAttribLocation(pr,'p'),lu=gl.getAttribLocation(pr,'uv');gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,3,gl.FLOAT,false,0,0);
+      gl.bindBuffer(gl.ARRAY_BUFFER,bt);gl.enableVertexAttribArray(lu);gl.vertexAttribPointer(lu,2,gl.FLOAT,false,0,0);
+      gl.uniform2f(gl.getUniformLocation(pr,'sz'),w,h);gl.drawArrays(gl.TRIANGLE_FAN,0,4);x.drawImage(gc2,0,0)}
+    else{const[a,b,,d]=cs;x.setTransform((b[0]-a[0])/img.width,(b[1]-a[1])/img.width,(d[0]-a[0])/img.height,(d[1]-a[1])/img.height,a[0],a[1]);x.drawImage(img,0,0)}
+    x.restore()}
+  return{quadro,homog,projeta}})();
+function desenhaOuro(x,w,h){const t=performance.now()-ouroC.t0,a=ouroC.alvo;if(!a)return;
+  const s=ouroC.q||(ouroC.q=a.map(p=>p.slice()));for(let i=0;i<4;i++)for(let k=0;k<2;k++)s[i][k]+=(a[i][k]-s[i][k])*.22;   // suaviza o tremido (a folha fica a 15 selos de distância)
+  const M=OURO.homog(s),F=FOLHA,cs=[M(F.x0,F.y0),M(F.x1,F.y0),M(F.x1,F.y1),M(F.x0,F.y1)];if(cs.some(c=>c[2]<=.05))return;
+  const q=ez(cl(t/700));x.save();x.fillStyle=`rgba(0,0,0,${.5*q})`;x.beginPath();x.rect(0,0,w,h);x.moveTo(cs[0][0],cs[0][1]);cs.slice(1).forEach(c=>x.lineTo(c[0],c[1]));x.closePath();x.fill('evenodd');x.restore();
+  const L=OURO.quadro(t);OURO.projeta(x,L.tm,cs,w,h,'multiply');OURO.projeta(x,L.ts,cs,w,h,'screen')}
 /* folha com código de áudio: marcador + barras do próprio áudio (medidas em lados do marcador, iguais à folha impressa) */
 const ONDA={0:{u:'assets/a/estacao1.mp3',s0:1.35,s1:5.5,h:[.34,.8,.15,.26,.54,.66,.59,.15,.98,1,.15,.2,.42,.5,.43,.64,.96,.48,.89,.49,.15,.2,.74,.22,.72,.5,.43,.15,.36,.42,.72,.52,.54,.46,.71,.15]}};
 function desenhaOnda(x,w,h){const o=ar.onda,V=$('#cacaV'),pr=V.duration?V.currentTime/V.duration:0,n=o.h.length,pt=(o.s1-o.s0)/n,bw=pt*.62;
