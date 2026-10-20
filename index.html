@@ -40,7 +40,7 @@ img{display:block;max-width:100%;-webkit-user-drag:none;user-select:none}
 .topo{position:fixed;left:0;right:0;top:0;z-index:40;max-width:520px;margin:0 auto;padding:env(safe-area-inset-top) 12px 0;background:linear-gradient(#0d0d0d 72%,#0d0d0d00);opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .4s,transform .4s}
 body.aberto .topo{opacity:1;pointer-events:auto;transform:none}
 .topo .l1{display:flex;align-items:center;gap:8px;height:46px}
-.topo img{height:30px;width:auto;margin-right:auto}
+.topo img{height:40px;width:auto;margin-right:auto}
 .prog{display:flex;align-items:center;gap:8px;cursor:pointer}
 .prog small{font-family:"Courier Prime";font-weight:700;font-size:9px;letter-spacing:.14em;color:#9a9a9a}
 .prog .slots{display:flex;gap:3px}
@@ -54,6 +54,7 @@ body.aberto .topo{opacity:1;pointer-events:auto;transform:none}
 .rail button::before{right:0;background:#333}
 .rail button i{width:calc(var(--p,0)*100%);background:var(--amarelo)}
 .rail button.on{color:#f2f2f2}
+.topo .prog,.rail{display:none}
 #trilho{position:relative;height:100vh;height:100dvh}
 .palco{position:absolute;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 .palco input,.palco textarea{user-select:text;-webkit-user-select:text}
@@ -391,7 +392,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 
 <div id="app">
   <header class="topo">
-    <div class="l1"><img src="assets/cb-logo-chapeu.png" alt="Caso Black">
+    <div class="l1"><img src="assets/cb-logo.png" alt="Caso Black">
       <div class="prog" role="button" aria-label="Abrir minha ficha"><small>FICHA</small><div class="slots" id="slots"></div></div></div>
     <nav class="rail" id="rail" aria-label="Folhas do caso"></nav>
   </header>
