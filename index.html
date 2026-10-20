@@ -335,7 +335,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 #lupa .falso{display:none;background:radial-gradient(#fff 0 1px,#0000 1.5px) 0 0/7px 7px,#e9e2d2;align-items:center;justify-content:center;text-align:center;font:400 34px/1.05 Anton;color:#1b2a6b;letter-spacing:.04em;padding:40px}
 #lupa.semcam .falso{display:flex}
 #lupa .aro{position:absolute;left:50%;top:44%;width:min(78vw,340px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 0 0 14px #1a1a1a,0 0 0 18px var(--amarelo),0 0 0 100vmax #000d;pointer-events:none}
-#lupa .aro::after{content:"";position:absolute;right:-26%;bottom:-26%;width:36%;height:12%;background:linear-gradient(#2a2a2a,#111);border:3px solid var(--amarelo);border-radius:8px;transform:rotate(45deg);transform-origin:0 50%}
+#lupa .aro::after{content:"";position:absolute;left:50%;top:50%;width:25%;height:11%;margin-top:-5.5%;background:linear-gradient(#2a2a2a,#111);border:3px solid var(--amarelo);border-radius:8px;transform:rotate(45deg) translateX(calc(min(39vw,170px) + 15px));transform-origin:0 50%}
 #lupa .info{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 24px);text-align:center;padding:0 24px;color:#ddd}
 #lupa .info b{display:block;font:400 22px Anton;letter-spacing:.06em;color:var(--amarelo)}
 #lupa .info p{font-size:12.5px;line-height:1.45;margin:6px auto 14px;max-width:300px}
