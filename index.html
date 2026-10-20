@@ -260,6 +260,13 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
 #sheet .enig{font:700 25px/1.12 Caveat;color:#1b2a6b;margin:12px 0 14px;padding-left:12px;border-left:3px solid var(--amarelo)}
 #sheet .loc{display:flex;gap:10px;align-items:center;font:400 12px/1.4 "Courier Prime";color:#444;border-top:1.5px dashed #0003;border-bottom:1.5px dashed #0003;padding:10px 0;margin-bottom:16px}
 #sheet .loc svg{flex:none;width:18px;height:18px}
+#sLoja{margin:0 0 16px}#sLoja .k{margin-bottom:8px}
+#sLoja p{font:400 12px/1.4 "Courier Prime";color:#444;margin:0 0 10px}
+#sLojaL{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;list-style:none;margin:0 -4px;padding:0 4px 6px}
+#sLojaL li{flex:0 0 42%;scroll-snap-align:start;font:400 12px/1.3 "Courier Prime";color:#222}
+#sLojaL img,#sLojaL .sem{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;background:#f4efe2;margin-bottom:6px}
+#sLojaL .sem{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;box-sizing:border-box;border:1.5px dashed #0003;color:#777}
+#sLojaL b{display:block;font-weight:700}#sLojaL i{font-style:normal;color:#666}
 #sheet label{display:block;font:700 9.5px "Courier Prime";letter-spacing:.18em;margin-bottom:8px}
 #sheet .campo{display:flex;gap:10px}
 #sheet input{flex:1;min-width:0;height:52px;border:2px solid var(--preto);border-radius:4px;background:#fff;text-align:center;font:400 24px Anton;letter-spacing:.28em;text-transform:uppercase;color:var(--preto);outline:none}
@@ -564,6 +571,7 @@ body.aberto .fita span{animation-play-state:paused}
     <h3 id="sTit">PISTA 01</h3>
     <div class="enig" id="sEnig"></div>
     <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span id="sLoc"></span></div>
+    <div id="sLoja" hidden><div class="k">VITRINE DA LOJINHA</div><p>Tudo aqui tem preço. Na loja de verdade, ache o que o Pipoca farejou e que não está à venda.</p><ul id="sLojaL"></ul></div>
     <button class="btn" id="sLun" style="width:100%;margin-bottom:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>Ler a placa com a lupa</button>
     <label for="sIn">SEM CÂMERA? DIGITE O CÓDIGO DA PLACA</label>
     <div class="campo"><input id="sIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="······"><button class="btn" id="sOk">Registrar</button></div>
@@ -700,7 +708,7 @@ $('#relato').parentElement.addEventListener('click',()=>pularTexto=true);
 let atual=0;
 function abrirPista(i){atual=i;const p=PISTAS[i],ok=achadas.includes(i);
   $('#sTit').textContent='PLACA '+dois(i+1);$('#sEnig').textContent=p.enig;
-  $('#sLoc').textContent=ok?`${p.loc} · prova registrada. Carimbo na ficha.`:`${p.loc} · com ${ajNome(i)}. Ache a placa e leia com a lupa.`;$('#sLun').hidden=ok;
+  $('#sLoc').textContent=ok?`${p.loc} · prova registrada. Carimbo na ficha.`:`${p.loc} · com ${ajNome(i)}. Ache a placa e leia com a lupa.`;$('#sLun').hidden=ok;Vitrine.mostrar(i===3);
   $('#sIn').value=ok?p.cod:'';$('#sNota').value=notas[i]||'';$('#sErro').textContent='';$('#sErro').className='erro';
   $('#sheet').classList.add('on');$('#sheet').setAttribute('aria-hidden','false');
 }
@@ -1128,6 +1136,6 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
 <script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="caso.js?v=11"></script><script src="prova.js?v=7"></script>
-<script src="filtro.js?v=5"></script>
+<script src="filtro.js?v=5"></script><script src="vitrine.js?v=1"></script>
 </body>
 </html>
