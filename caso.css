@@ -65,3 +65,8 @@
 .fiDisp{width:76px;height:76px;border-radius:50%;background:var(--amarelo);border:5px solid #fff;box-shadow:0 0 0 3px #0008}
 .fiDisp:active{transform:scale(.92)}
 .ovc .btn.alt{background:#e6e1d4;color:var(--preto);display:flex;align-items:center;justify-content:center}
+
+.ovc textarea{width:100%;border:1.5px solid var(--preto);border-radius:4px;background:#fffdf7;padding:10px 12px;font:15px/1.4 "Courier Prime",monospace;color:var(--preto);resize:vertical}
+.ovc .muPrev{display:block;width:42%;margin:4px auto 2px;aspect-ratio:9/16;object-fit:cover;border-radius:3px;box-shadow:0 6px 16px #0004;transform:rotate(-2deg);background:#e7e1d3}
+#oOk,#muEnv{width:100%;margin-top:14px}
+#opinaOv,#muralOv,#cad{z-index:95}

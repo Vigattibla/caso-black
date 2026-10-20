@@ -29,3 +29,36 @@ select i.nome, i.contato, i.tipo, i.criado_em,
 from investigadores i left join carimbos c on c.investigador_id = i.id
 group by i.id order by resolvido desc, carimbos desc, i.criado_em;
 revoke all on painel from anon, authenticated;
+
+-- feedback do fim do caso (😕 1 · 🙂 2 · 😍 3)
+create table if not exists feedback (
+  id uuid primary key,
+  investigador_id uuid references investigadores(id) on delete set null,
+  nota smallint not null check (nota between 1 and 3),
+  faltou text check (char_length(faltou) <= 500),
+  origem text check (char_length(origem) <= 30),
+  criado_em timestamptz default now()
+);
+alter table feedback enable row level security;
+create policy fb_insert on feedback for insert to anon with check (true);
+create or replace view painel_feedback with (security_invoker = true) as
+select nota, count(*) as respostas, round(100.0 * count(*) / sum(count(*)) over (), 1) as pct
+from feedback group by nota order by nota;
+revoke all on painel_feedback from anon, authenticated;
+
+-- Mural da Black: álbum entra com aprovado=false; a equipe do Village marca aprovado=true no Table Editor
+create table if not exists mural (
+  id uuid primary key,
+  investigador_id uuid references investigadores(id) on delete cascade,
+  equipe text not null check (char_length(equipe) between 2 and 40),
+  arquivo text not null check (arquivo ~ '^[0-9a-f-]{36}\.jpg$'),
+  autorizo boolean not null check (autorizo),
+  aprovado boolean not null default false,
+  criado_em timestamptz default now()
+);
+alter table mural enable row level security;
+create policy mu_insert on mural for insert to anon with check (not aprovado);
+create policy mu_select on mural for select to anon using (aprovado);   -- o site só lê o que foi aprovado
+-- Storage: bucket público "mural" (Storage > New bucket > Public). Upload anônimo só de .jpg novos:
+insert into storage.buckets (id, name, public) values ('mural', 'mural', true) on conflict (id) do nothing;
+create policy mu_up on storage.objects for insert to anon with check (bucket_id = 'mural' and name ~ '^[0-9a-f-]{36}\.jpg$');

@@ -24,7 +24,7 @@ const Dados = (() => {
     },
     endpoint: async ({tabela, linha}) => {
       const r = await fetch(C.endpoint, {method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({evento: tabela === 'investigadores' ? 'cadastro' : 'carimbo', ...linha})});
+        body: JSON.stringify({evento: {investigadores: 'cadastro', carimbos: 'carimbo'}[tabela] || tabela, ...linha})});
       return r.ok;
     },
   };
@@ -62,6 +62,27 @@ const Dados = (() => {
       if (novo) await enviar({tabela: 'carimbos', linha: {investigador_id: ficha.id, estacao, via}, conflito: 'investigador_id,estacao'});
       return novo;
     },
+    async opinar(nota, faltou) {   // nota 1..3 (😕 🙂 😍), faltou: texto opcional
+      gravar('cb-opiniao', {nota, faltou});
+      await enviar({tabela: 'feedback', linha: {id: uuid(), investigador_id: ficha ? ficha.id : null, nota, faltou: (faltou || '').slice(0, 500) || null, origem: ref()}});
+    },
+    opiniao: () => ler('cb-opiniao', null),
+    async mural(equipe, blob) {   // álbum do caso no Mural da Black; aparece só depois de aprovado pela equipe do Village
+      if (!ficha) return false;
+      const id = uuid(), arquivo = id + '.jpg';
+      if (C.backend === 'supabase') {
+        const r = await fetch(`${C.supabaseUrl}/storage/v1/object/mural/${arquivo}`, {method: 'POST', headers: {
+          apikey: C.supabaseAnon, Authorization: 'Bearer ' + C.supabaseAnon, 'Content-Type': 'image/jpeg'}, body: blob}).catch(() => null);
+        if (!r || !r.ok) return false;
+        await enviar({tabela: 'mural', linha: {id, investigador_id: ficha.id, equipe, arquivo, autorizo: true}});
+      } else if (C.backend === 'endpoint') {
+        const imagem = await new Promise(ok => { const f = new FileReader(); f.onload = () => ok(f.result); f.readAsDataURL(blob) });
+        if (!(await enviarUm({tabela: 'mural', linha: {id, investigador_id: ficha.id, equipe, autorizo: true, imagem}}))) return false;
+      }
+      gravar('cb-mural', {id, equipe, em: new Date().toISOString()});
+      return true;
+    },
+    noMural: () => ler('cb-mural', null),
     sair() { ficha = null; try { localStorage.removeItem(LS) } catch (e) {} },
     esvaziar,
   };

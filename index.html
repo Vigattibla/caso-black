@@ -380,13 +380,18 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 .revela p b{color:var(--amarelo)}
 .revela .btn{width:100%;max-width:320px;margin-top:12px}
 .revela .btn.alt{background:#f2f2f2;margin-top:10px}
-#fimAnim.fim .revela h3{transition-delay:1s}#fimAnim.fim .revela p{transition-delay:1.25s}#fimAnim.fim .revela .btn{transition-delay:1.6s}#fimAnim.fim .revela .btn.alt,#fimAnim.fim .revela .demo{transition-delay:1.75s}
+#fimAnim.fim .revela h3{transition-delay:1s}#fimAnim.fim .revela p{transition-delay:1.25s}#fimAnim.fim .revela .btn{transition-delay:1.6s}#fimAnim.fim .revela .btn.alt,#fimAnim.fim .revela .demos{transition-delay:1.75s}#fimAnim.fim .revela .opina{transition-delay:1.4s}
+.opina{display:flex;align-items:center;gap:6px;margin-top:10px;font:700 17px Caveat;color:#ddd}
+.opina button{font-size:24px;line-height:1;width:42px;height:42px;border-radius:50%;background:#ffffff14;border:1.5px solid #ffffff2a;transition:transform .15s,background .15s}
+.opina button:active{transform:scale(.9)}.opina button.on{background:var(--amarelo);border-color:var(--amarelo)}
+.opina.feito button:not(.on){opacity:.35}
+.demos{display:flex;justify-content:center;gap:4px 14px;flex-wrap:wrap}
 
 body.aberto .fita span{animation-play-state:paused}
 @media (pointer:coarse){.fundo::after,.costas::before,.face::after,.capa .ext::after,.capa .int::after,#sheet .card::after{mix-blend-mode:normal;opacity:.05}.f5 .face.frente::after{opacity:.06}.stage{will-change:auto}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important;transition-delay:0s!important}}
 </style>
-<link rel="stylesheet" href="caso.css?v=5">
+<link rel="stylesheet" href="caso.css?v=7">
 </head>
 <body>
 <div class="fundo"><div class="fita fx a parada"><span></span></div><div class="fita fx b parada"><span></span></div></div>
@@ -450,6 +455,7 @@ body.aberto .fita span{animation-play-state:paused}
               <div class="albG" id="albG"></div>
               <p class="albP" id="albP">cada placa achada vira uma foto</p>
               <button class="btn" id="postAlb">Postar o álbum</button>
+              <div class="demos"><button class="demo" id="muPor">pôr no mural</button><a class="demo" href="mural.html">ver o Mural da Black</a></div>
             </div><div class="luz"></div><div class="dobra"></div></div>
             <div class="face verso"></div>
           </article>
@@ -518,11 +524,12 @@ body.aberto .fita span{animation-play-state:paused}
     <img class="beR" src="assets/be-detetive.png" alt="Bê" onerror="this.onerror=null;this.src='assets/be.png'">
     <h3>BÊ!</h3>
     <p>Ele sumiu pra preparar a Black e deixou a lupa pra ver quem era bom de investigação. Você é! Entre no <b>grupo VIP</b> e veja as ofertas antes de todo mundo.</p>
+    <div class="opina" id="opina"><span>Curtiu o caso?</span><button data-n="1" aria-label="Não curti">😕</button><button data-n="2" aria-label="Curti">🙂</button><button data-n="3" aria-label="Amei">😍</button></div>
     <button class="btn brilho" id="grupoVip">Entrar no grupo VIP</button>
     <button class="btn alt" id="verVip">Ver as ofertas</button>
     <button class="btn alt" id="postAlb2">Postar o álbum</button>
     <button class="btn alt" id="baixaDossie">Baixar o dossiê (PDF)</button>
-    <button class="demo" id="fotoDet">foto de detetive</button>
+    <div class="demos"><button class="demo" id="muPor2">pôr no mural</button><button class="demo" id="fotoDet">foto de detetive</button></div>
   </div>
 </div>
 
@@ -1008,7 +1015,7 @@ if(location.hash==='#lupa'){irPara(0,false);abrirLupa()}
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{medir();pedir();document.body.classList.add('pronto')});
 setTimeout(()=>document.body.classList.add('pronto'),2500);
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=2"></script><script src="caso.js?v=8"></script><script src="prova.js?v=6"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="caso.js?v=10"></script><script src="prova.js?v=6"></script>
 <script src="filtro.js?v=5"></script>
 </body>
 </html>

@@ -97,6 +97,25 @@ document.body.insertAdjacentHTML('beforeend', `
   <p class="mono pq">Copie cada pedaço no verso da carta. Juntos, revelam a palavra da última prova.</p>
   <div class="campo"><input id="fPal" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PALAVRA"><button class="btn" id="fOk">Conferir</button></div>
   <div class="erro" id="fErro"></div>
+</div></div>
+<div id="opinaOv" class="ov" aria-hidden="true"><div class="ovc papel">
+  <div class="k">CASO 2026-BF · RELATÓRIO DO INVESTIGADOR</div>
+  <h3 id="oTit">O que faltou?</h3>
+  <p class="mono">Responde em uma frase, se quiser. A gente lê tudo pra próxima temporada.</p>
+  <label for="oTx">SUA OPINIÃO (OPCIONAL)</label><textarea id="oTx" maxlength="500" rows="3" placeholder="mais placas, prova mais difícil, prêmio..."></textarea>
+  <button class="btn" id="oOk">Enviar</button>
+  <button class="demo" id="oPula">pular</button>
+</div></div>
+<div id="muralOv" class="ov" aria-hidden="true"><div class="ovc papel">
+  <div class="k">MURAL DA BLACK · VILLAGE RESORT</div>
+  <h3>Pôr o álbum no mural</h3>
+  <p class="mono">O mural mostra as equipes que resolveram o caso, no site e no telão do resort.</p>
+  <img class="muPrev" id="muPrev" alt="Prévia do álbum">
+  <label for="muEq">NOME DA EQUIPE</label><input id="muEq" maxlength="40" placeholder="Família Silva">
+  <label class="lgpd"><input type="checkbox" id="muOk"><span>Autorizo o Village Resort a mostrar este álbum e o nome da equipe no Mural da Black. Todos que aparecem nas fotos concordam. Posso pedir pra tirar quando quiser (LGPD).</span></label>
+  <div class="erro" id="muErro"></div>
+  <button class="btn" id="muEnv">Mandar pro mural</button>
+  <p class="mono pq" style="margin-top:10px">Antes de aparecer, a equipe do Village confere cada álbum.</p>
 </div></div>`);
 
 const abreOv = id => { const o = $(id); o.classList.add('on'); o.setAttribute('aria-hidden', 'false') };
@@ -203,3 +222,39 @@ const Placa = (() => {
 })();
 
 pintarFicha();
+
+/* feedback do fim: a carinha vale na hora; o texto é opcional */
+let notaOp = 0;
+const pintaOpina = () => { const o = Dados.opiniao(), R = $('#opina'); if (!R) return;
+  R.classList.toggle('feito', !!o); R.querySelectorAll('button').forEach(b => b.classList.toggle('on', !!o && +b.dataset.n === o.nota));
+  R.querySelector('span').textContent = o ? 'Valeu pela opinião!' : 'Curtiu o caso?' };
+document.querySelectorAll('#opina button').forEach(b => b.onclick = () => { if (Dados.opiniao()) return;
+  notaOp = +b.dataset.n; vibra(20); b.classList.add('on'); $('#opina').classList.add('feito');
+  $('#oTit').textContent = notaOp === 3 ? 'O que faltou pra ser perfeito?' : 'O que faltou?';
+  $('#oTx').value = ''; abreOv('#opinaOv'); setTimeout(() => $('#oTx').focus(), 350) });
+const fechaOpina = async enviar => { fechaOv('#opinaOv'); await Dados.opinar(notaOp, enviar ? $('#oTx').value.trim() : ''); pintaOpina(); toast('Valeu, investigador!') };
+$('#oOk').onclick = () => fechaOpina(true);
+$('#oPula').onclick = () => fechaOpina(false);
+pintaOpina();
+
+/* Mural da Black: só quem resolveu o caso; entra depois da aprovação da equipe */
+let muBlob = null;
+async function porNoMural() {
+  if (!resolvido()) return toast('O mural é das equipes que resolveram o caso. Falta pouco!');
+  const ja = Dados.noMural(); if (ja) return toast(`O álbum da ${ja.equipe} já foi pro mural.`);
+  pedirCadastro(async () => {
+    toast('Montando o álbum...'); const c = await albumStory();
+    const m = document.createElement('canvas'); m.width = 540; m.height = 960; m.getContext('2d').drawImage(c, 0, 0, 540, 960);
+    muBlob = await new Promise(ok => m.toBlob(ok, 'image/jpeg', .82)); $('#muPrev').src = m.toDataURL('image/jpeg', .7);
+    const f = Dados.ficha(); $('#muEq').value = $('#muEq').value || (f ? 'Equipe ' + f.nome.split(' ')[0] : '');
+    $('#muErro').textContent = ''; abreOv('#muralOv') });
+}
+$('#muEnv').onclick = async () => {
+  const eq = $('#muEq').value.trim(), err = t => { $('#muErro').textContent = t; vibra([20, 30, 20]) };
+  if (eq.length < 2) return err('Dê um nome pra equipe.');
+  if (!$('#muOk').checked) return err('Marque a autorização pra mandar o álbum.');
+  $('#muEnv').disabled = true; const ok = await Dados.mural(eq, muBlob); $('#muEnv').disabled = false;
+  if (!ok) return err('Não deu pra enviar agora. Confira a internet e tente de novo.');
+  fechaOv('#muralOv'); toast('Álbum enviado! Aparece no mural depois que a equipe do Village conferir.');
+};
+$('#muPor').onclick = porNoMural; $('#muPor2').onclick = porNoMural;
