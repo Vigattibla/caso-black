@@ -128,6 +128,7 @@ h2.tit{font:400 33px/0.98 Anton;letter-spacing:.01em;margin:14px 0 2px;text-tran
 .est .av{width:50px;height:50px;border:2px solid var(--preto);border-radius:4px;background:var(--amarelo) radial-gradient(#e0a800 1.2px,transparent 1.4px) 0 0/6px 6px;overflow:hidden;position:relative;display:flex;justify-content:center}
 .est .av img{position:absolute;top:4px;left:-8%;width:116%}
 .est .av.g img{position:static;width:36%;margin-top:5px;object-fit:cover;object-position:top}
+.est .av.foto{background:#222}.est .av.foto img{position:static;width:100%;height:100%;object-fit:cover}
 .est .tx{min-width:0}
 .est .tx small{display:block;font:700 8.5px "Courier Prime";letter-spacing:.16em;color:#777}
 .est .tx b{display:block;font:400 21px/1.05 Anton;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -704,7 +705,7 @@ const ajNome=i=>i===4?'a turma toda':(i===3?'o ':i===2?'a ':'o ')+aj(i).nome;
 /* ---------- folha 02: estações (placa → lupa → prova) ---------- */
 function pintarEstacoes(novo=-1){const L=$('#estL');if(!L)return;const f=feitas(),px=PISTAS.findIndex((_,j)=>!f.has(j)),sv=typeof carimboSVG==='function';
   L.innerHTML=PISTAS.map((p,i)=>{const a=aj(i),ok=f.has(i);return `<button class="est${ok?' ok':''}${i===px?' prox':''}${i===novo?' novo':''}" data-i="${i}">
-    <span class="av${a.imgs.length>1?' g':''}">${a.imgs.map(u=>`<img src="${u}" alt="">`).join('')}</span>
+    <span class="av foto"><img src="assets/locais/${i+1}.webp" alt="${p.loc}"></span>
     <span class="tx"><small>${dois(i+1)} · ${EVID[i]}</small><b>${p.loc}</b><i>com ${ajNome(i)}</i></span>
     <span class="st">${ok&&sv?carimboSVG(i+1,'e'+(i+1)):i===px?'PRÓXIMA':'A ENCONTRAR'}</span></button>`}).join('');
   $$('#estL .est').forEach(b=>b.onclick=()=>abrirPista(+b.dataset.i));
