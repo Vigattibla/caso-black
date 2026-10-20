@@ -4,11 +4,11 @@ const Prova = (() => {
   const W = 1080, H = 1350, F = {x: 24, y: 24, w: 1032, h: 1212};   // molde 4:5 · janela da foto
   const LU = 'assets/lucas.webp', GA = 'assets/gabi.webp', PI = 'assets/pipoca.webp', BE = 'assets/be-cabeca.png';
   const AJ = {
-    0: {nome: 'Lucas', imgs: [LU], lugar: 'ÁGUA'},
-    1: {nome: 'Lucas', imgs: [LU], lugar: 'SABOR'},
-    2: {nome: 'Gabi', imgs: [GA], lugar: 'KIDS'},
-    3: {nome: 'Pipoca', imgs: [PI], lugar: 'NATUREZA'},
-    4: {nome: 'Turma', imgs: [LU, GA, PI], lugar: 'LOBBY'}};
+    0: {nome: 'Lucas', imgs: [LU], cab: ['lucas'], lugar: 'ÁGUA'},
+    1: {nome: 'Lucas', imgs: [LU], cab: ['lucas'], lugar: 'SABOR'},
+    2: {nome: 'Gabi', imgs: [GA], cab: ['gabi'], lugar: 'KIDS'},
+    3: {nome: 'Pipoca', imgs: [PI], cab: ['pipoca'], lugar: 'NATUREZA'},
+    4: {nome: 'Turma', imgs: [LU, GA, PI], cab: ['lucas', 'gabi', 'pipoca'], lugar: 'LOBBY'}};
   const imgs = {}; const img = u => imgs[u] || (imgs[u] = Object.assign(new Image(), {src: u}));
   [LU, GA, PI, BE].forEach(img);
 

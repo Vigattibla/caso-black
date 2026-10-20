@@ -325,6 +325,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 .beQ{position:absolute;left:0;bottom:100%;width:72px;height:72px;border:2px solid var(--preto);border-bottom:0;border-radius:6px 6px 0 0;background:var(--amarelo) radial-gradient(#e0a800 1.2px,transparent 1.4px) 0 0/6px 6px;overflow:hidden;opacity:0;transform:translateX(-28px);transition:transform .4s cubic-bezier(.3,1.4,.5,1) .05s,opacity .2s .05s}
 .balao.on .beQ{opacity:1;transform:none}
 .beQ img{position:absolute;left:0;bottom:-2px;width:100%}
+.beQ.cab img{left:6%;width:88%;bottom:-3px;animation:cabPop .35s cubic-bezier(.3,1.6,.5,1)}.beQ.cab.g{display:block}.beQ.cab.g img{position:absolute;top:auto;bottom:9px;width:52%;margin:0}.beQ.cab.g img:nth-child(1){left:-6%}.beQ.cab.g img:nth-child(2){left:24%;bottom:-3px;z-index:1}.beQ.cab.g img:nth-child(3){left:54%}@keyframes cabPop{from{transform:translateY(30%) scale(.8)}}
 .beQ.corpo img{top:5px;bottom:auto;left:-8%;width:116%}.beQ.g{display:flex}.beQ.g img{position:static;width:34%;margin-top:6px;object-fit:cover;object-position:top}
 .beNome{position:absolute;left:65px;top:-18px;background:var(--amarelo);color:var(--preto);font:400 11px/1 Anton;letter-spacing:.08em;padding:4px 7px 3px;border:2px solid var(--preto);border-radius:3px}
 .beSeta{position:absolute;right:9px;bottom:4px;color:var(--amarelo);font-size:10px;animation:beSeta 1s steps(2) infinite}@keyframes beSeta{50%{opacity:0}}
@@ -734,7 +735,7 @@ function pintarEstacoes(novo=-1){const L=$('#estL');if(!L)return;const f=feitas(
   $$('#estL .est').forEach(b=>b.onclick=()=>abrirPista(+b.dataset.i));
   $('#estP').textContent=f.size>=5?'5 de 5! Agora vira pra última folha.':`${f.size} de 5 · toque numa estação pra ver a pista`}
 function proxima(){const f=feitas(),i=PISTAS.findIndex((_,j)=>!f.has(j));if(i<0)return;const a=aj(i);
-  beFala(PISTAS[i].enig,`PRÓXIMA · ${PISTAS[i].loc.toUpperCase()}`,{nome:a.nome,imgs:a.imgs})}
+  beFala(PISTAS[i].enig,`PRÓXIMA · ${PISTAS[i].loc.toUpperCase()}`,{nome:a.nome,imgs:a.imgs,cab:a.cab})}
 window.proxima=proxima;
 
 /* ---------- álbum: foto da equipe em cada estação (fica só no aparelho) ---------- */
@@ -888,7 +889,7 @@ const digCam=pintaDig(document.createElement('canvas'),[92,52,8]);
 let abrindo=false;
 async function abrirFim(via,daCam){if(abrindo)return;abrindo=true;
   const A=$('#fimAnim'),S=$('#selo6'),ja=chave().feito,t=daCam?-1500:0,em=(ms,fn)=>setTimeout(fn,Math.max(0,ms)),add=c=>A.classList.add(c);
-  try{localStorage.setItem('cb-resolvido','1')}catch(_){}pintarAlbum();
+  if(!window.DEMO)try{localStorage.setItem('cb-resolvido','1')}catch(_){}pintarAlbum();
   pintaDig($('#digF'),[92,52,8]);pintaDig($('#digA'),[92,52,8]);A.className='on'+(daCam?' vem ouro dig':'');A.setAttribute('aria-hidden','false');
   S.classList.remove('on','bate');S.innerHTML=carimboSVG(6,'s6');
   em(40,()=>add('vem'));
@@ -896,7 +897,7 @@ async function abrirFim(via,daCam){if(abrindo)return;abrindo=true;
   em(t+1700,()=>{add('dig');vibra([30,40,30])});
   em(Math.max(300,t+3000),()=>{add('brilha');S.classList.add('on','bate');em(330,()=>{baque(true);vibra([60,40,60,40,160])})});
   em(Math.max(1400,t+4200),()=>{add('fim');abrindo=false});
-  if(!ja&&Dados.ficha()){await Dados.carimbar(6,via);pintarFicha();pintarChave()}
+  if(!window.DEMO&&!ja&&Dados.ficha()){await Dados.carimbar(6,via);pintarFicha();pintarChave()}
 }
 const fechaFim=()=>{const A=$('#fimAnim');A.className='';A.setAttribute('aria-hidden','true')};
 $('#grupoVip').onclick=()=>LINK_GRUPO?open(LINK_GRUPO,'_blank','noopener'):toast('Link do grupo VIP: em breve.');
@@ -914,9 +915,14 @@ $('#garantir').onclick=()=>{const f=Dados.ficha();if(!f)return pedirCadastro(()=
 const DICAS={relatorio:'Oi, eu sou o Lucas! O Bê sumiu e deixou essa pasta com a lupa mágica dele. Arraste a folha pro lado pra virar.',
  estacoes:'São 5 placas pelo resort, e em cada uma tem alguém da turma esperando. Toque numa estação pra ver a pista.',
  album:'A cada placa, uma foto da equipe. No fim, vocês postam o álbum inteiro no story.'};
-const NARR={nome:'Lucas',imgs:['assets/lucas.webp']};   // o Bê sumiu: quem guia é a turma
-function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createElement('i'),Q=B.querySelector('.beQ'),q=quem||NARR,im=q.imgs;   // quem={nome,imgs,fixo}: outro ajudante no mesmo balão
-  Q.className='beQ'+(q.cabeca?'':' corpo')+(im.length>1?' g':'');Q.innerHTML=im.map(u=>`<img src="${u}" alt="">`).join('');B.querySelector('.beNome').textContent=q.nome.toUpperCase();
+const NARR={nome:'Lucas',imgs:['assets/lucas.webp'],cab:['lucas']};
+// cabeças com expressão (assets/cab): o humor sai do texto da fala, ou vem em quem.humor
+const CAB={be:{feliz:6,surpresa:1,duvida:7,serio:4,piscada:3},gabi:{feliz:3,surpresa:2,duvida:1,serio:4,piscada:9},
+ lucas:{feliz:5,surpresa:3,duvida:1,serio:2,piscada:9},pipoca:{feliz:10,surpresa:1,duvida:7,serio:9,piscada:12}};
+const humor=x=>/errad|falta|ainda|n[ãa]o /i.test(x)?'serio':/certa|complet|fechad|parab|boa|isso/i.test(x)?'feliz':/\?/.test(x)?'duvida':/!/.test(x)?'surpresa':'piscada';
+const cabUrl=(n,h)=>`assets/cab/${n}-${String(CAB[n][h]).padStart(2,'0')}.webp`;   // o Bê sumiu: quem guia é a turma
+function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createElement('i'),Q=B.querySelector('.beQ'),q=quem||NARR,hu=q.humor||humor((tit||'')+' '+t),im=q.cab?q.cab.map(n=>cabUrl(n,hu)):q.imgs;   // quem={nome,imgs,fixo}: outro ajudante no mesmo balão
+  Q.className='beQ'+(q.cabeca||q.cab?' cab':' corpo')+(im.length>1?' g':'');Q.innerHTML=im.map(u=>`<img src="${u}" alt="">`).join('');B.querySelector('.beNome').textContent=q.nome.toUpperCase();
   $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
 function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
@@ -1088,21 +1094,35 @@ if(atalho!==undefined){irPara(atalho,false);if(location.hash==='#vip')setTimeout
 if(location.hash==='#lupa'){irPara(0,false);abrirLupa()}
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{medir();pedir();document.body.classList.add('pronto')});
 setTimeout(()=>document.body.classList.add('pronto'),2500);
-/* #demo-selo: animação do selo sem câmera, sobre o verso da carta */
-if(location.hash==='#demo-selo')addEventListener('load',()=>{const c=document.createElement('canvas'),x=c.getContext('2d'),im=new Image();
+/* demos sem câmera: #demos abre a galeria; #demo-selo só o selo em loop. Nada é gravado (window.DEMO) */
+window.DEMO=/^#demo/.test(location.hash);
+function demoSelo(fim){const c=document.createElement('canvas'),x=c.getContext('2d'),im=new Image();
   c.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;z-index:99999;background:#1b1712';document.body.appendChild(c);im.src='assets/demo-verso.jpg';
-  let t0=performance.now();c.onclick=()=>{t0=performance.now();ouroC=null};
-  (function q(){const d=devicePixelRatio||1,w=c.width=innerWidth*d,h=c.height=innerHeight*d,t=performance.now()-t0,u=t/1000;
-    if(t>8000){t0=performance.now();ouroC=null}
+  let t0=performance.now(),vivo=true;c.onclick=()=>{t0=performance.now();ouroC=null};c.parar=()=>{vivo=false;c.remove();ouroC=null};
+  (function q(){if(!vivo)return;const d=devicePixelRatio||1,w=c.width=innerWidth*d,h=c.height=innerHeight*d,t=performance.now()-t0,u=t/1000;
+    if(t>(fim?6800:8000)){if(fim){vivo=false;fim();setTimeout(()=>{c.remove();ouroC=null},700);return}t0=performance.now();ouroC=null}
     const k=Math.min(w/826,h/1170)*.86,r=-.06+.025*Math.sin(u*.9),sx=w/2+6*d*Math.sin(u*1.3),sy=h/2+5*d*Math.cos(u*1.1);
     const T=(px,py)=>{const X=(px-413)*k,Y=(py-585)*k;return[sx+X*Math.cos(r)-Y*Math.sin(r),sy+X*Math.sin(r)+Y*Math.cos(r)]};
     x.fillStyle='#1b1712';x.fillRect(0,0,w,h);
     if(im.complete){x.save();x.translate(sx,sy);x.rotate(r);x.drawImage(im,-413*k,-585*k,826*k,1170*k);x.restore()}
     if(t>600){ouroC=ouroC||{t0:t0+600};ouroC.alvo=[T(704,30.5),T(779,30.5),T(779,105.5),T(704,105.5)];desenhaOuro(x,w,h)}
     x.fillStyle='#fff8';x.font=13*d+'px sans-serif';x.fillText('toque para repetir',12*d,h-14*d);
-    requestAnimationFrame(q)})()});
+    requestAnimationFrame(q)})();return c}
+
+function demoCarta(){fechaFim();abrindo=false;requestAnimationFrame(()=>abrirFim('demo',true))}
+function demoBaloes(){const L=[['lucas','Lucas'],['gabi','Gabi'],['pipoca','Pipoca'],['be','Bê']],H={feliz:'Boa! Prova certa.',surpresa:'Olha isso!',duvida:'Hmm… cadê a pista?',serio:'Ainda falta carimbo.',piscada:'Confia na lupa.'};
+  const fila=[];L.forEach(([n,nome])=>Object.keys(H).forEach(h=>fila.push({nome,imgs:[],cab:[n],humor:h,fixo:true,t:H[h],tit:h.toUpperCase()})));
+  fila.push({nome:'Turma',imgs:[],cab:['lucas','gabi','pipoca'],humor:'feliz',fixo:true,t:'Todo mundo na foto!',tit:'TURMA'});
+  let i=0;clearInterval(demoBaloes.iv);const vai=()=>{const q=fila[i++%fila.length];$('#balao').classList.remove('on');void $('#balao').offsetWidth;beFala(q.t,q.tit,q)};vai();demoBaloes.iv=setInterval(vai,1500)}
+if(location.hash==='#demo-selo')addEventListener('load',()=>demoSelo());
+if(location.hash==='#demos')addEventListener('load',()=>{const b=document.createElement('div');let cv=null;
+  b.style.cssText='position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top) + 8px);z-index:100001;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;font:700 11px sans-serif';
+  const limpa=()=>{cv&&cv.parar();cv=null;clearInterval(demoBaloes.iv);$('#balao').classList.remove('on');fechaFim();abrindo=false};
+  [['▶ Fluxo completo',()=>{cv=demoSelo(()=>{cv=null;demoCarta()})}],['Selo AR',()=>{cv=demoSelo()}],['Envelope + carta',demoCarta],['Balões',demoBaloes],['✕',()=>{}]].forEach(([r,f])=>{
+    const k=document.createElement('button');k.textContent=r;k.style.cssText='padding:7px 10px;border-radius:99px;border:0;background:#fdc72fee;color:#1b1712;font:inherit';k.onclick=()=>{limpa();f()};b.appendChild(k)});
+  document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="caso.js?v=11"></script><script src="prova.js?v=6"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="caso.js?v=11"></script><script src="prova.js?v=7"></script>
 <script src="filtro.js?v=5"></script>
 </body>
 </html>
