@@ -917,7 +917,7 @@ $('#grupoVip').onclick=()=>LINK_GRUPO?open(LINK_GRUPO,'_blank','noopener'):toast
 $('#baixaDossie').onclick=()=>dossie();
 $('#verVip').onclick=()=>{fechaFim();liberar()};
 $('#fotoDet').onclick=()=>window.Filtro?Filtro.abrir():toast('Foto de detetive: em breve.');
-function liberar(){const v=$('#vip');v.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>v.classList.add('go')));chuva()}
+function liberar(){const v=$('#vip');typeof Voz==='object'&&setTimeout(()=>Voz.toca(['21-be-revelacao','22-be-grupo-vip']),1500);v.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>v.classList.add('go')));chuva()}
 function chuva(){const v=$('#vip');v.querySelectorAll('.moeda').forEach(m=>m.remove());
   for(let i=0;i<22;i++){const m=document.createElement('img');m.src='assets/moeda.png';m.className='moeda';m.alt='';
     const w=30+Math.random()*30;m.style.cssText=`left:${Math.random()*100}%;width:${w}px;--r:${(Math.random()*2-1)*540}deg;animation-duration:${2.4+Math.random()*1.8}s;animation-delay:${.4+Math.random()*1.4}s`;v.appendChild(m)}}
@@ -936,11 +936,11 @@ const humor=x=>/errad|falta|ainda|n[ãa]o /i.test(x)?'serio':/certa|complet|fech
 const cabUrl=(n,h)=>`assets/cab/${n}-${String(CAB[n][h]).padStart(2,'0')}.webp?v=2`;   // o Bê sumiu: quem guia é a turma
 function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createElement('i'),Q=B.querySelector('.beQ'),q=quem||NARR,hu=q.humor||humor((tit||'')+' '+t),im=q.cab?q.cab.map(n=>cabUrl(n,hu)):q.imgs;   // quem={nome,imgs,fixo}: outro ajudante no mesmo balão
   Q.className='beQ'+(q.cabeca||q.cab?' cab':' corpo')+(im.length>1?' g':'');Q.innerHTML=im.map(u=>`<img src="${u}" alt="">`).join('');B.querySelector('.beNome').textContent=q.nome.toUpperCase();
-  $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
+  $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;typeof Voz==='object'&&Voz.diz(t,q.nome);B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
 function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
   const ch=chave();beFala(ch.feito?'Caso fechado! E o Bê apareceu, finalmente.':ch.ok?'Provas completas! Pega sua carta, abre a lupa e aponta pro selo no verso. De quem será essa digital?':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra que aparece.')}
-$('#balao').onclick=()=>$('#balao').classList.remove('on');
+$('#balao').onclick=()=>{$('#balao').classList.remove('on');typeof Voz==='object'&&Voz.para()};
 function dicaLupa(){let v=0;try{v=localStorage.getItem('cbLupa')}catch(_){}if(v)return;beFala('Essa lupa é mágica! Toque nela e aponte pras manchas da carta. Nas placas, ela mostra a pista.','A LUPA DO BÊ')}
 
 /* marcas de manuseio: a digital do Bê (a mesma do final) + café + vinco */
@@ -1135,7 +1135,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
     const k=document.createElement('button');k.textContent=r;k.style.cssText='padding:7px 10px;border-radius:99px;border:0;background:#fdc72fee;color:#1b1712;font:inherit';k.onclick=()=>{limpa();f()};b.appendChild(k)});
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="caso.js?v=11"></script><script src="prova.js?v=7"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="voz.js?v=1"></script><script src="caso.js?v=12"></script><script src="prova.js?v=8"></script>
 <script src="filtro.js?v=5"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>

@@ -154,6 +154,7 @@ function mostrarCarimbo(n, novo) {
   $('#carimbo').classList.toggle('fim', fim);
   abreOv('#carimbo'); const s = $('#kSlot'); s.classList.remove('bate'); void s.offsetWidth; s.classList.add('bate');
   setTimeout(() => { baque(fim); vibra(fim ? [60, 40, 60, 40, 160] : [70]) }, 330);
+  if (novo && !fim && typeof Voz === 'object') setTimeout(() => Voz.carimbo(5 - falta), 900);
 }
 $('#kOk').onclick = () => { fechaOv('#carimbo'); pintarFicha(); if ($('#carimbo').classList.contains('fim')) return setTimeout(liberar, 250);
   if (Dados.carimbos().filter(x => x <= 5).length >= 5 && typeof irPara === 'function') setTimeout(() => { irPara(N - 1); beDica() }, 350);

@@ -123,7 +123,7 @@ const Prova = (() => {
   q('#pvPul').onclick = () => fechar(true);
   q('#pvX').onclick = () => fechar(false);
 
-  function passoFoto() { fala('#pvBl2', 'GUARDA ESSA PROVA', `Todo mundo na foto${est === 4 ? ' com a turma' : ' com ' + (est === 3 ? 'o ' : est === 2 ? 'a ' : 'o ') + AJ[est].nome}! Ela vai pro álbum do caso.`);
+  function passoFoto() { fala('#pvBl2', 'GUARDA ESSA PROVA', est === 4 ? 'Todo mundo na foto com a turma! Essa é a última do álbum.' : `Todo mundo na foto com ${est === 2 ? 'a' : 'o'} ${AJ[est].nome}! Ela vai pro álbum do caso.`);
     passo(0); P.scrollTop = 0; ligarCam() }
 
   function fechar(ok) { const b = q('#balao'); b.classList.remove('on'); document.body.append(b); pararCam(); P.classList.remove('on'); P.setAttribute('aria-hidden', 'true'); const f = fim; fim = null; if (ok && f) f() }
