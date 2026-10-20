@@ -215,7 +215,7 @@ const Placa = (() => {
       const vw = video.videoWidth || video.width, vh = video.videoHeight || video.height; if (!vw) return [];
       const f = Math.min(1, 720 / Math.max(vw, vh)); cv.width = Math.round(vw * f); cv.height = Math.round(vh * f);
       cx.drawImage(video, 0, 0, cv.width, cv.height);
-      return det.detect(cx.getImageData(0, 0, cv.width, cv.height)).filter(m => m.id >= ARUCO0 && m.id <= ARUCO0 + 5)
+      return det.detect(cx.getImageData(0, 0, cv.width, cv.height)).filter(m => m.id >= ARUCO0 && m.id <= ARUCO0 + 10)
         .map(m => ({id: m.id, corners: m.corners.map(p => ({x: p.x / f, y: p.y / f}))}));
     },
     svg: id => { det = det || new AR.Detector({dictionaryName: 'ARUCO_4X4_1000', maxHammingDistance: 0}); return det.dictionary.generateSVG(id) },
