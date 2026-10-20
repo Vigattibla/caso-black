@@ -54,7 +54,7 @@ body.aberto .topo{opacity:1;pointer-events:auto;transform:none}
 .rail button::before{right:0;background:#333}
 .rail button i{width:calc(var(--p,0)*100%);background:var(--amarelo)}
 .rail button.on{color:#f2f2f2}
-.topo .prog,.rail{display:none}
+.topo{display:none}
 #trilho{position:relative;height:100vh;height:100dvh}
 .palco{position:absolute;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 .palco input,.palco textarea{user-select:text;-webkit-user-select:text}
@@ -394,7 +394,7 @@ body.aberto .fita span{animation-play-state:paused}
 
 <div id="app">
   <header class="topo">
-    <div class="l1"><img src="assets/cb-logo.png" alt="Caso Black">
+    <div class="l1">
       <div class="prog" role="button" aria-label="Abrir minha ficha"><small>FICHA</small><div class="slots" id="slots"></div></div></div>
     <nav class="rail" id="rail" aria-label="Folhas do caso"></nav>
   </header>
@@ -597,7 +597,7 @@ $('#rail').innerHTML=FOLHAS.map((n,i)=>`<button data-j="${i}"><i></i>${n}</butto
 const railB=$$('#rail button');
 document.body.insertAdjacentHTML('beforeend','<button class="vira ant" id="viraA" aria-label="Página anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button class="vira prox chama" id="viraP" aria-label="Próxima página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>');
 let pos=-1,alvo=-1,anim=0; // -1 capa fechada · 0..N-1 folha aberta
-function escala(){const vh=innerHeight,W=Math.min(innerWidth,520),top=$('.topo').offsetHeight||66,bot=78;
+function escala(){const vh=innerHeight,W=Math.min(innerWidth,520),top=16,bot=78;
   const s=Math.min((W-20)/360,(vh-top-bot)/620,1.3);R.style.setProperty('--s',s.toFixed(4));R.style.setProperty('--cy',Math.round(top+(vh-top-bot)/2)+'px')}
 function medir(){escala()}
 const capa=$('#capa'),cFita=$('.capa .fita'),cElas=$('.capa .elastico');
