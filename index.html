@@ -355,7 +355,8 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 /* final: a carta fica dourada e revela a digital do Bê */
 #fimAnim{position:fixed;inset:0;z-index:88;display:none;overflow:hidden;background:radial-gradient(90% 60% at 50% 32%,#232323,#070707);color:var(--off)}
 #fimAnim.on{display:block}
-#fimAnim .luzC{position:absolute;left:50%;top:32%;width:160vmax;height:160vmax;margin:-80vmax 0 0 -80vmax;border-radius:50%;background:radial-gradient(closest-side,#fdc72fcc,#fdc72f33 35%,#fdc72f00 70%);opacity:0;transform:scale(.2);transition:opacity .8s,transform 1.4s var(--ease)}
+#fimAnim .luzC{position:absolute;left:50%;top:32%;width:160vmax;height:160vmax;margin:-80vmax 0 0 -80vmax;border-radius:50%;background:radial-gradient(closest-side,#fff6dc55,#fff6dc12 40%,#fff0 70%);opacity:0;transform:scale(.2);transition:opacity .8s,transform 1.4s var(--ease)}
+#fimAnim.fim .luzC{opacity:.55;transition:opacity 1.2s}
 #fimAnim.brilha .luzC{opacity:1;transform:none}
 /* envelope lacrado com a digital: a lupa termina num lacre dourado, o envelope abre e sai a carta do Bê */
 .env{position:absolute;left:50%;top:40%;width:250px;height:162px;margin:-81px 0 0 -125px;perspective:700px;opacity:0;transform:translateY(60px) rotate(-8deg) scale(.85);transition:transform .7s cubic-bezier(.3,1.4,.5,1),opacity .4s}
@@ -377,17 +378,21 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 .revela>*{opacity:0;transform:translateY(14px);flex-shrink:0}
 #fimAnim.fim .revela{pointer-events:auto}
 #fimAnim.fim .revela>*{opacity:1;transform:none;transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1)}
-.carta{width:100%;max-width:340px;margin:auto 0 4px;padding:20px 22px 16px;border-radius:3px;background:linear-gradient(170deg,#f3ecdc,#e6dcc4);box-shadow:0 22px 44px #000b;color:#2a2118;text-align:left}
+/* carta datilografada do Bê: papel claro, fita amarela da campanha, marca-texto no "Você é." */
+.carta{position:relative;width:100%;max-width:340px;margin:auto 0 4px;padding:30px 24px 18px;border-radius:2px;background:#f6f3ec repeating-linear-gradient(#0000 0 25px,#1a1a1a0b 25px 26px);box-shadow:0 30px 60px #000,0 0 0 1px #0002;color:#1a1a1a;text-align:left}
+.carta::before{content:"";position:absolute;left:50%;top:-11px;width:118px;height:24px;margin-left:-59px;background:#fdc72fe6;transform:rotate(-3deg);box-shadow:0 1px 2px #0003}
 .revela>.carta{transform:translateY(38vh) scale(.7) rotate(-2deg)}
 #fimAnim.fim .revela>.carta{transform:rotate(-1deg);transition:transform .9s cubic-bezier(.3,1.25,.5,1) .55s,opacity .3s .55s}
 .carta>*{opacity:0;transform:translateY(6px)}
 #fimAnim.fim .carta>*{opacity:1;transform:none;transition:opacity .6s,transform .6s}
-.carta .k{font:700 10px "Courier Prime";letter-spacing:.22em;color:#8b7b5c;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #2a211822}
-.carta p{font:600 21px/1.22 Caveat;margin-top:6px}
-.carta .ola{font-size:24px;margin-top:0}
-.carta .forte{font-size:30px;color:#9a6a00}
-.carta b{color:#9a6a00}
-.carta .ass{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:6px;font:700 26px Caveat}
+.carta .k{display:flex;justify-content:space-between;font:700 10px "Courier Prime";letter-spacing:.18em;color:#8a8a8a;padding-bottom:10px;margin-bottom:14px;border-bottom:1.5px dashed #1a1a1a33}
+.carta .k i{font-style:normal;color:var(--verm)}
+.carta p{font:400 15px/1.55 "Courier Prime";margin-top:10px}
+.carta .ola{font-weight:700;margin-top:0}
+.carta .forte{display:inline-block;font:400 34px/1 Anton;text-transform:uppercase;letter-spacing:.02em;margin:14px 0 2px;padding:2px 6px;background:linear-gradient(#fdc72f,#fdc72f) 0 60%/0 70% no-repeat}
+#fimAnim.fim .carta .forte{background-size:100% 70%;transition:opacity .4s,transform .4s,background-size .5s var(--ease) 2.3s}
+.carta b{font-weight:700;box-shadow:inset 0 -.45em #fdc72f}
+.carta .ass{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:8px;font:700 30px Caveat}
 .carta .ass canvas{width:32px;height:40px;transform:rotate(-14deg);opacity:.85}
 #fimAnim.fim .carta .k{transition-delay:.9s}#fimAnim.fim .carta .ola{transition-delay:1.1s}#fimAnim.fim .carta p:nth-of-type(2){transition-delay:1.4s}#fimAnim.fim .carta .forte{transition-delay:1.9s}#fimAnim.fim .carta p:nth-of-type(4){transition-delay:2.3s}#fimAnim.fim .carta .ass{transition-delay:2.7s}
 .revela .btn{width:100%;max-width:320px;margin-top:12px}
@@ -535,7 +540,7 @@ body.aberto .fita span{animation-play-state:paused}
   <div class="selo6 slotC" id="selo6"></div>
   <div class="revela">
     <div class="carta">
-      <div class="k">CASO 2026-BF · ENCERRADO</div>
+      <div class="k"><span>CASO 2026-BF</span><i>ENCERRADO</i></div>
       <p class="ola">Detetive,</p>
       <p>a digital era minha. Eu sumi pra preparar a Black e deixei a lupa pra ver quem era bom de investigação.</p>
       <p class="forte">Você é.</p>
