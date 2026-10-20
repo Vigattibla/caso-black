@@ -1073,6 +1073,19 @@ if(atalho!==undefined){irPara(atalho,false);if(location.hash==='#vip')setTimeout
 if(location.hash==='#lupa'){irPara(0,false);abrirLupa()}
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{medir();pedir();document.body.classList.add('pronto')});
 setTimeout(()=>document.body.classList.add('pronto'),2500);
+/* #demo-selo: animação do selo sem câmera, sobre o verso da carta */
+if(location.hash==='#demo-selo')addEventListener('load',()=>{const c=document.createElement('canvas'),x=c.getContext('2d'),im=new Image();
+  c.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;z-index:99999;background:#1b1712';document.body.appendChild(c);im.src='assets/demo-verso.jpg';
+  let t0=performance.now();c.onclick=()=>{t0=performance.now();ouroC=null};
+  (function q(){const d=devicePixelRatio||1,w=c.width=innerWidth*d,h=c.height=innerHeight*d,t=performance.now()-t0,u=t/1000;
+    if(t>8000){t0=performance.now();ouroC=null}
+    const k=Math.min(w/826,h/1170)*.86,r=-.06+.025*Math.sin(u*.9),sx=w/2+6*d*Math.sin(u*1.3),sy=h/2+5*d*Math.cos(u*1.1);
+    const T=(px,py)=>{const X=(px-413)*k,Y=(py-585)*k;return[sx+X*Math.cos(r)-Y*Math.sin(r),sy+X*Math.sin(r)+Y*Math.cos(r)]};
+    x.fillStyle='#1b1712';x.fillRect(0,0,w,h);
+    if(im.complete){x.save();x.translate(sx,sy);x.rotate(r);x.drawImage(im,-413*k,-585*k,826*k,1170*k);x.restore()}
+    if(t>600){ouroC=ouroC||{t0:t0+600};ouroC.alvo=[T(704,30.5),T(779,30.5),T(779,105.5),T(704,105.5)];desenhaOuro(x,w,h)}
+    x.fillStyle='#fff8';x.font=13*d+'px sans-serif';x.fillText('toque para repetir',12*d,h-14*d);
+    requestAnimationFrame(q)})()});
 </script>
 <script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="caso.js?v=11"></script><script src="prova.js?v=6"></script>
 <script src="filtro.js?v=5"></script>
