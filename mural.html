@@ -3,175 +3,149 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Mural da Black · Caso Black</title>
-<meta name="description" content="As equipes que resolveram o Caso Black no Village Resort.">
-<meta name="theme-color" content="#0d0d0d">
+<meta name="robots" content="noindex">
+<title>Mural da Black · Impressão</title>
 <link rel="icon" href="assets/cb-logo-chapeu.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Courier+Prime:wght@400;700&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--preto:#111;--amarelo:#FDC72F;--papel:#F4F1EA;--ease:cubic-bezier(.65,0,.25,1)}
+:root{--preto:#111;--amarelo:#FDC72F;--papel:#F4F1EA}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:#0d0d0d;min-height:100%}
-body{color:#eee;font-family:Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:radial-gradient(120% 60% at 50% 0%,#262626 0%,#111 55%,#080808 100%) fixed}
+body{background:#141414;color:#eee;font:400 14px/1.45 'Courier Prime',monospace;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 img{display:block;max-width:100%}
-a{color:inherit}
-.fita{background:var(--amarelo);color:var(--preto);font-family:Anton;font-size:12px;letter-spacing:.14em;white-space:nowrap;overflow:hidden;line-height:1;display:flex;align-items:center;border-top:2px solid var(--preto);border-bottom:2px solid var(--preto);height:28px}
-.fita span{display:inline-block;animation:corre 18s linear infinite}
-@keyframes corre{to{transform:translateX(-50%)}}
-
-/* ---------- página ---------- */
-.pg{max-width:1100px;margin:0 auto;padding:28px 16px 40px}
-.cab{text-align:center}
-.cab img{width:150px;margin:0 auto}
-.cab h1{font:400 clamp(44px,11vw,84px)/.92 Anton;color:var(--amarelo);letter-spacing:.01em;margin-top:14px;text-transform:uppercase}
-.cab p{font:400 14px/1.45 'Courier Prime',monospace;color:#bbb;max-width:34ch;margin:10px auto 0}
-.conta{display:inline-flex;align-items:baseline;gap:8px;margin-top:18px;padding:8px 14px;background:var(--papel);color:var(--preto);transform:rotate(-1.5deg);box-shadow:0 6px 18px #0008}
-.conta b{font:400 30px/1 Anton}
-.conta span{font:700 19px/1 Caveat}
-.exemplo{display:none;margin:12px auto 0;width:max-content;font:700 11px/1 'Courier Prime',monospace;letter-spacing:.12em;color:var(--preto);background:var(--amarelo);padding:5px 8px}
-.ex .exemplo{display:block}
-
-.grade{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 14px;margin-top:30px}
-@media(min-width:700px){.grade{grid-template-columns:repeat(4,1fr);gap:34px 26px}}
-.alb{position:relative;background:var(--papel);padding:6px 6px 0;box-shadow:0 10px 26px #000a;transform:rotate(var(--r,0deg));transition:transform .35s var(--ease)}
-.alb:hover{transform:rotate(0) scale(1.03)}
-.alb::before{content:"";position:absolute;left:50%;top:-9px;width:58px;height:18px;margin-left:-29px;background:#fdc72fcc;transform:rotate(var(--fr,-3deg));box-shadow:0 1px 2px #0004}
+.pg{max-width:1100px;margin:0 auto;padding:24px 16px 120px}
+h1{font:400 clamp(34px,8vw,54px)/1 Anton;color:var(--amarelo);text-transform:uppercase}
+.sub{color:#aaa;margin-top:6px;max-width:60ch}
+.passos{margin:16px 0 0 18px;color:#ccc}
+.passos li{margin-top:4px}
+.exemplo{display:none;margin-top:14px;max-width:100%;font-weight:700;font-size:11px;letter-spacing:.12em;color:var(--preto);background:var(--amarelo);padding:5px 8px}
+.ex .exemplo{display:inline-block}
+.barra{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:22px;padding:12px 0;border-top:1px dashed #ffffff2a;border-bottom:1px dashed #ffffff2a}
+.barra label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.barra .n{margin-left:auto;color:#aaa}
+.grade{display:grid;grid-template-columns:repeat(2,1fr);gap:18px 14px;margin-top:20px}
+@media(min-width:700px){.grade{grid-template-columns:repeat(5,1fr)}}
+.alb{position:relative;background:var(--papel);color:var(--preto);padding:5px;cursor:pointer;outline:3px solid transparent;transition:outline-color .2s,opacity .2s}
+.alb.sel{outline-color:var(--amarelo)}
+.alb.feito{opacity:.45}
 .alb img{width:100%;aspect-ratio:9/16;object-fit:cover;background:#ddd}
-.alb figcaption{font:700 19px/1.1 Caveat;color:var(--preto);text-align:center;padding:6px 4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.alb .tag{position:absolute;right:10px;top:10px;font:700 9px/1 'Courier Prime',monospace;letter-spacing:.1em;background:var(--preto);color:var(--amarelo);padding:3px 5px}
+.alb .eq{font:700 17px/1.1 Caveat;text-align:center;padding:5px 2px 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.alb .dt{font-size:10px;text-align:center;color:#666}
+.alb .ck{position:absolute;left:10px;top:10px;width:26px;height:26px;border-radius:50%;background:#000a;border:2px solid #fff;display:grid;place-items:center;font:700 15px/1 sans-serif;color:var(--preto)}
+.alb.sel .ck{background:var(--amarelo);border-color:var(--preto)}
+.alb.sel .ck::after{content:"✓"}
+.alb .tag{position:absolute;right:10px;top:10px;font-weight:700;font-size:9px;letter-spacing:.1em;background:var(--preto);color:var(--amarelo);padding:3px 5px}
 .vazio{grid-column:1/-1;text-align:center;font:700 22px Caveat;color:#bbb;padding:40px 0}
+.acao{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(#14141400,#141414 30%);display:flex;justify-content:center;gap:10px}
+.acao button{font:400 18px/1 Anton;letter-spacing:.04em;text-transform:uppercase;padding:14px 20px}
+#imp{background:var(--amarelo);color:var(--preto);box-shadow:0 5px 0 #a87d00}
+#imp:disabled{opacity:.4;cursor:default}
+#marca{border:2px solid #ffffff55}
 
-.cta{display:block;width:max-content;margin:40px auto 0;font:400 22px/1 Anton;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;background:var(--amarelo);color:var(--preto);padding:16px 26px;box-shadow:0 6px 0 #a87d00}
-.cta:active{transform:translateY(3px);box-shadow:0 3px 0 #a87d00}
-.rod{text-align:center;font:400 12px/1.5 'Courier Prime',monospace;color:#888;margin-top:22px}
-
-/* ---------- foto aberta ---------- */
-.zoom{position:fixed;inset:0;z-index:50;background:#000e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;opacity:0;pointer-events:none;transition:opacity .3s}
-.zoom.on{opacity:1;pointer-events:auto}
-.zoom img{max-height:calc(100vh - 110px);width:auto;box-shadow:0 10px 40px #000}
-.zoom b{font:700 26px Caveat;color:#fff}
-.zoom button{position:absolute;right:12px;top:12px;width:44px;height:44px;font-size:26px;color:#fff}
-
-/* ---------- telão (?tv) ---------- */
-.tv{display:none}
-body.modo-tv{overflow:hidden;height:100vh}
-body.modo-tv .pg{display:none}
-body.modo-tv .tv{display:grid;grid-template-columns:1fr 30vw;height:calc(100vh - 56px)}
-.tv .palco{display:flex;align-items:center;justify-content:center;gap:3vw;padding:3vh 2vw}
-.tv .alb{width:min(18vw,calc((100vh - 200px)*9/16));opacity:0;transform:translateY(30px) rotate(var(--r));transition:opacity .8s,transform .8s var(--ease)}
-.tv .alb.on{opacity:1;transform:rotate(var(--r))}
-.tv .alb figcaption{font-size:2.2vw}
-.tv .lado{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:2vh;padding:2vw;border-left:2px dashed #ffffff22}
-.tv .lado img.logo{width:14vw}
-.tv .lado h2{font:400 4.4vw/.95 Anton;color:var(--amarelo);text-transform:uppercase}
-.tv .lado .conta b{font-size:3vw}.tv .lado .conta span{font-size:1.9vw}
-.tv .qr{width:15vw;border:.6vw solid var(--amarelo)}
-.tv .lado p{font:700 2.2vw/1.1 Caveat;color:#fff}
+/* folha: A4 retrato, 2 álbuns de 96 x 170,7 mm lado a lado, com nome da equipe e linha de corte */
+.folhas{display:none}
+@page{size:A4 portrait;margin:6mm}
+@media print{
+  body{background:#fff}
+  .pg,.acao{display:none}
+  .folhas{display:block}
+  .folha{display:flex;justify-content:center;gap:6mm;padding-top:20mm;break-after:page}
+  .folha:last-child{break-after:auto}
+  .cp{width:96mm;outline:.2mm dashed #bbb;outline-offset:1.5mm}
+  .cp img{width:96mm;height:170.67mm;object-fit:cover}
+  .cp b{display:block;font:700 15pt/1 Caveat;color:#111;text-align:center;margin-top:3mm}
+}
 </style>
 </head>
 <body>
-<div class="fita"><span id="fitaTx"></span></div>
-
-<main class="pg" id="pg">
-  <header class="cab">
-    <img src="assets/cb-logo.png" alt="Caso Black">
-    <h1>Mural da Black</h1>
-    <p>As equipes de detetives que resolveram o caso no Village Resort.</p>
-    <div class="conta"><b id="nEq">0</b><span>equipes resolveram</span></div>
-    <span class="exemplo">ÁLBUNS DE EXEMPLO</span>
-  </header>
-  <section class="grade" id="grade" aria-live="polite"></section>
-  <a class="cta" href="index.html?ref=mural">Abrir o caso</a>
-  <p class="rod">@villageresortmg · #CasoBlack<br>Só aparecem álbuns com autorização da equipe, conferidos pelo Village.</p>
+<main class="pg">
+  <h1>Mural da Black · impressão</h1>
+  <p class="sub">Página da equipe do Village. Mostra os álbuns que as equipes mandaram, com autorização, depois de aprovados.</p>
+  <ol class="passos">
+    <li>Aprovar o álbum no Supabase (tabela <b>mural</b>, coluna <b>aprovado</b>).</li>
+    <li>Selecionar aqui os novos e tocar em Imprimir (A4, 2 por folha).</li>
+    <li>Recortar na linha tracejada e colar no mural da recepção.</li>
+  </ol>
+  <span class="exemplo">ÁLBUNS DE EXEMPLO · backend ainda não ligado</span>
+  <div class="barra">
+    <label><input type="checkbox" id="verFeitos"> mostrar já impressos</label>
+    <button id="todos">selecionar todos</button>
+    <span class="n" id="n"></span>
+  </div>
+  <section class="grade" id="grade"></section>
 </main>
-
-<section class="tv" aria-hidden="true">
-  <div class="palco" id="palco"></div>
-  <aside class="lado">
-    <img class="logo" src="assets/cb-logo.png" alt="">
-    <h2>Mural da Black</h2>
-    <div class="conta"><b id="nEqTv">0</b><span>equipes resolveram</span></div>
-    <img class="qr" src="assets/qr-telao.png" alt="QR para abrir o caso">
-    <p>Aponte a câmera e<br>abra o caso você também</p>
-  </aside>
-</section>
-
-<div class="zoom" id="zoom" role="dialog" aria-modal="true"><button id="zFecha" aria-label="Fechar">✕</button><img id="zImg" alt=""><b id="zEq"></b></div>
+<div class="acao"><button id="marca">Marcar como impressos</button><button id="imp" disabled>Imprimir</button></div>
+<div class="folhas" id="folhas"></div>
 
 <script src="dados.js?v=4"></script>
 <script>
 (() => {
-  const C = window.CB_CONFIG, tv = new URLSearchParams(location.search).has('tv');
-  const $ = s => document.querySelector(s);
-  const EXEMPLOS = [1, 2, 3, 4].map((n, i) => ({equipe: ['Equipe Lucas', 'Detetives da Piscina', 'Família Rocha', 'Os Sherlocks'][i], url: `assets/mural-exemplo/${n}.jpg`, ex: true}));
-  const giro = i => [-2.5, 1.8, -1.2, 2.6, -1.9, 1.1][i % 6] + 'deg';
-  const fita = 'MURAL DA BLACK ✦ CASO RESOLVIDO ✦ VILLAGE RESORT ✦ BLACK FRIDAY 2026 ✦ ';
-  $('#fitaTx').textContent = fita.repeat(8);
+  const C = window.CB_CONFIG, $ = s => document.querySelector(s), KEY = 'cb-impressos';
+  const ler = () => { try { return JSON.parse(localStorage.getItem(KEY)) || [] } catch (e) { return [] } };
+  const gravar = v => { try { localStorage.setItem(KEY, JSON.stringify(v)) } catch (e) {} };
+  const EXEMPLOS = ['Equipe Lucas', 'Detetives da Piscina', 'Família Rocha', 'Os Sherlocks'].map((equipe, i) => ({id: 'ex' + i, equipe, url: `assets/mural-exemplo/${i + 1}.jpg`, ex: true}));
+  let lista = [], sel = new Set();
 
   async function carregar() {
     try {
       if (C.backend === 'supabase' && C.supabaseUrl) {
-        const r = await fetch(`${C.supabaseUrl}/rest/v1/mural?aprovado=eq.true&select=equipe,arquivo,criado_em&order=criado_em.desc&limit=200`,
+        const r = await fetch(`${C.supabaseUrl}/rest/v1/mural?aprovado=eq.true&select=id,equipe,arquivo,criado_em&order=criado_em.asc&limit=500`,
           {headers: {apikey: C.supabaseAnon, Authorization: 'Bearer ' + C.supabaseAnon}});
-        if (r.ok) return (await r.json()).map(m => ({equipe: m.equipe, url: `${C.supabaseUrl}/storage/v1/object/public/mural/${m.arquivo}`}));
+        if (r.ok) return (await r.json()).map(m => ({id: m.id, equipe: m.equipe, em: m.criado_em, url: `${C.supabaseUrl}/storage/v1/object/public/mural/${m.arquivo}`}));
       } else if (C.backend === 'endpoint' && C.endpoint) {
         const r = await fetch(C.endpoint + (C.endpoint.includes('?') ? '&' : '?') + 'mural=1');
-        if (r.ok) return (await r.json()).map(m => ({equipe: m.equipe, url: m.url}));
+        if (r.ok) return (await r.json()).map(m => ({id: m.id || m.url, equipe: m.equipe, em: m.criado_em, url: m.url}));
       }
     } catch (e) {}
     return null;
   }
 
-  const card = (m, i) => {
-    const f = document.createElement('figure');
-    f.className = 'alb'; f.style.setProperty('--r', giro(i)); f.style.setProperty('--fr', (i % 2 ? 4 : -3) + 'deg');
-    const img = new Image(); img.src = m.url; img.alt = 'Álbum da ' + m.equipe; img.loading = 'lazy';
-    const cap = document.createElement('figcaption'); cap.textContent = m.equipe;
-    f.append(img, cap);
-    if (m.ex) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = 'EXEMPLO'; f.append(t) }
-    return f;
-  };
-
-  function grade(lista) {
-    const g = $('#grade'); g.textContent = '';
-    if (!lista.length) { g.innerHTML = '<p class="vazio">Nenhum caso resolvido ainda. Seja a primeira equipe!</p>'; return }
-    lista.forEach((m, i) => {
-      const f = card(m, i);
-      f.tabIndex = 0;
-      const abre = () => { $('#zImg').src = m.url; $('#zEq').textContent = m.equipe; $('#zoom').classList.add('on') };
-      f.onclick = abre; f.onkeydown = e => { if (e.key === 'Enter') abre() };
+  function pintar() {
+    const feitos = ler(), ver = $('#verFeitos').checked, g = $('#grade');
+    const vis = lista.filter(m => ver || !feitos.includes(m.id));
+    g.textContent = '';
+    if (!vis.length) g.innerHTML = '<p class="vazio">Nada novo pra imprimir.</p>';
+    vis.forEach(m => {
+      const f = document.createElement('figure');
+      f.className = 'alb' + (sel.has(m.id) ? ' sel' : '') + (feitos.includes(m.id) ? ' feito' : '');
+      const img = new Image(); img.src = m.url; img.alt = 'Álbum da ' + m.equipe; img.loading = 'lazy';
+      const eq = document.createElement('div'); eq.className = 'eq'; eq.textContent = m.equipe;
+      const dt = document.createElement('div'); dt.className = 'dt'; dt.textContent = m.em ? new Date(m.em).toLocaleDateString('pt-BR') : '';
+      const ck = document.createElement('span'); ck.className = 'ck';
+      f.append(img, eq, dt, ck);
+      if (m.ex) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = 'EXEMPLO'; f.append(t) }
+      f.onclick = () => { sel.has(m.id) ? sel.delete(m.id) : sel.add(m.id); pintar() };
       g.append(f);
     });
-  }
-  $('#zFecha').onclick = $('#zoom').onclick = e => { if (e.target.tagName !== 'IMG') $('#zoom').classList.remove('on') };
-  addEventListener('keydown', e => { if (e.key === 'Escape') $('#zoom').classList.remove('on') });
-
-  // telão: 3 álbuns por vez, gira a cada 7s e recarrega a lista a cada minuto
-  let fila = [], pos = 0;
-  function passo() {
-    const p = $('#palco'), n = Math.min(3, fila.length);
-    p.querySelectorAll('.alb').forEach(a => a.classList.remove('on'));
-    setTimeout(() => {
-      p.textContent = '';
-      for (let k = 0; k < n; k++) { const f = card(fila[(pos + k) % fila.length], pos + k); f.querySelector('img').loading = 'eager'; p.append(f) }
-      pos = (pos + n) % Math.max(fila.length, 1);
-      requestAnimationFrame(() => requestAnimationFrame(() => p.querySelectorAll('.alb').forEach((a, k) => setTimeout(() => a.classList.add('on'), k * 180))));
-    }, p.children.length ? 700 : 0);
+    $('#n').textContent = `${sel.size} selecionado(s) · ${vis.length} na lista`;
+    $('#imp').disabled = !sel.size;
+    $('#imp').textContent = sel.size ? `Imprimir ${sel.size} (${Math.ceil(sel.size / 2)} folha${sel.size > 2 ? 's' : ''})` : 'Imprimir';
   }
 
-  async function atualizar() {
-    const real = await carregar();
-    const lista = real && real.length ? real : (real ? [] : EXEMPLOS);
-    document.body.classList.toggle('ex', !real);
-    $('#nEq').textContent = $('#nEqTv').textContent = real ? real.length : EXEMPLOS.length;
-    if (tv) fila = lista.length ? lista : EXEMPLOS; else grade(lista);
+  function montarFolhas() {
+    const F = $('#folhas'), itens = lista.filter(m => sel.has(m.id));
+    F.textContent = '';
+    for (let i = 0; i < itens.length; i += 2) {
+      const fo = document.createElement('div'); fo.className = 'folha';
+      itens.slice(i, i + 2).forEach(m => {
+        const cp = document.createElement('div'); cp.className = 'cp';
+        const img = new Image(); img.src = m.url; img.alt = '';
+        const b = document.createElement('b'); b.textContent = m.equipe;
+        cp.append(img, b); fo.append(cp);
+      });
+      F.append(fo);
+    }
+    return Promise.all([...F.querySelectorAll('img')].map(im => im.complete ? 0 : new Promise(ok => { im.onload = im.onerror = ok })));
   }
 
-  if (tv) { document.body.classList.add('modo-tv'); atualizar().then(passo); setInterval(passo, 7000); setInterval(atualizar, 60000) }
-  else atualizar();
+  $('#imp').onclick = async () => { await montarFolhas(); print() };
+  $('#marca').onclick = () => { if (!sel.size) return; gravar([...new Set([...ler(), ...sel])]); sel.clear(); pintar() };
+  $('#todos').onclick = () => { const feitos = ler(); lista.forEach(m => ($('#verFeitos').checked || !feitos.includes(m.id)) && sel.add(m.id)); pintar() };
+  $('#verFeitos').onchange = pintar;
+
+  carregar().then(real => { document.body.classList.toggle('ex', !real); lista = real || EXEMPLOS; pintar() });
 })();
 </script>
 </body>

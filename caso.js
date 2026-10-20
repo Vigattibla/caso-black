@@ -109,10 +109,10 @@ document.body.insertAdjacentHTML('beforeend', `
 <div id="muralOv" class="ov" aria-hidden="true"><div class="ovc papel">
   <div class="k">MURAL DA BLACK · VILLAGE RESORT</div>
   <h3>Pôr o álbum no mural</h3>
-  <p class="mono">O mural mostra as equipes que resolveram o caso, no site e no telão do resort.</p>
+  <p class="mono">O Village imprime o álbum e cola no Mural da Black, na parede da recepção. Passa lá pra ver o seu!</p>
   <img class="muPrev" id="muPrev" alt="Prévia do álbum">
   <label for="muEq">NOME DA EQUIPE</label><input id="muEq" maxlength="40" placeholder="Família Silva">
-  <label class="lgpd"><input type="checkbox" id="muOk"><span>Autorizo o Village Resort a mostrar este álbum e o nome da equipe no Mural da Black. Todos que aparecem nas fotos concordam. Posso pedir pra tirar quando quiser (LGPD).</span></label>
+  <label class="lgpd"><input type="checkbox" id="muOk"><span>Autorizo o Village Resort a imprimir este álbum e expor, com o nome da equipe, no Mural da Black da recepção. Todos que aparecem nas fotos concordam. Posso pedir pra tirar quando quiser (LGPD).</span></label>
   <div class="erro" id="muErro"></div>
   <button class="btn" id="muEnv">Mandar pro mural</button>
   <p class="mono pq" style="margin-top:10px">Antes de aparecer, a equipe do Village confere cada álbum.</p>
@@ -244,8 +244,8 @@ async function porNoMural() {
   const ja = Dados.noMural(); if (ja) return toast(`O álbum da ${ja.equipe} já foi pro mural.`);
   pedirCadastro(async () => {
     toast('Montando o álbum...'); const c = await albumStory();
-    const m = document.createElement('canvas'); m.width = 540; m.height = 960; m.getContext('2d').drawImage(c, 0, 0, 540, 960);
-    muBlob = await new Promise(ok => m.toBlob(ok, 'image/jpeg', .82)); $('#muPrev').src = m.toDataURL('image/jpeg', .7);
+    // vai impresso no mural da recepção: manda em 1080x1920
+    muBlob = await new Promise(ok => c.toBlob(ok, 'image/jpeg', .86)); $('#muPrev').src = c.toDataURL('image/jpeg', .6);
     const f = Dados.ficha(); $('#muEq').value = $('#muEq').value || (f ? 'Equipe ' + f.nome.split(' ')[0] : '');
     $('#muErro').textContent = ''; abreOv('#muralOv') });
 }
@@ -255,6 +255,6 @@ $('#muEnv').onclick = async () => {
   if (!$('#muOk').checked) return err('Marque a autorização pra mandar o álbum.');
   $('#muEnv').disabled = true; const ok = await Dados.mural(eq, muBlob); $('#muEnv').disabled = false;
   if (!ok) return err('Não deu pra enviar agora. Confira a internet e tente de novo.');
-  fechaOv('#muralOv'); toast('Álbum enviado! Aparece no mural depois que a equipe do Village conferir.');
+  fechaOv('#muralOv'); toast('Álbum enviado! A equipe do Village confere, imprime e cola no mural da recepção.');
 };
 $('#muPor').onclick = porNoMural; $('#muPor2').onclick = porNoMural;
