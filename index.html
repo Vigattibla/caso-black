@@ -605,7 +605,7 @@ function render(){pedido=0;const c=cl(pos+1);
   const f=ez(cl(c/.28)),e=ez(cl((c-.06)/.3)),r=ez(cl((c-.24)/.76));
   cFita.style.transform=`translate(${f*70}%,${-f*60}px) rotate(${-12-18*f}deg)`;cFita.style.opacity=1-f;
   cElas.style.transform=`translateX(${e*70}px)`;cElas.style.opacity=1-e;
-  capa.style.transform=`rotateY(${-178*r}deg)`;capa.style.opacity=r>.82?cl((1-r)/.18):1;capa.classList.toggle('foi',c>=.999);
+  capa.style.transform=`translateZ(${8*(1-r)+1}px) rotateY(${-178*r}deg)`;capa.style.opacity=r>.82?cl((1-r)/.18):1;capa.classList.toggle('foi',c>=.999);
   R.style.setProperty('--z',(.8+.2*ez(c)).toFixed(4));R.style.setProperty('--c',c.toFixed(3));
   document.body.classList.toggle('aberto',c>.85);
   // folhas: viram como página de livro, presas na lombada da esquerda
