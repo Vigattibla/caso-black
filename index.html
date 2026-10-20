@@ -601,11 +601,11 @@ body.aberto .fita span{animation-play-state:paused}
 
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const PISTAS=[ // loc: lugar da placa (04 a definir: não é a Trilha; enigma 04 revisar junto)
+const PISTAS=[ // loc: lugar da placa
  {cod:'AGUA',  dig:2,loc:'Piscina',    enig:'Onde a água esconde o amarelo, alguém deixou cair um segredo.'},
  {cod:'SABOR', dig:7,loc:'Restaurante',enig:'Onde a fome encontra o sabor, procure o que ninguém pede no cardápio.'},
  {cod:'BRINCA',dig:1,loc:'Espaço Kids',enig:'Onde as crianças mandam, alguém virou criança também.'},
- {cod:'VERDE', dig:1,loc:'Estação 04', enig:'Onde a natureza fica quieta, a pista grita.'},
+ {cod:'MIMOS', dig:1,loc:'Lojinha',    enig:'Onde tudo tem preço, o Pipoca farejou o que não está à venda.'},
  {cod:'PASSA', dig:5,loc:'Recepção',   enig:'Por onde todo mundo passa, ninguém repara.'},
 ];
 const RELATO='Na madrugada de ontem, as ofertas da Black Friday sumiram. E o Bê sumiu junto.\n\nSó ficou a lupa mágica dele. Ela lê as 5 placas espalhadas pelo resort e revela cada pista.\n\nSua missão: achar as 5 placas, guardar a foto de cada prova e salvar a Black antes do check-out.';
@@ -723,7 +723,7 @@ function atualizar(novo=-1){
 }
 
 /* ---------- ofertas (tela VIP) ---------- */
-const EVID=['ÁGUA','SABOR','KIDS','NATUREZA','LOBBY'];
+const EVID=['ÁGUA','SABOR','KIDS','LOJINHA','LOBBY'];
 const OFERTAS=['','','','',''];      // PENDENTE: ofertas da Black 2026 (texto curto ou 'assets/arquivo.png'); vazio = cupom "a revelar"
 const cupom=(i,t)=>t&&/\.(png|webp|jpe?g|svg)$/.test(t)?`<img src="${t}" alt="">`:`<div class="cupom"><small>OFERTA</small><b>${t||dois(i+1)}</b><i>${t?'':'a revelar'}</i></div>`;
 const feitas=()=>{const c=window.Dados&&Dados.ficha()?Dados.carimbos():[];return new Set([...achadas,...c.filter(x=>x<=5).map(x=>x-1)])};
