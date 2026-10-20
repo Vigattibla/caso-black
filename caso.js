@@ -171,12 +171,12 @@ $('#fOk').onclick = async () => {
   if (v !== PALAVRA) { $('#fErro').textContent = v ? 'Não é essa. Junte os 5 quadros e leia a palavra que aparece.' : ''; vibra([20, 30, 20]); return }
   $('#fErro').textContent = ''; conferePalavra(v); fechaOv('#ficha');
   if (Dados.carimbos().filter(x => x <= 5).length < 5) return beFala('Palavra certa! Agora falta completar os carimbos da chave.', 'PALAVRA CERTA');
-  irPara(N - 1); setTimeout(() => beFala('Provas completas! Vira sua carta, abre a luneta e aponta pro selo do arquivo.', 'ÚLTIMA PROVA'), 700);
+  irPara(N - 1); setTimeout(() => beFala('Provas completas! Vira sua carta, abre a lupa e aponta pro selo do arquivo.', 'ÚLTIMA PROVA'), 700);
 };
 $('#fPal').addEventListener('keydown', e => { if (e.key === 'Enter') $('#fOk').click() });
 $('.prog').addEventListener('click', abrirFicha); $('.prog').style.cursor = 'pointer';
 
-/* ---------- leitura da placa pela luneta ---------- */
+/* ---------- leitura da placa pela lupa ---------- */
 const Placa = (() => {
   let det = null; const cv = document.createElement('canvas'), cx = cv.getContext('2d', {willReadFrequently: true});
   return {
