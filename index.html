@@ -925,7 +925,7 @@ const NARR={nome:'Lucas',imgs:['assets/lucas.webp'],cab:['lucas']};
 const CAB={be:{feliz:6,surpresa:1,duvida:7,serio:4,piscada:3},gabi:{feliz:3,surpresa:2,duvida:1,serio:4,piscada:9},
  lucas:{feliz:5,surpresa:3,duvida:1,serio:2,piscada:9},pipoca:{feliz:10,surpresa:1,duvida:7,serio:9,piscada:12}};
 const humor=x=>/errad|falta|ainda|n[ãa]o /i.test(x)?'serio':/certa|complet|fechad|parab|boa|isso/i.test(x)?'feliz':/\?/.test(x)?'duvida':/!/.test(x)?'surpresa':'piscada';
-const cabUrl=(n,h)=>`assets/cab/${n}-${String(CAB[n][h]).padStart(2,'0')}.webp`;   // o Bê sumiu: quem guia é a turma
+const cabUrl=(n,h)=>`assets/cab/${n}-${String(CAB[n][h]).padStart(2,'0')}.webp?v=2`;   // o Bê sumiu: quem guia é a turma
 function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createElement('i'),Q=B.querySelector('.beQ'),q=quem||NARR,hu=q.humor||humor((tit||'')+' '+t),im=q.cab?q.cab.map(n=>cabUrl(n,hu)):q.imgs;   // quem={nome,imgs,fixo}: outro ajudante no mesmo balão
   Q.className='beQ'+(q.cabeca||q.cab?' cab':' corpo')+(im.length>1?' g':'');Q.innerHTML=im.map(u=>`<img src="${u}" alt="">`).join('');B.querySelector('.beNome').textContent=q.nome.toUpperCase();
   $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
