@@ -23,6 +23,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-f
 #limitado{position:fixed;right:12px;top:calc(62px + env(safe-area-inset-top));z-index:10;background:#c8102e;color:#fff;font:700 11px Montserrat;padding:5px 8px}
 #credito{position:fixed;left:0;right:0;bottom:calc(6px + env(safe-area-inset-bottom));z-index:10;text-align:center;font:600 10px Montserrat,sans-serif;color:#fffb;text-shadow:0 1px 2px #000}
 #credito a{color:inherit}
+#debug{position:fixed;left:8px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:10;font:700 11px monospace;color:#0f0;text-shadow:0 1px 2px #000}
 </style>
 </head>
 <body>
@@ -38,6 +39,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-f
 </div></section>
 <section id="erro" hidden><div class="caixa"><h1>Ops</h1><p></p><button onclick="location.reload()">Recarregar</button></div></section>
 <div id="credito">AR por 8th Wall · Niantic Spatial · <a href="./xr/LICENSE" target="_blank">licença</a></div>
-<script type="module" src="./app.js"></script>
+<div id="debug"></div>
+<script type="module" src="./app.js?v=3"></script>
 </body>
 </html>

@@ -10,6 +10,7 @@ const status = t => { $('#status').textContent = t; $('#status').hidden = !t; };
 document.head.insertAdjacentHTML('beforeend', `<style>${CSS}</style>`);
 
 const ancora = criarAncora();
+const DEBUG = /debug/.test(location.search); // ?debug mostra resolução do vídeo e do canvas
 const PX = 600; // largura do quadro em px CSS
 let alvoLargura = 1, alvoAltura = 4/3, cssScene, cssRenderer, raiz, quadroObj, ultimo = 0, rodando = false, visivel = null;
 window.__ar8w = {ancora, eventos: []}; // inspeção nos testes
@@ -51,9 +52,11 @@ const modulo = {
     status('Aponte para a placa da Estação 1');
   },
   onCanvasSizeChange() { cssRenderer.setSize(innerWidth, innerHeight); },
+  onVideoSizeChange({videoWidth, videoHeight}) { __ar8w.video = videoWidth + 'x' + videoHeight; },
   onUpdate({processCpuResult}) {
     const r = processCpuResult.reality;
     if (r) $('#limitado').hidden = r.trackingStatus !== 'LIMITED';
+    if (DEBUG) { const c = $('#camera'); $('#debug').textContent = `vídeo ${__ar8w.video} · canvas ${c.width}x${c.height} · tela ${innerWidth}x${innerHeight}@${devicePixelRatio}`; }
   },
   onRender() {
     const agora = performance.now(), dt = Math.min(0.1, (agora - (ultimo || agora)) / 1000);
