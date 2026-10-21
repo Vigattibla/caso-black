@@ -14,7 +14,7 @@ Object.defineProperty(navigator.mediaDevices,'getUserMedia',{configurable:true,v
   w.strokeStyle='#a19a8b44';w.lineWidth=2;for(let y=130;y<c.height;y+=260){w.beginPath();w.moveTo(0,y);w.lineTo(c.width,y);w.stroke()}
   let lastId=-1,rects=[],t0=performance.now();
   f.project=(u,v,t=performance.now())=>{
-    const time=f.moving?(t-t0)/1000:0,pose=f.pose,side=62*(1+pose*.075+.025*Math.sin(time*.4));
+    const time=f.moving?(t-t0)/1000:0,pose=f.pose,side=(f.side??62)*(1+pose*.075+.025*Math.sin(time*.4));
     const ang=.025+pose*.035+.025*Math.sin(time*.35),cx=(f.cx??195)+pose*10+9*Math.sin(time*.45),cy=(f.cy??104)+pose*13+6*Math.sin(time*.3);
     const z=1+.012*(u-.5)+(.008+pose*.003)*(v-.5),px=(u-.5)*side/z,py=(v-.5)*side/z;
     const screen={x:cx+px*Math.cos(ang)-py*Math.sin(ang),y:cy+px*Math.sin(ang)+py*Math.cos(ang)};

@@ -13,7 +13,7 @@ function unit(){
   assert.equal(pinca(landmarks(.5,.5,.05),true).fechada,false);
   const a=pinca(landmarks(.5,.5,.02),false,780,1688),b=pinca(landmarks(.5,.5,.02).map(p=>({x:p.x*2,y:p.y*2})),false,780,1688);
   assert.equal(a.razao,b.razao);assert.equal(a.x,.5);assert.equal(a.y,.5);checks.push('Pinça: inválidos, abertura/fechamento, histerese, escala e proporção do vídeo');
-  for(const f of ['index.html','caso.js','quadro.js','mochila.js'])assert(!fs.readFileSync(path.join(ROOT,f)).includes(8),'Backspace literal: '+f);
+  for(const f of ['index.html','caso.js','aruco-worker.js','mao-worker.js','quadro-ar.js','quadro.js','mochila.js'])assert(!fs.readFileSync(path.join(ROOT,f)).includes(8),'Backspace literal: '+f);
   checks.push('Nenhum backspace literal');
 }
 function cdp(method,params={}){return new Promise((resolve,reject)=>{const id=++seq,t=setTimeout(()=>{pending.delete(id);reject(Error('Timeout '+method))},20000);pending.set(id,{resolve:r=>{clearTimeout(t);resolve(r)},reject:e=>{clearTimeout(t);reject(e)}});ws.send(JSON.stringify({id,method,params}))})}
@@ -28,7 +28,7 @@ export const HandLandmarker={createFromOptions:async(fs,opts)=>{window.__modelOp
 async function nav(suffix=''){
   const url=new URL(base+'/'+suffix);url.searchParams.set('mochila-carga',Date.now().toString());
   await cdp('Page.navigate',{url:url.href});await until(`location.search===${JSON.stringify(url.search)}&&document.readyState==='complete'&&typeof Mochila!=='undefined'&&typeof Placa!=='undefined'`,'Módulos');
-  await ev(`window.__jobs=[];window.__passes=[];window.__call=0;const ler=Placa.lerTudo;Placa.lerTudo=(v,...args)=>{__call++;__jobs.push({kind:'aruco',time:v.currentTime,t:performance.now()});return ler(v,...args)};const det=AR.Detector.prototype.detect;AR.Detector.prototype.detect=function(...a){__passes.push(__call);return det.apply(this,a)};__fake.moving=false;window.__sintetica=${landmarks.toString()};`);
+  await ev(`window.__jobs=[];window.__passes=[];window.__call=0;const ler=Placa.lerTudo;Placa.lerTudo=(v,...args)=>{__call++;__jobs.push({kind:'aruco',time:v.currentTime,t:performance.now()});return ler(v,...args)};const disparar=Placa.disparar;Placa.disparar=(v,...args)=>{const t=performance.now(),ok=disparar(v,...args);if(ok)__jobs.push({kind:'aruco',time:v.currentTime,t});return ok};const det=AR.Detector.prototype.detect;AR.Detector.prototype.detect=function(...a){__passes.push(__call);return det.apply(this,a)};__fake.moving=false;window.__sintetica=${landmarks.toString()};`);
 }
 async function handAt(p,closed){await ev(`(()=>{const v=document.querySelector('#lupaV'),r=document.querySelector('#lupaC').getBoundingClientRect(),s=Math.max(r.width/v.videoWidth,r.height/v.videoHeight),ox=r.x+(r.width-v.videoWidth*s)/2,oy=r.y+(r.height-v.videoHeight*s)/2;window.__hand=__sintetica((${p.x}-ox)/s/v.videoWidth,(${p.y}-oy)/s/v.videoHeight,${closed?.005:.14})})()`);await sleep(180)}
 async function framePoint(u=.4,v=.53){return ev(`QuadroAR.ponto(QuadroAR.homografia(QuadroAR.cantos),${u},${v})`)}
@@ -47,6 +47,15 @@ async function main(){
   await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');await cdp('Fetch.enable',{patterns:[{urlPattern:'https://fonts.googleapis.com/*'},{urlPattern:'*/vendor/mediapipe/vision_bundle.mjs'}]});
   await cdp('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:2,mobile:true});await cdp('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
   await cdp('Page.addScriptToEvaluateOnNewDocument',{source:fs.readFileSync(path.join(__dirname,'ar-camera-fixture.js'),'utf8')+`
+    // Só o modelo é sintético; o worker ArUco e a captura transferida continuam reais.
+    const WorkerReal=Worker;window.Worker=class{
+      constructor(url,...opts){if(!String(url).includes('mao-worker.js'))return new WorkerReal(url,...opts);this.fechado=false;this.modelo=null;}
+      postMessage(data){if(this.fechado)return;setTimeout(async()=>{if(this.fechado){(data.bitmap||data.frame)?.close();return}try{
+        if(data.tipo==='iniciar'){const {HandLandmarker}=await import('./vendor/mediapipe/vision_bundle.mjs');const criar=delegate=>HandLandmarker.createFromOptions({}, {baseOptions:{delegate},runningMode:'VIDEO',numHands:1});let cpu=!!data.cpu;try{this.modelo=await criar(cpu?'CPU':'GPU')}catch(e){if(cpu)throw e;cpu=true;this.modelo=await criar('CPU')}if(!this.fechado)this.onmessage?.({data:{pronto:true,cpu}});else this.modelo.close();}
+        else{try{const result=this.modelo.detectForVideo({currentTime:data.videoTime},data.t);this.onmessage?.({data:{landmarks:result.landmarks[0]||null,t:data.t,ms:0}})}finally{(data.bitmap||data.frame).close()}}
+      }catch(e){this.onmessage?.({data:{erro:e.message}})}},0)}
+      terminate(){this.fechado=true;this.modelo?.close()}
+    };
     localStorage.setItem('outra-origem','preservado');
     if(location.hash==='#demo-mochila'){localStorage.setItem('cb-mochila','["item-real"]');localStorage.setItem('cb-mochila-mao','item-real');}
     window.__writes=[];const set=Storage.prototype.setItem,rem=Storage.prototype.removeItem;Storage.prototype.setItem=function(k,v){__writes.push(k);return set.call(this,k,v)};Storage.prototype.removeItem=function(k){__writes.push(k);return rem.call(this,k)};
@@ -80,6 +89,7 @@ async function main(){
   const jobs=await ev(`__jobs`),hands=jobs.filter(j=>j.kind==='mao');assert(hands.length>3);for(let i=1;i<hands.length;i++)assert(hands[i].t-hands[i-1].t>=1000/15-.1,'Mão excedeu 15fps');
   for(const h of hands)assert(!jobs.some(j=>j.kind==='aruco'&&j.time===h.time),'ArUco e mão no mesmo frame');checks.push('Mão <=15 fps e em frames distintos do ArUco');
   await ok(`new Set(__passes).size===__passes.length`,'No máximo uma detecção ArUco por chamada');
+  await ok(`Placa.workerAtivo&&__jobs.some(j=>j.kind==='aruco')&&__passes.length===0`,'Worker e mão intercalados sem detecção ArUco na interface');
   await ev(`__handThrow=true`);await until(`document.querySelector('#toast').textContent.includes('Mão indisponível')`,'Fallback após falha CPU');await touch('#mochilaItem');await ok(`Mochila.naMao==='lente'`,'Toque funciona depois da falha do rastreador');
   await ev(`fecharLupa()`);await ok(`localStorage.getItem('cb-mochila')==='["lente"]'&&localStorage.getItem('outra-origem')==='preservado'`,'Item recuperável e armazenamento alheio preservado');
   await nav('?dev#demo-mochila');await until(`!document.querySelector('#mochilaQueda')?.hidden`,'Demo sem câmera');await sleep(950);await touch('#mochilaItem');await touch('[data-etapa="311"]');await until(`!document.querySelector('#mochilaCarta').hidden`,'Demo 311');await touch('[data-item="lente"]');await touch('[data-etapa="303"]');await until(`QuadroAR.id===303&&QuadroAR.cantos`,'Demo 303');await sleep(500);await touchPoint(await framePoint());await until(`!document.querySelector('#mochilaRevelacao').hidden`,'Demo revela');await shot('05-demo');

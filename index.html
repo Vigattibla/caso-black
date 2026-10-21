@@ -1002,21 +1002,29 @@ const TXT={carta:['LUPA MÁGICA','Aponte para os <b style="display:inline;font:i
 async function videoDe(e){const nome=`estacao${e+1}.mp4`;
   const {estacoes}=await Midias();return estacoes?.includes(nome)?`assets/v/${nome}`:null}
 async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
-  Mochila.iniciar();
+  Mochila.iniciar();Placa.iniciar();
   $('#lupaTit').textContent=TXT[m][0];$('#lupaTxt').innerHTML=TXT[m][1];
-  try{const recebido=Mochila.demo?Mochila.videoDemo():await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30}},audio:false});
+  try{const recebido=Mochila.demo?Mochila.videoDemo():await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30}},audio:false});
     if(pedido!==pedidoLupa){recebido.getTracks().forEach(t=>t.stop());return}fluxo=recebido;
     try{await fluxo.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'},{exposureMode:'continuous'}]})}catch(_){}
     try{const t=fluxo.getVideoTracks()[0],cp=t.getCapabilities?t.getCapabilities():{};if(cp.zoom)await t.applyConstraints({advanced:[{zoom:cp.zoom.min}]})}catch(_){}   // sem zoom: imagem inteira da câmera
-    if(pedido!==pedidoLupa)return;const v=$('#lupaV');v.srcObject=fluxo;v.load();v.play().catch(()=>{});if(pedido!==pedidoLupa)return;const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
+    if(pedido!==pedidoLupa)return;const v=$('#lupaV');v.srcObject=fluxo;v.load();v.play().catch(()=>{});if(pedido!==pedidoLupa)return;const c=$('#lupaC'),x=c.getContext('2d');let tinta=false;
     let ocupado=false,ultimaLeitura=-1e9,custo=0,tempoVideo=-1,pausada=-1,visPausada=0,ultimaTarefa='';dec={};const confirmar=new Map(),suaves=new Map();
     const proxima=()=>{if(fluxo&&pedido===pedidoLupa)leituraLupa=v.requestVideoFrameCallback?v.requestVideoFrameCallback(detectar):requestAnimationFrame(detectar)};
-    function detectar(agora){if(!fluxo||pedido!==pedidoLupa)return;proxima();if(ocupado||v.readyState<2||v.currentTime===tempoVideo)return;
-      if(Mochila.lerMao(v,agora,ultimaTarefa==='aruco')){tempoVideo=v.currentTime;ultimaTarefa='mao';return}
+    function detectar(agora){if(!fluxo||pedido!==pedidoLupa)return;proxima();
+      const resultado=Placa.consumir();if(resultado&&agora-resultado.t<700)receber(resultado.marcas,resultado.t);
+      if(!fluxo||pedido!==pedidoLupa||ocupado||v.readyState<2||v.currentTime===tempoVideo)return;
+      if(Mochila.lerMao(v,agora,ultimaTarefa==='aruco'&&!Placa.ocupado)){tempoVideo=v.currentTime;ultimaTarefa='mao';return}
+      if(Mochila.lendoMao)return;
       // Folga para a tela: no celular lento a leitura espera 1,5× o próprio custo antes da próxima.
-      const t0=performance.now();if(t0-ultimaLeitura<Math.max(45,custo*1.5))return;ultimaLeitura=t0;
-      const vw=v.videoWidth,w=Math.min(1280,vw);ocupado=true;tempoVideo=v.currentTime;
-        try{ultimaTarefa='aruco';const marcas=Placa.lerTudo(v,Mochila.rastreio||QuadroAR.rastreio,Mochila.procurarCarta);Mochila.observar(marcas,v,agora);if(Mochila.demo){Mochila.quadroDemo(marcas,v,agora);return}lerSelo(marcas.find(mk=>mk.id===ARUCO0+5),w/vw);if(agora-visPausada>700)pausada=-1;
+      const t0=performance.now();if(t0-ultimaLeitura<Math.max(45,custo*1.5))return;
+      if(Placa.assincrono){if(Placa.disparar(v,Mochila.rastreio||QuadroAR.rastreio,Mochila.procurarCarta,agora)){ultimaTarefa='aruco';tempoVideo=v.currentTime;ultimaLeitura=t0}return}
+      ultimaLeitura=t0;ocupado=true;tempoVideo=v.currentTime;
+      try{ultimaTarefa='aruco';receber(Placa.lerTudo(v,Mochila.rastreio||QuadroAR.rastreio,Mochila.procurarCarta),agora)}
+      finally{ocupado=false;custo=custo*.7+(performance.now()-t0)*.3}
+    }
+    function receber(marcas,agora){const vw=v.videoWidth,w=Math.min(1280,vw);
+          Mochila.observar(marcas,v,agora);if(Mochila.demo){Mochila.quadroDemo(marcas,v,agora);return}lerSelo(marcas.find(mk=>mk.id===ARUCO0+5),w/vw,agora);if(agora-visPausada>700)pausada=-1;
           if(QuadroAR.ativo){const mk=marcas.find(m=>m.id===QuadroAR.id);if(mk)QuadroAR.atualizar(mk,v,agora);return}
           if(document.querySelector('#quadro.on'))return;
           for(const mk of marcas){if(mk.id===ARUCO0+5)continue;
@@ -1027,11 +1035,14 @@ async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;
               const anterior=suaves.get(id);k.alvo=alvo.map((p,j)=>p.map((n,l)=>anterior?anterior[j][l]+(n-anterior[j][l])*.4:n));suaves.set(id,k.alvo);
               if(k.leituras.length>=3){vibra(40);pausada=id;visPausada=agora;confirmar.delete(id);investigar(id-ARUCO0,'placa',true);QuadroAR.atualizar(mk,v,agora);return}
             }}
-        }finally{ocupado=false;custo=custo*.7+(performance.now()-t0)*.3}}
+    }
     proxima();
     (function quadro(agora=performance.now()){if(!fluxo||pedido!==pedidoLupa)return;
-      const vw=v.videoWidth,vh=v.videoHeight;if(vw&&v.readyState>=2){const w=Math.min(1280,vw),h=Math.round(w*vh/vw);if(c.width!==w||c.height!==h){c.width=w;c.height=h}x.drawImage(v,0,0,w,h);
-        if(!ouroC&&!QuadroAR.ativo){desenhaCodigos(x);for(const k of confirmar.values())if(agora-k.vis<250)desenhaLeitura(x,k.alvo)}if(ouroC)desenhaOuro(x,w,h)}
+      const vw=v.videoWidth,vh=v.videoHeight;if(vw&&v.readyState>=2){const w=Math.min(1280,vw),h=Math.round(w*vh/vw);if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+        // O vídeo já é exibido pelo compositor; canvas transparente só para os efeitos.
+        const efeitos=!!ouroC||!QuadroAR.ativo&&(confirmar.size>0||Object.keys(dec).length>0);
+        if(tinta||efeitos)x.clearRect(0,0,w,h);tinta=efeitos;
+        if(efeitos&&!ouroC){desenhaCodigos(x);for(const k of confirmar.values())if(agora-k.vis<250)desenhaLeitura(x,k.alvo)}if(ouroC)desenhaOuro(x,w,h)}
       QuadroAR.desenhar(agora);Mochila.desenhar(agora);laco=requestAnimationFrame(quadro)})();
   }catch(e){if(pedido!==pedidoLupa)return;if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
 }
@@ -1136,7 +1147,7 @@ const CacaMedia=(()=>{const c=document.createElement('canvas'),x=c.getContext('2
   return{chave,onda}})();
 function desenhaLeitura(x,alvo){x.save();x.strokeStyle='#fdc72f';x.lineWidth=4;alvo.forEach((p,i)=>{const ant=alvo[(i+3)%4],prox=alvo[(i+1)%4];x.beginPath();x.moveTo(p[0]+(ant[0]-p[0])*.22,p[1]+(ant[1]-p[1])*.22);x.lineTo(...p);x.lineTo(p[0]+(prox[0]-p[0])*.22,p[1]+(prox[1]-p[1])*.22);x.stroke()});x.fillStyle='#fdc72f';x.font='bold 14px sans-serif';x.fillText('lendo...',Math.max(8,alvo[0][0]),Math.max(18,alvo[0][1]-12));x.restore()}
 function investigar(i,via,daLupa=false){const depois=()=>{if(daLupa)fecharLupa();resolver(i,via)};if(Quadro.tem(i)&&(!feitas().has(i)||daLupa&&(i===3&&Mochila.naMao||i===0&&Mochila.premioPendente)))Quadro.abrir(i,via,depois,daLupa);else depois()}
-function fecharLupa(){pedidoLupa++;if(typeof Mochila!=='undefined')Mochila.fechar();if(typeof QuadroAR!=='undefined'&&QuadroAR.ativo)Quadro.fechar();const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);const v=$('#lupaV');if(v.requestVideoFrameCallback&&v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(leituraLupa);else cancelAnimationFrame(leituraLupa);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}v.pause();v.srcObject=null;clearTimeout(ouroC?.timer);ouroC=null;seloLido=null}
+function fecharLupa(){pedidoLupa++;if(typeof Placa!=='undefined')Placa.parar();if(typeof Mochila!=='undefined')Mochila.fechar();if(typeof QuadroAR!=='undefined'&&QuadroAR.ativo)Quadro.fechar();const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);const v=$('#lupaV');if(v.requestVideoFrameCallback&&v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(leituraLupa);else cancelAnimationFrame(leituraLupa);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}v.pause();v.srcObject=null;clearTimeout(ouroC?.timer);ouroC=null;seloLido=null}
 $('#lupaX').onclick=fecharLupa;
 $('#lupaBtn').onclick=()=>{if(!window.DEMO)try{localStorage.setItem('cbLupa','1')}catch(_){}$('#balao').classList.remove('on');abrirLupa(k===N-1&&chave().ok?'final':'carta')};
 
@@ -1179,7 +1190,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
 <link rel="stylesheet" href="quadro-ar.css?v=2">
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=18"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=8"></script><script src="mochila.js?v=1"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=19"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=2"></script><script src="quadro.js?v=8"></script><script src="mochila.js?v=2"></script>
 <script src="filtro.js?v=8"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>

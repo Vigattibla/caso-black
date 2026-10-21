@@ -66,13 +66,18 @@ const QuadroAR = (() => {
     e.salto=null;e.vis=t;e.raw=g;e.marca={id:mk.id,corners:mk.corners.map(p=>({...p}))};
     if(e.tela)perspectiva();
     if(!e.filtros)e.filtros=g.cantos.flatMap(p=>[new Euro(p.x,t),new Euro(p.y,t)]);
-    e.cantos=g.cantos.map((p,i)=>({x:e.filtros[i*2].filtrar(p.x,t),y:e.filtros[i*2+1].filtrar(p.y,t)}));
-    e.el.style.visibility='';desenhar(t);return true;
+    e.alvo=g.cantos.map((p,i)=>({x:e.filtros[i*2].filtrar(p.x,t),y:e.filtros[i*2+1].filtrar(p.y,t)}));
+    if(!e.cantos)e.cantos=e.alvo.map(p=>({...p}));
+    e.el.style.visibility='';return true;
   }
   function desenhar(t=performance.now()){
     const e=estado;if(!e)return;const perdido=t-e.vis;
     e.hud.querySelector('.qar-status').hidden=perdido<=400;e.hud.querySelector('.qar-tela').hidden=perdido<=4000;
     if(e.tela||!e.cantos)return;e.el.style.opacity=perdido>400?'.85':'1';
+    // A pose filtrada é o alvo; o DOM avança em todo rAF, mesmo com o detector ocupado.
+    const dt=Math.max(0,Math.min(50,t-(e.desenho??t)));e.desenho=t;
+    if(perdido<=400&&e.alvo&&e.cantos.some((p,i)=>Math.hypot(e.alvo[i].x-p.x,e.alvo[i].y-p.y)>.02)){
+      const a=1-Math.exp(-dt/45);e.cantos=e.cantos.map((p,i)=>({x:p.x+(e.alvo[i].x-p.x)*a,y:p.y+(e.alvo[i].y-p.y)*a}))}
     let cantos=e.cantos;const s=Math.min(1,Math.max(.001,(t-e.inicio)/350));
     if(s<1){const m=homografia(cantos),ax=.5,ay=(-TOPO+.5)/(QUADRO_ESCALA*4/3),k=1-Math.pow(1-s,3);
       cantos=[[0,0],[1,0],[1,1],[0,1]].map(([x,y])=>ponto(m,ax+(x-ax)*k,ay+(y-ay)*k))}

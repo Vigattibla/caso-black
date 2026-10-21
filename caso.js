@@ -226,7 +226,58 @@ const Placa = (() => {
     // Sem nada na tela, um passe por quadro: alterna inteiro (720), inteiro (1080) e centro ampliado.
     const fase=quadro%3;return fase===0?tentativa(720):fase===1?tentativa(1080):tentativa(1080,{sx:vw/4,sy:vh/4,sw:vw/2,sh:vh/2})
   }
-  return{lerTudo,ler:video=>{const m=lerTudo(video).find(m=>m.id>=ARUCO0&&m.id<ARUCO0+5);return m?m.id-ARUCO0:-1},svg:id=>detector().dictionary.generateSVG(id)};
+  // Limites só do worker; o fallback conserva a leitura síncrona original.
+  const LIMITES=Object.freeze({inteiro:640,detalhe:1080,roi:720,centro:960});
+  let worker=null,pronto=false,falhou=false,emVoo=null,resultado=null,geracao=0,sequencia=0,timer=0,wQuadro=0,wFora=false,usarFrame=true;
+  const suporta=()=>typeof Worker==='function'&&typeof OffscreenCanvas==='function'&&typeof createImageBitmap==='function';
+  function parar(){geracao++;clearTimeout(timer);worker?.terminate();worker=null;pronto=false;emVoo=null;resultado=null;wQuadro=0;wFora=false}
+  function falhar(){parar();falhou=true}
+  function iniciar(){if(worker||falhou||!suporta())return;
+    try{const g=geracao;worker=new Worker('aruco-worker.js?v=1');timer=setTimeout(falhar,4000);
+      worker.onerror=e=>{e.preventDefault();if(g===geracao)falhar()};
+      worker.onmessage=({data})=>{if(g!==geracao)return;if(data.pronto){clearTimeout(timer);pronto=true;return}
+        if(!emVoo||data.id!==emVoo.id)return;if(data.erro){falhar();return}
+        clearTimeout(timer);const envio=emVoo;emVoo=null;
+        if(envio.roi)wFora=!data.marcas.some(m=>m.id===envio.roi);
+        resultado={marcas:envio.ignorar===null?data.marcas:data.marcas.filter(m=>m.id!==envio.ignorar),t:envio.t};
+      };
+    }catch(_){falhar()}
+  }
+  function plano(vw,vh,rastreio,externos){
+    wQuadro++;let regiao={sx:0,sy:0,sw:vw,sh:vh},limite=LIMITES.detalhe,roi=null,ignorar=null,ampliar=false;
+    if(rastreio&&(wQuadro%20||!externos)&&!wFora){
+      const xs=rastreio.corners.map(p=>p.x),ys=rastreio.corners.map(p=>p.y),lado=Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)),pad=lado*.85;
+      const sx=Math.max(0,Math.floor(Math.min(...xs)-pad)),sy=Math.max(0,Math.floor(Math.min(...ys)-pad)),sw=Math.min(vw-sx,Math.ceil(Math.max(...xs)+pad-sx)),sh=Math.min(vh-sy,Math.ceil(Math.max(...ys)+pad-sy));
+      if(sw<=8||sh<=8){wFora=true;return null}
+      regiao={sx,sy,sw,sh};limite=LIMITES.roi;roi=rastreio.id;ampliar=true;
+    }else if(rastreio){if(!wFora)ignorar=rastreio.id;wFora=false}
+    else{const fase=wQuadro%3;limite=fase===0?LIMITES.inteiro:LIMITES.detalhe;
+      if(fase===2){regiao={sx:vw/4,sy:vh/4,sw:vw/2,sh:vh/2};limite=LIMITES.centro;ampliar=true}}
+    const f=Math.min(ampliar?2:1,limite/Math.max(regiao.sw,regiao.sh));
+    return {regiao,roi,ignorar,resizeWidth:Math.max(1,Math.round(regiao.sw*f)),resizeHeight:Math.max(1,Math.round(regiao.sh*f))};
+  }
+  function disparar(video,rastreio=null,externos=false,t=performance.now()){
+    iniciar();if(!pronto||emVoo||resultado)return false;
+    const vw=video.videoWidth||video.width,vh=video.videoHeight||video.height;if(!vw||!vh)return false;
+    const p=plano(vw,vh,rastreio,externos);if(!p){resultado={marcas:[],t};return true}
+    const envio=emVoo={id:++sequencia,roi:p.roi,ignorar:p.ignorar,t},g=geracao;
+    timer=setTimeout(falhar,4000);
+    const {sx,sy,sw,sh}=p.regiao;
+    // Evita também a cópia síncrona que createImageBitmap(video) faz no Chrome.
+    let frame;try{if(usarFrame&&typeof VideoFrame==='function')frame=new VideoFrame(video)}catch(_){usarFrame=false}
+    if(frame){try{worker.postMessage({id:envio.id,frame,regiao:p.regiao,resizeWidth:p.resizeWidth,resizeHeight:p.resizeHeight},[frame])}
+      catch(_){frame.close();usarFrame=false}if(usarFrame)return true}
+    // resize no createImageBitmap(video) ainda bloqueia o Chrome: só captura aqui.
+    // O worker aplica os mesmos limites ao desenhar o bitmap recortado.
+    try{createImageBitmap(video,sx,sy,sw,sh).then(bitmap=>{
+      if(g!==geracao||!worker){bitmap.close();return}
+      try{worker.postMessage({id:envio.id,bitmap,regiao:p.regiao,resizeWidth:p.resizeWidth,resizeHeight:p.resizeHeight},[bitmap])}catch(_){bitmap.close();falhar()}
+    },()=>{if(g===geracao)falhar()})}catch(_){falhar()}
+    return true;
+  }
+  function consumir(){const r=resultado;resultado=null;return r}
+  return{lerTudo,iniciar,parar,disparar,consumir,limites:LIMITES,get ocupado(){return !!emVoo},get assincrono(){return !falhou&&suporta()},get workerAtivo(){return !!worker&&pronto},
+    ler:video=>{const m=lerTudo(video).find(m=>m.id>=ARUCO0&&m.id<ARUCO0+5);return m?m.id-ARUCO0:-1},svg:id=>detector().dictionary.generateSVG(id)};
 })();
 
 pintarFicha();

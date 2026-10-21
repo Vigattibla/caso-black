@@ -48,11 +48,11 @@ const Dados = window.Dados = (() => {
   return {
     ficha: () => ficha,
     carimbos: () => ficha ? ficha.carimbos : [],
-    async entrar({nome, email = '', whatsapp = '', lgpd}) {
+    async entrar({nome, email = '', whatsapp = '', lgpd, origem = ''}) {
       const contato = whatsapp || email, tipo = email && whatsapp ? 'ambos' : whatsapp ? 'whatsapp' : 'email';
       ficha = {id: uuid(), nome, contato, email, whatsapp, tipo, carimbos: [], resolvido: false, em: new Date().toISOString()};
       gravar(LS, ficha);
-      await enviar({tabela: 'investigadores', linha: {id: ficha.id, nome, contato, email: email || null, whatsapp: whatsapp || null, tipo, lgpd: !!lgpd, origem: ref()}});
+      await enviar({tabela: 'investigadores', linha: {id: ficha.id, nome, contato, email: email || null, whatsapp: whatsapp || null, tipo, lgpd: !!lgpd, origem: origem || ref()}});
       return ficha;
     },
     async carimbar(estacao, via) {   // estacao 1..5 · 6 = caso resolvido

@@ -26,7 +26,7 @@ const Mochila=(()=>{
     x.strokeStyle='#8c1024';x.lineWidth=10;x.lineJoin='round';x.beginPath();x.moveTo(335,650);x.lineTo(415,650);x.lineTo(395,625);x.moveTo(415,650);x.lineTo(395,675);x.stroke();
   };
   let demo=!!window.DEV&&location.hash==='#demo-mochila',aberta=false,ui=null,bag=[],mao=null,solta=null,revelada=false;
-  let carta=null,quadros=new Map(),cursor=null,ultimaMao=-Infinity,custoMao=0,modelo=null,carga=null,falhou=false,cpuModelo=false,geracao=0,arrasto=null;
+  let carta=null,quadros=new Map(),cursor=null,ultimaMao=-Infinity,custoMao=0,modelo=null,carga=null,falhou=false,cpuModelo=false,geracao=0,arrasto=null,cancelarCarga=null;
   let demoId=300,demoTimer=0,demoStream=null,tintaPixels=null;
   const $=s=>ui.querySelector(s),agora=()=>performance.now();
   function ler(){
@@ -110,7 +110,7 @@ const Mochila=(()=>{
   function iniciar(){demo=!!window.DEV&&location.hash==='#demo-mochila';criar();aberta=true;ui.hidden=false;ler();mao=null;cursor=null;quadros.clear();carta=null;revelada=false;falhou=false;
     $('#mochilaEtapas').hidden=!demo;$('#mochilaInstrucao').hidden=!demo;barra();
   }
-  function fechar(){if(!aberta)return;guardar(false);if(solta?.adquirida){if(!bag.includes(solta.id))bag.push(solta.id);solta=null;salvar()}aberta=false;geracao++;modelo?.close();modelo=null;carga=null;falhou=false;ultimaMao=-Infinity;custoMao=0;cursor=null;arrasto=null;
+  function fechar(){if(!aberta)return;guardar(false);if(solta?.adquirida){if(!bag.includes(solta.id))bag.push(solta.id);solta=null;salvar()}aberta=false;geracao++;cancelarCarga?.();cancelarCarga=null;modelo?.close();modelo=null;carga=null;falhou=false;ultimaMao=-Infinity;custoMao=0;cursor=null;arrasto=null;
     clearTimeout(demoTimer);ui.hidden=true;document.body.classList.remove('mochila-carta');demoStream?.getTracks().forEach(t=>t.stop());demoStream=null;
   }
   function premiar(est){if(est!==0||bag.includes('lente')||mao?.id==='lente'||solta)return;
@@ -159,8 +159,37 @@ const Mochila=(()=>{
     if(g.fechada&&!anterior){const alvo=hit(p);if(alvo?.tipo==='solta')coletar('mao',p);else if(alvo?.tipo==='slot')tirar(alvo.id,'mao',p);else if(mao?.modo==='toque'){mao.modo='mao';mao.p=p}}
     if(!g.fechada&&anterior&&mao?.modo==='mao')soltar();
   }
+  function modeloWorker(cpu,aoErro){
+    const w=new Worker('mao-worker.js?v=1');let fechado=false,pronto=false,emVoo=false,retorno=null,timer=0,rejeitar,usarFrame=true;
+    const cargaWorker=new Promise((ok,erro)=>{rejeitar=erro;timer=setTimeout(()=>falha(Error('Tempo do modelo')),15000);
+      w.onmessage=({data})=>{if(fechado)return;if(data.erro){falha(Error(data.erro));return}
+        if(data.pronto){clearTimeout(timer);pronto=true;proxy.cpu=data.cpu;ok(proxy);return}
+        clearTimeout(timer);emVoo=false;const receber=retorno;retorno=null;receber?.(data.landmarks,data.t,data.ms)};
+      w.onerror=e=>{e.preventDefault();falha(Error(e.message||'Worker da mão indisponível'))};
+    });
+    function falha(e){if(fechado)return;if(!pronto)rejeitar(e);else aoErro();proxy.close()}
+    const proxy={worker:true,cpu:false,pronto:cargaWorker,get ocupado(){return emVoo},
+      enviar(v,t,receber){if(fechado||!pronto||emVoo)return false;emVoo=true;retorno=receber;const videoTime=v.currentTime;timer=setTimeout(()=>falha(Error('Tempo da mão')),4000);
+        // VideoFrame transfere a referência; a conversão de pixels fica no worker.
+        let frame;try{if(usarFrame&&typeof VideoFrame==='function')frame=new VideoFrame(v)}catch(_){usarFrame=false}
+        if(frame){try{w.postMessage({tipo:'quadro',frame,t,videoTime},[frame])}catch(_){frame.close();usarFrame=false}if(usarFrame)return true}
+        try{createImageBitmap(v).then(bitmap=>{if(fechado){bitmap.close();return}
+          try{w.postMessage({tipo:'quadro',bitmap,t,videoTime},[bitmap])}catch(e){bitmap.close();falha(e)}
+        },falha)}catch(e){falha(e)}return true},
+      close(){if(fechado)return;fechado=true;clearTimeout(timer);w.terminate();retorno=null;if(!pronto)rejeitar(Error('Modelo encerrado'))}
+    };
+    w.postMessage({tipo:'iniciar',cpu});return proxy;
+  }
+  function erroMao(){modelo?.close();modelo=null;if(cpuModelo){falhou=true;toast('Mão indisponível. Toque nos itens para pegar.')}else preparar(true)}
   async function preparar(cpu=false){if(carga||falhou||!aberta)return;const vez=geracao;
-    carga=(async()=>{try{const {FilesetResolver,HandLandmarker}=await import('./vendor/mediapipe/vision_bundle.mjs');const fs=await FilesetResolver.forVisionTasks('./vendor/mediapipe/wasm');
+    carga=(async()=>{try{
+        if(typeof Worker==='function'&&typeof OffscreenCanvas==='function'&&typeof createImageBitmap==='function'){
+          let proxy;
+          try{proxy=modeloWorker(cpu,()=>{if(aberta&&vez===geracao)erroMao()});cancelarCarga=()=>proxy.close();
+            const novo=await proxy.pronto;if(vez===geracao)cancelarCarga=null;if(!aberta||vez!==geracao){novo.close();return}modelo=novo;cpuModelo=novo.cpu;return;
+          }catch(_){proxy?.close();if(vez===geracao)cancelarCarga=null;if(!aberta||vez!==geracao)return}
+        }
+        const {FilesetResolver,HandLandmarker}=await import('./vendor/mediapipe/vision_bundle.mjs');const fs=await FilesetResolver.forVisionTasks('./vendor/mediapipe/wasm');
         const criar=delegate=>HandLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:'./vendor/mediapipe/hand_landmarker.task',delegate},runningMode:'VIDEO',numHands:1});
         let novo,usouCPU=cpu;try{novo=await criar(cpu?'CPU':'GPU')}catch(e){if(cpu)throw e;usouCPU=true;novo=await criar('CPU')}
         if(!aberta||vez!==geracao){novo.close();return}modelo=novo;cpuModelo=usouCPU;
@@ -171,8 +200,10 @@ const Mochila=(()=>{
     if(!aberta||demo)return false;
     const precisa=mao||solta&&visivel(quadros.get(solta.placa),t)||bag.length&&visivel(carta,t);
     if(!precisa)return false;if(!modelo){preparar();return false}
-    if(!vezMao||t-ultimaMao<Math.max(1000/15,custoMao*2))return false;ultimaMao=t;const inicio=agora();
-    try{receberMao(modelo.detectForVideo(v,t).landmarks[0],v,t)}catch(_){modelo.close();modelo=null;if(cpuModelo){falhou=true;toast('Mão indisponível. Toque nos itens para pegar.')}else preparar(true)}
+    if(!vezMao||t-ultimaMao<Math.max(1000/15,modelo.worker?0:custoMao*2))return false;
+    if(modelo.worker){const vez=geracao,enviou=modelo.enviar(v,t,(l,tempo)=>{if(aberta&&vez===geracao&&agora()-tempo<350)receberMao(l,v,tempo)});if(enviou)ultimaMao=t;return enviou}
+    ultimaMao=t;const inicio=agora();
+    try{receberMao(modelo.detectForVideo(v,t).landmarks[0],v,t)}catch(_){erroMao()}
     custoMao=.7*custoMao+.3*(agora()-inicio);return true;
   }
   function desenhar(t=agora()){
@@ -220,6 +251,6 @@ const Mochila=(()=>{
   document.addEventListener('visibilitychange',()=>{if(document.hidden){guardar();cursor=null}});
   if(demo)addEventListener('load',()=>{irPara(0,false);abrirLupa()});
   return {iniciar,fechar,premiar,observar,desenhar,lerMao,pinca:pincaMochila,ITENS,CARTA,TINTA_OCULTA,
-    videoDemo,quadroDemo,etapaDemo,get demo(){return demo},get naMao(){return mao?.id},get premioPendente(){return !!solta&&!solta.adquirida},get procurarCarta(){return !!(solta||mao||bag.length)},get rastreio(){return visivel(carta)?carta.marca:null}};
+    videoDemo,quadroDemo,etapaDemo,get lendoMao(){return !!modelo?.worker&&modelo.ocupado},get demo(){return demo},get naMao(){return mao?.id},get premioPendente(){return !!solta&&!solta.adquirida},get procurarCarta(){return !!(solta||mao||bag.length)},get rastreio(){return visivel(carta)?carta.marca:null}};
 })();
 if(typeof module!=='undefined'&&module.exports)module.exports={pinca:pincaMochila};

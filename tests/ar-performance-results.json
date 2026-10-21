@@ -1,0 +1,207 @@
+{
+  "date": "2026-10-21",
+  "method": {
+    "browser": "Chromium headless shell 1208, --mute-audio",
+    "cdpCpuThrottlingRate": 4,
+    "viewport": "390x844, DPR 2",
+    "fixture": "tests/ar-camera-fixture.js",
+    "durationPerSceneMs": 6000,
+    "longTasks": "PerformanceObserver; tarefas de qualquer duração também medidas por trace CDP na CrRendererMain",
+    "artifacts": "C:\\Users\\Vigatti\\AppData\\Local\\Temp\\cb-ar-performance"
+  },
+  "before": [
+    {
+      "scene": "procurando",
+      "fps": 17.928221323087413,
+      "maxReadMainMs": 86,
+      "maxDetectionCallbackMs": null,
+      "maxMainTaskMs": 167.841,
+      "mainTasksOver16ms": 102,
+      "longTasksOver50ms": 47,
+      "maxRafGapMs": 166.59999999999945,
+      "video": {
+        "width": 1920,
+        "height": 1080
+      },
+      "worker": false,
+      "hand": null
+    },
+    {
+      "scene": "rastreando",
+      "fps": 24.508992150498464,
+      "maxReadMainMs": 132.69999998807907,
+      "maxDetectionCallbackMs": null,
+      "maxMainTaskMs": 152.116,
+      "mainTasksOver16ms": 136,
+      "longTasksOver50ms": 21,
+      "maxRafGapMs": 149.90000000000146,
+      "video": {
+        "width": 1920,
+        "height": 1080
+      },
+      "worker": false,
+      "hand": null
+    }
+  ],
+  "after": [
+    {
+      "scene": "procurando",
+      "fps": 60.12958675471513,
+      "maxReadMainMs": 2.2000000178813934,
+      "maxDetectionCallbackMs": 3.192,
+      "maxMainTaskMs": 24.551,
+      "mainTasksOver16ms": 6,
+      "longTasksOver50ms": 0,
+      "maxRafGapMs": 16.800000000000182,
+      "video": {
+        "width": 1280,
+        "height": 720
+      },
+      "worker": true,
+      "hand": null
+    },
+    {
+      "scene": "rastreando",
+      "fps": 60.12357810224061,
+      "maxReadMainMs": 3.199999988079071,
+      "maxDetectionCallbackMs": 4.032,
+      "maxMainTaskMs": 17.312,
+      "mainTasksOver16ms": 2,
+      "longTasksOver50ms": 0,
+      "maxRafGapMs": 16.80000000000291,
+      "video": {
+        "width": 1280,
+        "height": 720
+      },
+      "worker": true,
+      "hand": null
+    }
+  ],
+  "handBeforeWorker": [
+    {
+      "scene": "rastreando+mao",
+      "fps": 34.816055175089105,
+      "maxReadMainMs": 11,
+      "maxDetectionCallbackMs": 189.622,
+      "maxMainTaskMs": 191.678,
+      "mainTasksOver16ms": 40,
+      "longTasksOver50ms": 17,
+      "maxRafGapMs": 183.39999999999964,
+      "video": {
+        "width": 1280,
+        "height": 720
+      },
+      "worker": true,
+      "hand": {
+        "calls": 20,
+        "maxMs": 200.09999999403954,
+        "meanMs": 159.38499999791384,
+        "delegates": [
+          "CPU"
+        ]
+      }
+    }
+  ],
+  "handAfterWorker": [
+    {
+      "scene": "rastreando+mao",
+      "fps": 60.16365848374249,
+      "maxReadMainMs": 2.699999988079071,
+      "maxDetectionCallbackMs": 5.957,
+      "maxMainTaskMs": 23.337,
+      "mainTasksOver16ms": 12,
+      "longTasksOver50ms": 0,
+      "maxRafGapMs": 16.80000000000109,
+      "video": {
+        "width": 1280,
+        "height": 720
+      },
+      "worker": true,
+      "hand": {
+        "calls": 71,
+        "maxMs": 91.2999999821186,
+        "meanMs": 31.245070423038914,
+        "delegates": [
+          "CPU"
+        ]
+      }
+    }
+  ],
+  "tracking": {
+    "rmsPx": 0.004375326301793786,
+    "checks": 14,
+    "consoleErrors": 0
+  },
+  "workerVerification": {
+    "cpuThrottle": 4,
+    "width": 1280,
+    "checks": [
+      "Placa 300, lado 62px, sem detecção na interface",
+      "Placa 301, lado 62px, sem detecção na interface",
+      "Placa 302, lado 62px, sem detecção na interface",
+      "Placa 303, lado 62px, sem detecção na interface",
+      "Placa 304, lado 62px, sem detecção na interface",
+      "Placa 300, lado 31px, sem detecção na interface",
+      "Placa 301, lado 31px, sem detecção na interface",
+      "Placa 302, lado 31px, sem detecção na interface",
+      "Placa 303, lado 31px, sem detecção na interface",
+      "Placa 304, lado 31px, sem detecção na interface",
+      "Um envio em voo; resultado real consumido uma única vez",
+      "Fechar/reabrir descarta captura e resposta da geração anterior",
+      "Fallback sem Worker",
+      "Fallback sem OffscreenCanvas",
+      "Fallback sem createImageBitmap",
+      "Sem VideoFrame continua assíncrono com ImageBitmap",
+      "Falha assíncrona de captura ativa fallback"
+    ],
+    "errors": []
+  },
+  "configuration": {
+    "camera": "1280x720 ideal, 30fps",
+    "limits": {
+      "inteiro": 640,
+      "detalhe": 1080,
+      "roi": 720,
+      "centro": 960
+    },
+    "frameTransport": "VideoFrame transferido e convertido em ImageBitmap no worker quando disponível; captura por ImageBitmap nos demais; fallback síncrono se APIs faltarem ou falharem",
+    "hand": "Worker separado, envios intercalados, GPU por software evitada, fallback CPU; implementação síncrona original sem APIs necessárias",
+    "scripts": {
+      "caso": 19,
+      "quadroAR": 2,
+      "mochila": 2,
+      "arucoWorker": 1,
+      "maoWorker": 1
+    }
+  },
+  "rejectedCandidates": [
+    {
+      "candidate": "ROI 540",
+      "result": "Jitter 0.1275px; ROI final 720"
+    },
+    {
+      "candidate": "Passe detalhado 960",
+      "result": "Falhou ao adquirir placa 300 de 31px CSS; final 1080"
+    },
+    {
+      "candidate": "createImageBitmap(video) na main",
+      "result": "Picos de cópia acima de 16ms; captura via VideoFrame nas APIs compatíveis"
+    },
+    {
+      "candidate": "MediaPipe síncrono em CPU",
+      "result": "34.8fps, inferência média 159.4ms; também movido ao worker"
+    }
+  ],
+  "tests": {
+    "envelopes": "105 OK",
+    "mochila": "30 OK com --modelo-real",
+    "arCamera": "Falha preexistente na estação 3: Diferenças: áreas de toque sem sobreposição, confirmada antes/depois; asserção preservada",
+    "arTrackingOnly": "14 OK",
+    "worker": "17 OK, CPU 4x"
+  },
+  "limitations": [
+    "Marcadores sintéticos com 62px e 31px CSS (metade do tamanho angular), ids 300..304; não substitui teste físico a 1–2m em Android/iOS.",
+    "Picos gerais da main incluem tarefas além da leitura; máximo do callback de leitura ficou abaixo de 16ms nos cenários finais."
+  ],
+  "git": "Sem commit ou push"
+}
