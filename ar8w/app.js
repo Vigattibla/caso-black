@@ -56,7 +56,7 @@ const modulo = {
   onUpdate({processCpuResult}) {
     const r = processCpuResult.reality;
     if (r) $('#limitado').hidden = r.trackingStatus !== 'LIMITED';
-    if (DEBUG) { const c = $('#camera'); $('#debug').textContent = `vídeo ${__ar8w.video} · canvas ${c.width}x${c.height} · tela ${innerWidth}x${innerHeight}@${devicePixelRatio}`; }
+    if (DEBUG) { const c = $('#camera'); $('#debug').textContent = `${__ar8w.alvo || 'alvo ?'} · achou ${ancora.achou || 0} · vídeo ${__ar8w.video} · canvas ${c.width}x${c.height} · tela ${innerWidth}x${innerHeight}@${devicePixelRatio}`; }
   },
   onRender() {
     const agora = performance.now(), dt = Math.min(0.1, (agora - (ultimo || agora)) / 1000);
@@ -72,6 +72,8 @@ const modulo = {
     cssRenderer.render(cssScene, camera);
   },
   listeners: [
+    {event: 'reality.imageloading', process: () => { __ar8w.alvo = 'alvo carregando'; }},
+    {event: 'reality.imagescanning', process: ({detail}) => { __ar8w.alvo = 'alvo pronto (' + (detail?.imageTargets?.length ?? '?') + ')'; }},
     {event: 'reality.imagefound', process: ({detail}) => {
       alvoLargura = detail.scaledWidth; alvoAltura = detail.scaledHeight;
       ancora.found(detail); __ar8w.eventos.push('found'); status('');
