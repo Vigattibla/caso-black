@@ -28,6 +28,7 @@ async function main(){
   await ok(`!window.__ar8w.configErro`,'configure aceitou o alvo placa-1');
   await ok(`!document.querySelector('#abrir').disabled&&document.querySelector('#abrir').textContent==='Abrir lupa'`,'botão Abrir lupa liberado');
   await ok(`/8th Wall/.test(document.querySelector('#credito').textContent)`,'crédito 8th Wall visível');
+  await ok(`(()=>{document.body.appendChild(document.querySelector('#camera'));const z=e=>+getComputedStyle(document.querySelector(e)).zIndex||0;return z('#css3d')>z('#camera')})()`,'quadro fica acima do canvas mesmo com o canvas no fim do body');
   await shot('8w-inicio');
 
   // Âncora: suaviza, segura ao perder, não salta.

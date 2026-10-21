@@ -96,6 +96,14 @@ async function configurar() {
   XR8.XrController.configure({imageTargetData: [json], disableWorldTracking: false});
 }
 
+// Teste de nitidez: ?k=1.5 multiplica a resolução do canvas (padrão 1 = sem zoom confirmado).
+const K = Math.min(3, Math.max(1, parseFloat(new URLSearchParams(location.search).get('k')) || 1));
+const nitidez = {
+  name: 'nitidez',
+  onAttach({canvas}) { if (K > 1) requestAnimationFrame(() => { canvas.width = Math.round(innerWidth * K); canvas.height = Math.round(innerHeight * K); }); },
+  onDeviceOrientationChange({orientation}) { nitidez.onAttach({canvas: $('#camera')}); },
+};
+
 async function abrir() {
   if (rodando) return;
   if (!XR8.XrDevice.isDeviceBrowserCompatible()) {
@@ -109,6 +117,7 @@ async function abrir() {
   const canvas = $('#camera');
   XR8.addCameraPipelineModules([
     XR8.FullWindowCanvas.pipelineModule(), // canvas na resolução do vídeo (canvas grande = zoom da câmera)
+    nitidez,
     XR8.GlTextureRenderer.pipelineModule(),
     XR8.Threejs.pipelineModule(),
     XR8.XrController.pipelineModule(),
