@@ -103,6 +103,7 @@ async function abrir() {
   await configurar();
   const canvas = $('#camera');
   XR8.addCameraPipelineModules([
+    XR8.FullWindowCanvas.pipelineModule(), // canvas na resolução do vídeo (canvas grande = zoom da câmera)
     XR8.GlTextureRenderer.pipelineModule(),
     XR8.Threejs.pipelineModule(),
     XR8.XrController.pipelineModule(),
@@ -111,12 +112,6 @@ async function abrir() {
   XR8.run({canvas, allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS});
 }
 
-function tamanhoCanvas() {
-  const c = $('#camera'), d = devicePixelRatio || 1;
-  c.width = Math.round(innerWidth * d); c.height = Math.round(innerHeight * d);
-}
-addEventListener('resize', tamanhoCanvas);
-tamanhoCanvas();
 montarCss();
 
 const pronto = () => {
