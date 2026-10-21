@@ -8,14 +8,14 @@ window.Filtro = (() => {
   const MODELO = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
   const W = 1080, H = 1920, img = {};
   const ARROBA = '@villageresortmg';
-  let rosto = null, carregando = null, fluxo = null, laco = 0, ui = null, ultimo = null, suave = null, pedidoCam = 0;
+  let tiro = false, rosto = null, carregando = null, fluxo = null, laco = 0, ui = null, ultimo = null, suave = null, pedidoCam = 0;
 
   async function prepara() {
     if (carregando) return carregando;
     carregando = (async () => {
       const carregaImg = n => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `assets/filtro/${n}.png` });
       // Artes opcionais (chapéu/selo): sem o PNG, usa o desenho reserva.
-      [img.chapeu, img.selo] = await Promise.all(['chapeu', 'selo'].map(carregaImg));
+      [img.chapeu, img.selo, img.moldura] = await Promise.all(['chapeu', 'selo', 'moldura'].map(carregaImg));
       img.logo = await new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = 'assets/cb-logo.png' });
       try {
         const v = await import(MP + '/vision_bundle.mjs');
@@ -84,6 +84,7 @@ window.Filtro = (() => {
         x.restore();
       });
       $('#fiMsg').textContent = faces.length ? '' : 'MOSTRE O ROSTO PRA CÂMERA';
+      if (tiro) { tiro = false; emoldura(c) }   // foto sem o selo, dentro da moldura da pasta
       if (img.selo) x.drawImage(img.selo, 0, 0, W, H); else seloReserva(x);
     }
     laco = requestAnimationFrame(quadro);
@@ -109,9 +110,21 @@ window.Filtro = (() => {
     cancelAnimationFrame(laco); if (fluxo) { fluxo.getTracks().forEach(t => t.stop()); fluxo = null }
     if (ui) { ui.className = ''; ui.setAttribute('aria-hidden', 'true') }
   }
+  const J = {cx: 539.35, cy: 835, w: 724, h: 824, ang: -2.5 * Math.PI / 180};   // furo de assets/filtro/moldura.svg (igual ao moldura.html)
+  function mostra(c) { c.toBlob(b => { ultimo = b; const f = $('#fiFoto'); if (f.src) URL.revokeObjectURL(f.src); f.src = URL.createObjectURL(b); ui.classList.add('foto') }, 'image/jpeg', .92) }
+  function emoldura(cam) {
+    if (!img.moldura) return mostra(cam);
+    const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+    x.fillStyle = '#111'; x.fillRect(0, 0, W, H);
+    const s = Math.max(J.w / W, J.h / H), w = W * s, h = H * s;
+    x.save(); x.translate(J.cx, J.cy); x.rotate(J.ang); x.beginPath(); x.rect(-J.w / 2, -J.h / 2, J.w, J.h); x.clip();
+    x.drawImage(cam, -w / 2, -J.h / 2 - (h - J.h) * .3, w, h); x.restore();   // corta mais embaixo que em cima: cabeça e chapéu inteiros
+    x.drawImage(img.moldura, 0, 0, W, H); mostra(c);
+  }
   function disparar() {
     vibra(30); ui.classList.add('flash'); setTimeout(() => ui.classList.remove('flash'), 300);
-    $('#fiC').toBlob(b => { ultimo = b; const f = $('#fiFoto'); if (f.src) URL.revokeObjectURL(f.src); f.src = URL.createObjectURL(b); ui.classList.add('foto') }, 'image/jpeg', .92);
+    if (!$('#fiV').videoWidth) return;
+    tiro = true;
   }
   async function compartilhar() {
     if (!ultimo) return;
