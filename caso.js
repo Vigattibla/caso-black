@@ -200,15 +200,22 @@ $('.prog').addEventListener('click', abrirFicha); $('.prog').style.cursor = 'poi
 const Placa = (() => {
   let det=null,tolerante=null,quadro=0;const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
   function detector(){return det||(det=new AR.Detector({dictionaryName:'ARUCO_4X4_1000',maxHammingDistance:0}))}
-  function lerTudo(video){if(!window.AR)return[];const vw=video.videoWidth||video.width,vh=video.videoHeight||video.height;if(!vw||!vh)return[];
-    function tentativa(limite,recorte=false){const sw=recorte?vw/2:vw,sh=recorte?vh/2:vh,sx=(vw-sw)/2,sy=(vh-sh)/2,f=Math.min(1,limite/Math.max(sw,sh));cv.width=Math.round(sw*f);cv.height=Math.round(sh*f);cx.drawImage(video,sx,sy,sw,sh,0,0,cv.width,cv.height);
+  function lerTudo(video,rastreio=null){if(!window.AR)return[];const vw=video.videoWidth||video.width,vh=video.videoHeight||video.height;if(!vw||!vh)return[];
+    function tentativa(limite,regiao=null){const {sx=0,sy=0,sw=vw,sh=vh}=regiao||{},f=Math.min(regiao?2:1,limite/Math.max(sw,sh));cv.width=Math.round(sw*f);cv.height=Math.round(sh*f);cx.drawImage(video,sx,sy,sw,sh,0,0,cv.width,cv.height);
       const dados=cx.getImageData(0,0,cv.width,cv.height),exatos=detector().detect(dados).filter(m=>m.id>=ARUCO0&&m.id<=ARUCO0+10);
       if(!tolerante){tolerante=new AR.Detector({dictionaryName:'ARUCO_4X4_1000',maxHammingDistance:1});
         // Nesta versão do vendor, find usa distance < tau: 2 inclui distância 1.
         tolerante.dictionary.tau=2}
       const marcas=exatos.length?exatos:tolerante.detect(dados).filter(m=>m.id>=ARUCO0&&m.id<ARUCO0+5&&m.hammingDistance<=1);
-      return marcas.map(m=>({id:m.id,hammingDistance:m.hammingDistance,corners:m.corners.map(p=>({x:p.x/f+sx,y:p.y/f+sy}))}))}
-    const primeiro=tentativa(720);if(primeiro.length)return primeiro;return ++quadro%2?tentativa(1080):tentativa(1080,true)
+      return marcas.map(m=>({id:m.id,hammingDistance:m.hammingDistance,corners:m.corners.map(p=>({x:p.x*sw/cv.width+sx,y:p.y*sh/cv.height+sy}))}))}
+    quadro++;
+    if(rastreio){const xs=rastreio.corners.map(p=>p.x),ys=rastreio.corners.map(p=>p.y),lado=Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)),pad=lado*.85;
+      const sx=Math.max(0,Math.floor(Math.min(...xs)-pad)),sy=Math.max(0,Math.floor(Math.min(...ys)-pad)),sw=Math.min(vw-sx,Math.ceil(Math.max(...xs)+pad-sx)),sh=Math.min(vh-sy,Math.ceil(Math.max(...ys)+pad-sy));
+      if(sw>8&&sh>8){const roi=tentativa(1080,{sx,sy,sw,sh});if(roi.some(m=>m.id===rastreio.id)){
+        // O selo continua sendo procurado fora da ROI, mesmo durante a tarefa.
+        return quadro%20?roi:[...roi,...tentativa(720).filter(m=>m.id===ARUCO0+5)]}}
+    }
+    const primeiro=tentativa(720);if(primeiro.length)return primeiro;return quadro%2?tentativa(1080):tentativa(1080,{sx:vw/4,sy:vh/4,sw:vw/2,sh:vh/2})
   }
   return{lerTudo,ler:video=>{const m=lerTudo(video).find(m=>m.id>=ARUCO0&&m.id<ARUCO0+5);return m?m.id-ARUCO0:-1},svg:id=>detector().dictionary.generateSVG(id)};
 })();
