@@ -11,7 +11,7 @@
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-family:Montserrat,sans-serif;overscroll-behavior:none}
 #camera{position:fixed;inset:0;width:100vw;height:100vh;display:block}
-#css3d{position:fixed;inset:0;pointer-events:none;overflow:hidden}#css3d .e1{pointer-events:auto}
+#css3d{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden} /* FullWindowCanvas move o canvas pro fim do body */#css3d .e1{pointer-events:auto}
 #inicio,#erro{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:#111 url(../assets/ruido.webp);text-align:center}
 #inicio[hidden],#erro[hidden],[hidden]{display:none!important}
 .caixa{max-width:340px}.caixa img{width:190px;margin:0 auto 10px;display:block}
@@ -40,6 +40,6 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-f
 <section id="erro" hidden><div class="caixa"><h1>Ops</h1><p></p><button onclick="location.reload()">Recarregar</button></div></section>
 <div id="credito">AR por 8th Wall · Niantic Spatial · <a href="./xr/LICENSE" target="_blank">licença</a></div>
 <div id="debug"></div>
-<script type="module" src="./app.js?v=4"></script>
+<script type="module" src="./app.js?v=5"></script>
 </body>
 </html>
