@@ -9,7 +9,7 @@ function cdp(method, params = {}) { return new Promise((resolve, reject) => { co
 async function ev(expression) { const r = await cdp('Runtime.evaluate', {expression, returnByValue: true, awaitPromise: true, replMode: true}); if (r.exceptionDetails) throw Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text); return r.result.value }
 async function ok(expression, label) { if (!await ev(expression)) throw Error(label); checks.push(label) }
 async function until(expression, label) { for (let i = 0; i < 80; i++) { if (await ev(expression)) return; await sleep(100) } throw Error(label) }
-async function nav(hash = '') { const url = endpoint + '/?envelopes-test=' + Date.now() + hash; await cdp('Page.navigate', {url}); await until(`location.href===${JSON.stringify(url)} && !!window.Envelopes && typeof Quadro !== 'undefined'`, 'Carregar módulos') }
+async function nav(hash = '') { const url = endpoint + '/?dev&envelopes-test=' + Date.now() + hash; await cdp('Page.navigate', {url}); await until(`location.href===${JSON.stringify(url)} && !!window.Envelopes && typeof Quadro !== 'undefined'`, 'Carregar módulos') }
 async function touchStart(selector) {
   const pos = await ev(`(()=>{const b=document.querySelector(${JSON.stringify(selector)});b.scrollIntoView({block:'center',behavior:'instant'});const r=b.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;if(!b.contains(document.elementFromPoint(x,y)))throw Error('Alvo coberto '+${JSON.stringify(selector)});return {x,y}})()`);
   await cdp('Input.dispatchTouchEvent', {type: 'touchStart', touchPoints: [{...pos, radiusX: 2, radiusY: 2, force: 1}]});

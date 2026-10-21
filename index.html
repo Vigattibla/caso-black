@@ -371,7 +371,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 #fimAnim .selo6{position:absolute;left:50%;top:40%;width:110px;height:110px;margin:-95px 0 0 28px;z-index:3;display:none}
 #fimAnim .selo6.on{display:block}
 #fimAnim.fim .selo6{transition:transform .9s var(--ease),opacity .6s;transform:translateY(-8vh) scale(.6);opacity:0}
-.revela{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 22px) 20px calc(env(safe-area-inset-bottom) + 20px);display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.revela{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 22px) 20px calc(env(safe-area-inset-bottom) + 20px);display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .revela>*{opacity:0;transform:translateY(14px);flex-shrink:0}
 #fimAnim.fim .revela{pointer-events:auto}
 #fimAnim.fim .revela>*{opacity:1;transform:none;transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1)}
@@ -597,6 +597,9 @@ body.aberto .fita span{animation-play-state:paused}
 <div id="toast" role="status"></div>
 
 <script>
+/* versão pública: rotas de teste (#demo*, #revela, #quadroN) e botões de demonstração só com ?dev */
+window.DEV=/[?&]dev(=|&|$)/.test(location.search);
+if(!DEV){const tira=()=>{if(/^#(demo|revela|quadro\d)/.test(location.hash))history.replaceState(null,'',location.pathname+location.search)};tira();addEventListener('hashchange',tira);document.querySelectorAll('#demoTudo,#sDemo').forEach(b=>b.style.display='none')}
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const PISTAS=[ // loc: lugar da placa
  {cod:'AGUA',  dig:2,loc:'Piscina',    enig:'Onde a água esconde o amarelo, alguém deixou cair um segredo.'},
@@ -1149,7 +1152,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
 <link rel="stylesheet" href="quadro-ar.css?v=1">
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=16"></script><script src="envelopes.js?v=6"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=7"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=16"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=7"></script>
 <script src="filtro.js?v=8"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>

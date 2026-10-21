@@ -44,11 +44,11 @@ const Envelopes = window.Envelopes = (() => {
 .envelopes-resumo small{display:block;margin-top:4px;font:700 8px/1.2 'Courier Prime',monospace}
 .envelopes-mini{position:relative;flex:none;width:44px;height:31px;border-radius:2px;background:linear-gradient(160deg,#dcb57d,#ad7b3c);box-shadow:0 2px 5px #0007,inset 0 0 0 1px #0002}
 .envelopes-mini::before{content:'';position:absolute;inset:0 0 38%;background:linear-gradient(#e6c592,#c39257);clip-path:polygon(0 0,100% 0,50% 100%)}
-.envelopes-selo{position:absolute;left:50%;top:62%;width:21px;height:21px;margin:-10.5px;display:grid;place-items:center;border-radius:47% 53% 45% 55%/52% 46% 54% 48%;background:radial-gradient(circle at 34% 28%,#fff8,#fff0 42%),radial-gradient(circle at 62% 72%,#0000 40%,#0006),var(--lacre);box-shadow:0 1px 2px #0008}
+.envelopes-selo{position:absolute;left:50%;top:50%;width:21px;height:21px;margin:-10.5px;display:grid;place-items:center;border-radius:47% 53% 45% 55%/52% 46% 54% 48%;background:radial-gradient(circle at 34% 28%,#fff8,#fff0 42%),radial-gradient(circle at 62% 72%,#0000 40%,#0006),var(--lacre);box-shadow:0 1px 2px #0008}
 .envelopes-selo svg{width:13px;height:13px}.envelopes-bloq .envelopes-mini{filter:grayscale(.85) brightness(.7)}.envelopes-bloq .envelopes-selo{color:#1a1a1a}
 .en-icone{overflow:visible}.en-ico-luz{color:#fff7;transform:translate(.6px,.9px)}.en-ico{color:#1a0e05c0}
-.f5 .fimW{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;touch-action:pan-y;padding:0 4px 8px 0}.f5 .fimW>*{flex-shrink:0}.f5 #fimLupa{margin-top:12px}
-#vip .miolo{overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}#vip .miolo>*{flex-shrink:0}
+.f5 .fimW{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;touch-action:pan-y;padding:0 4px 8px 0}.f5 .fimW>*{flex-shrink:0}.f5 #fimLupa{margin-top:12px}
+#vip .miolo{overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:none}#vip .miolo::-webkit-scrollbar,.f5 .fimW::-webkit-scrollbar,.revela::-webkit-scrollbar{display:none}#vip .miolo>*{flex-shrink:0}
 #vip .envelopes-secao h3,#fimAnim .envelopes-secao h3{font:700 10px/1.4 'Courier Prime',monospace;letter-spacing:.2em;color:#f4f1ea99;margin-bottom:8px}#vip .envelopes-secao>p,#fimAnim .envelopes-secao>p{display:none}
 .envelopes-resumo .en-perda{margin:6px 0 0;font:700 9px/1.3 'Courier Prime',monospace;letter-spacing:.04em;color:#e8736b}
 #vip .envelopes-secao{margin-top:20px}#vip .envelopes-resumo{gap:10px}
