@@ -907,7 +907,7 @@ $('#fotoDet').onclick=()=>window.Filtro?Filtro.abrir():toast('Foto de detetive: 
 function pintarVip(){const v=$('#vip'),fim=window.Envelopes?Envelopes.resolvido():resolvido();v.classList.toggle('em-aberto',!fim);
   v.querySelector('.ok').textContent=fim?'CASO RESOLVIDO · O BÊ APARECEU':'CASO EM ABERTO';
   v.querySelector('p.t').innerHTML=fim?'Você está na <b>lista VIP</b>: vê as ofertas da Black antes de todo mundo.':'Tem desconto já liberado esperando por você. Termine o caso para abrir os envelopes.';
-  $('#garantir').textContent=fim?'Garantir meu acesso':'Voltar ao caso'}
+  $('#garantir').textContent=fim?'Garantir meu acesso':'Voltar ao caso';$('#voltar').hidden=!fim}
 function liberar(){const v=$('#vip'),ja=v.classList.contains('on');pintarVip();window.Envelopes?.atualizar();v.classList.add('on');if(ja)return;v.querySelector('.miolo').scrollTop=0;requestAnimationFrame(()=>requestAnimationFrame(()=>v.classList.add('go')));
   if(!v.classList.contains('em-aberto')){typeof Voz==='object'&&setTimeout(()=>{if(v.classList.contains('on'))Voz.toca(['21-be-revelacao','22-be-grupo-vip'])},1500);chuva()}}
 function chuva(){const v=$('#vip');v.querySelectorAll('.moeda').forEach(m=>m.remove());if(calmo())return;
