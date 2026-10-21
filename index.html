@@ -599,6 +599,9 @@ body.aberto .fita span{animation-play-state:paused}
 <script>
 /* versão pública: rotas de teste (#demo*, #revela, #quadroN) e botões de demonstração só com ?dev */
 window.DEV=/[?&]dev(=|&|$)/.test(location.search);
+/* ?zerar apaga o progresso deste jogo neste aparelho (só chaves cb*, mantém o mudo) para testar de novo */
+if(/[?&]zerar(=|&|$)/.test(location.search)){try{Object.keys(localStorage).filter(k=>/^cb/.test(k)&&k!=='cbMudo').forEach(k=>localStorage.removeItem(k))}catch(_){}
+  history.replaceState(null,'',location.pathname+location.search.replace(/[?&]zerar(=[^&]*)?/,'').replace(/^&/,'?')+location.hash);addEventListener('load',()=>setTimeout(()=>toast('Progresso zerado. Bom recomeço!'),800))}
 if(!DEV){const tira=()=>{if(/^#(demo|revela|quadro\d)/.test(location.hash))history.replaceState(null,'',location.pathname+location.search)};tira();addEventListener('hashchange',tira);document.querySelectorAll('#demoTudo,#sDemo').forEach(b=>b.style.display='none')}
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const PISTAS=[ // loc: lugar da placa
