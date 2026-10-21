@@ -72,7 +72,8 @@ document.body.insertAdjacentHTML('beforeend', `
   <h3>Abra sua ficha de investigador</h3>
   <p class="mono">Cada placa que você achar no resort vira um <b>carimbo</b> na sua ficha. Com os 5, você descobre de quem é a digital na sua carta e entra no <b>grupo VIP da Black</b>.</p>
   <label for="cNome">NOME DO INVESTIGADOR</label><input id="cNome" maxlength="60" autocomplete="name" placeholder="como te chamamos?">
-  <label for="cCont">E-MAIL OU WHATSAPP</label><input id="cCont" maxlength="120" autocomplete="email" inputmode="email" placeholder="voce@email.com ou (31) 9...">
+  <label for="cMail">E-MAIL</label><input id="cMail" maxlength="120" autocomplete="email" inputmode="email" placeholder="voce@email.com">
+  <label for="cZap">WHATSAPP · basta um dos dois</label><input id="cZap" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="(31) 9 0000-0000">
   <label class="lgpd"><input type="checkbox" id="cLgpd"><span>Aceito que o Village Resort use esses dados para me avisar do Caso Black e das ofertas da Black Friday. Posso pedir pra sair quando quiser (LGPD).</span></label>
   <div class="erro" id="cErro"></div>
   <button class="btn" id="cOk">Abrir minha ficha</button>
@@ -84,6 +85,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <div id="kFrag"></div>
   <p class="mono" id="kTxt"></p>
   <label class="btn alt" id="kFoto">Foto da equipe aqui<input type="file" accept="image/*" capture="user"></label>
+  <button class="btn alt" id="kEnvelope" hidden></button>
   <button class="btn" id="kOk">Continuar</button>
 </div></div>
 <div id="ficha" class="ov" aria-hidden="true"><div class="ovc papel">
@@ -125,13 +127,15 @@ const fechaOv = id => { const o = $(id); o.classList.remove('on'); o.setAttribut
 let depoisCad = null;
 function pedirCadastro(fn) { if (Dados.ficha()) return fn && fn(); depoisCad = fn; abreOv('#cad'); setTimeout(() => $('#cNome').focus(), 350) }
 $('#cOk').onclick = async () => {
-  const nome = $('#cNome').value.trim(), cont = $('#cCont').value.trim(), dig = cont.replace(/\D/g, '');
+  const nome = $('#cNome').value.trim(), email = $('#cMail').value.trim().toLowerCase(), zap = $('#cZap').value.replace(/\D/g, '');
   const err = t => { $('#cErro').textContent = t; vibra([20, 30, 20]) };
   if (nome.length < 2) return err('Diga seu nome, investigador.');
-  if (!(/^\S+@\S+\.\S+$/.test(cont) || (!cont.includes('@') && dig.length >= 10 && dig.length <= 13))) return err('Use um e-mail ou WhatsApp com DDD.');
+  if (!email && !zap) return err('Preencha o e-mail ou o WhatsApp (um basta).');
+  if (email && !/^\S+@\S+\.\S+$/.test(email)) return err('Confira o e-mail.');
+  if (zap && (zap.length < 10 || zap.length > 13)) return err('Use o WhatsApp com DDD.');
   if (!$('#cLgpd').checked) return err('Marque o aceite para abrir a ficha.');
   $('#cOk').disabled = true;
-  await Dados.entrar({nome, contato: cont.includes('@') ? cont.toLowerCase() : dig, lgpd: true});
+  await Dados.entrar({nome, email, whatsapp: zap, lgpd: true});
   // pistas já registradas antes do cadastro viram carimbos
   for (const i of achadas) await Dados.carimbar(i + 1, 'antes-cadastro');
   $('#cOk').disabled = false; fechaOv('#cad'); pintarFicha();
@@ -152,6 +156,7 @@ function mostrarCarimbo(n, novo) {
     : `Copie o desenho no <b>quadro ${dois(n)}</b> do verso da carta, ponto por ponto.` + (falta ? ` Faltam <b>${falta}</b>.` : ` <b>Retrato completo!</b> Leia a palavra e digite na folha 04.`);
   $('#kFoto').hidden = fim || (typeof fotoDe === 'function' && !!fotoDe(n)); $('#kFoto').dataset.n = n;
   $('#carimbo').classList.toggle('fim', fim);
+  window.Envelopes?.aviso(n, novo);
   abreOv('#carimbo'); const s = $('#kSlot'); s.classList.remove('bate'); void s.offsetWidth; s.classList.add('bate');
   setTimeout(() => { baque(fim); vibra(fim ? [60, 40, 60, 40, 160] : [70]) }, 330);
   if (novo && !fim && typeof Voz === 'object') setTimeout(() => Voz.carimbo(5 - falta), 900);

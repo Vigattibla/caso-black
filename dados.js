@@ -48,17 +48,18 @@ const Dados = window.Dados = (() => {
   return {
     ficha: () => ficha,
     carimbos: () => ficha ? ficha.carimbos : [],
-    async entrar({nome, contato, lgpd}) {
-      const tipo = contato.includes('@') ? 'email' : 'whatsapp';
-      ficha = {id: uuid(), nome, contato, tipo, carimbos: [], resolvido: false, em: new Date().toISOString()};
+    async entrar({nome, email = '', whatsapp = '', lgpd}) {
+      const contato = whatsapp || email, tipo = email && whatsapp ? 'ambos' : whatsapp ? 'whatsapp' : 'email';
+      ficha = {id: uuid(), nome, contato, email, whatsapp, tipo, carimbos: [], resolvido: false, em: new Date().toISOString()};
       gravar(LS, ficha);
-      await enviar({tabela: 'investigadores', linha: {id: ficha.id, nome, contato, tipo, lgpd: !!lgpd, origem: ref()}});
+      await enviar({tabela: 'investigadores', linha: {id: ficha.id, nome, contato, email: email || null, whatsapp: whatsapp || null, tipo, lgpd: !!lgpd, origem: ref()}});
       return ficha;
     },
     async carimbar(estacao, via) {   // estacao 1..5 · 6 = caso resolvido
       if (!ficha) return false;
       const novo = !ficha.carimbos.includes(estacao);
-      if (novo) { ficha.carimbos.push(estacao); if (estacao === 6) ficha.resolvido = true; gravar(LS, ficha) }
+      if (novo) { ficha.carimbos.push(estacao); if (estacao === 6) ficha.resolvido = true; gravar(LS, ficha);
+        document.dispatchEvent(new CustomEvent('cb-carimbo', {detail: {estacao}})) }
       if (novo) await enviar({tabela: 'carimbos', linha: {investigador_id: ficha.id, estacao, via}, conflito: 'investigador_id,estacao'});
       return novo;
     },

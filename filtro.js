@@ -1,8 +1,8 @@
 /* Caso Black · foto de detetive (fim do caso)
-   Câmera frontal + MediaPipe Face Landmarker: chapéu na testa e óculos nos olhos, selo leve por cima.
+   Câmera frontal + MediaPipe Face Landmarker: chapéu na testa (só quando acha o rosto), selo leve por cima.
    O hóspede posta a foto no story marcando o Village; a equipe reposta na moldura da pasta (moldura.html).
-   Artes (PNG transparente) em assets/filtro/: chapeu.png, oculos.png, selo.png (1080x1920, textos entre y=250 e 1670).
-   Sem arquivo, usa o desenho reserva. Sem rastreio (modelo não carregou), o chapéu fica fixo no topo. */
+   Artes (PNG transparente) em assets/filtro/: chapeu.png, selo.png (1080x1920, textos entre y=250 e 1670).
+   Sem arquivo, usa o desenho reserva. Sem rosto, sem chapéu. */
 window.Filtro = (() => {
   const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
   const MODELO = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
@@ -14,8 +14,8 @@ window.Filtro = (() => {
     if (carregando) return carregando;
     carregando = (async () => {
       const carregaImg = n => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `assets/filtro/${n}.png` });
-      // Artes opcionais (chapéu/óculos/selo): sem o PNG, usa o desenho reserva.
-      [img.chapeu, img.oculos, img.selo] = await Promise.all(['chapeu', 'oculos', 'selo'].map(carregaImg));
+      // Artes opcionais (chapéu/selo): sem o PNG, usa o desenho reserva.
+      [img.chapeu, img.selo] = await Promise.all(['chapeu', 'selo'].map(carregaImg));
       img.logo = await new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = 'assets/cb-logo.png' });
       try {
         const v = await import(MP + '/vision_bundle.mjs');
@@ -50,14 +50,9 @@ window.Filtro = (() => {
     x.fillStyle = '#FDC72F'; x.font = `400 ${h * .1}px Anton`; x.textAlign = 'center'; x.fillText('CASO BLACK', w / 2, h * .77);
     x.restore();
   }
-  function oculosReserva(x, w) {
-    const r = w * .2; x.save(); x.lineWidth = w * .045; x.strokeStyle = '#111'; x.fillStyle = '#11111155';
-    [-1, 1].forEach(s => { x.beginPath(); x.arc(s * w * .25, 0, r, 0, Math.PI * 2); x.fill(); x.stroke() });
-    x.beginPath(); x.moveTo(-w * .05, -r * .2); x.quadraticCurveTo(0, -r * .5, w * .05, -r * .2); x.stroke(); x.restore();
-  }
   function seloReserva(x) {   // fora das faixas que o Instagram cobre (250 px em cima e embaixo)
     x.save();
-    if (img.logo) { const lw = 320, lh = lw * img.logo.height / img.logo.width; x.drawImage(img.logo, 56, 270, lw, lh) }
+    if (img.logo) { const lw = 300, lh = lw * img.logo.height / img.logo.width; x.drawImage(img.logo, (W - lw) / 2, 1420 - lh, lw, lh) }   // logo embaixo, junto da faixa: o chapéu segue a cabeça e não pode cobrir
     x.translate(W / 2, 1560); x.rotate(-.04);
     x.fillStyle = '#FDC72F'; x.fillRect(-400, -120, 800, 120);
     x.fillStyle = '#111'; x.font = '400 88px Anton'; x.textAlign = 'center'; x.fillText('INVESTIGADOR OFICIAL', 0, -26);
@@ -83,17 +78,12 @@ window.Filtro = (() => {
         const g = suave[n] || (suave[n] = alvo), k = .45;
         ['ang', 'lw', 'ow'].forEach(p => g[p] += (alvo[p] - g[p]) * k);
         ['t', 'm'].forEach(p => g[p] = [g[p][0] + (alvo[p][0] - g[p][0]) * k, g[p][1] + (alvo[p][1] - g[p][1]) * k]);
-        // óculos: largura ~1,5x a distância dos cantos dos olhos, centro no meio dos olhos
-        x.save(); x.translate(g.m[0], g.m[1]); x.rotate(g.ang); const ow = g.ow * 1.5;
-        if (img.oculos) x.drawImage(img.oculos, -ow / 2, -ow * img.oculos.height / img.oculos.width / 2, ow, ow * img.oculos.height / img.oculos.width); else oculosReserva(x, ow);
-        x.restore();
         // chapéu: largura ~1,6x a do rosto, base um pouco abaixo do topo da testa
         x.save(); x.translate(g.t[0], g.t[1]); x.rotate(g.ang); x.translate(0, g.lw * .12); const cw = g.lw * 1.6;
         if (img.chapeu) { const ch = cw * img.chapeu.height / img.chapeu.width; x.drawImage(img.chapeu, -cw / 2, -ch, cw, ch) } else chapeuReserva(x, cw);
         x.restore();
       });
-      if (!faces.length) { x.save(); x.translate(W / 2, H * .3); const cw = W * .62; if (img.chapeu) { const ch = cw * img.chapeu.height / img.chapeu.width; x.drawImage(img.chapeu, -cw / 2, -ch, cw, ch) } else chapeuReserva(x, cw); x.restore() }
-      $('#fiMsg').textContent = faces.length ? '' : rosto ? 'MOSTRE O ROSTO PRA CÂMERA' : 'ENCAIXE A CABEÇA NO CHAPÉU';
+      $('#fiMsg').textContent = faces.length ? '' : 'MOSTRE O ROSTO PRA CÂMERA';
       if (img.selo) x.drawImage(img.selo, 0, 0, W, H); else seloReserva(x);
     }
     laco = requestAnimationFrame(quadro);

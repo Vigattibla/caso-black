@@ -3,7 +3,9 @@ create table if not exists investigadores (
   id uuid primary key,
   nome text not null check (char_length(nome) between 2 and 80),
   contato text not null check (char_length(contato) between 8 and 120),
-  tipo text not null check (tipo in ('email','whatsapp')),
+  email text check (email is null or char_length(email) between 6 and 120),
+  whatsapp text check (whatsapp is null or char_length(whatsapp) between 10 and 13),
+  tipo text not null check (tipo in ('email','whatsapp','ambos')),
   lgpd boolean not null check (lgpd),
   origem text default 'carta-qr',
   criado_em timestamptz default now()
