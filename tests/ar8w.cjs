@@ -37,6 +37,12 @@ async function main(){
     for(let i=0;i<120;i++)a.passo(1/60);const fix=a.pose.p[0];a.lost();for(let i=0;i<120;i++)a.passo(1/60);
     return Math.abs(fix-0.02)<1e-3&&Math.abs(a.pose.p[0]-fix)<1e-9&&!a.visto&&a.achou===1})()`,'âncora suaviza e fica no lugar ao perder a placa');
 
+  await ok(`(()=>{const a=__ar8w.ancora;const d=x=>({position:{x,y:1.5,z:-2},rotation:{x:0,y:0,z:0,w:1},scale:1});
+    a.found(d(0.02));for(let i=0;i<60;i++){a.updated(d(0.02));a.passo(1/60)}if(!a.travado)return 'nao travou';const fix=a.pose.p[0];
+    for(let i=0;i<60;i++){a.updated(d(0.02+(i%2?0.05:-0.05)));a.passo(1/60)}if(Math.abs(a.pose.p[0]-fix)>1e-9)return 'tremeu';
+    for(let i=0;i<30;i++){a.updated(d(0.4));a.passo(1/60)}if(Math.abs(a.pose.p[0]-fix)>1e-9)return 'seguiu cedo';
+    for(let i=0;i<120;i++){a.updated(d(0.4));a.passo(1/60)}return a.pose.p[0]>0.3||'nao seguiu placa mexida'})()===true`,'âncora trava: ignora leitura ruidosa e só segue placa mexida');
+
   // Quadro jogável (DOM sem câmera): 3 pares certos + 1 errado.
   await ev(`(()=>{const q=__ar8w.quadro;document.body.appendChild(q);q.style.cssText='position:fixed;left:0;top:0;transform:scale(.65);transform-origin:0 0;z-index:50;visibility:visible'})()`);
   const tocar=async s=>ev(`document.querySelector(${JSON.stringify(s)}).click()`);
