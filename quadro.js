@@ -65,6 +65,7 @@ const Quadro = (() => {
   };
   function erro(el){el.classList.remove('q-treme');void el.offsetWidth;el.classList.add('q-treme');fala(tarefas[est].erro);vibra([20,30,20])}
   function ganhar(){if(venceu)return;venceu=true;const s=q(`[data-s="${est}"]`);s.classList.add('q-fora','q-novo');vibra(40);
+    if(QuadroAR.ativo&&est===0)Mochila.premiar(0);
     fimTimer=setTimeout(()=>{q('.q-fim').hidden=false;QuadroAR.ganhou();q('.q-segue').focus()},700)}
   function fechar(){sessao++;clearTimeout(timer);clearTimeout(fimTimer);cancelAnimationFrame(raf);observador?.disconnect();observador=null;Q._resize=null;if(midia){midia.pause();midia.removeAttribute('src');midia.load();midia=null}
     QuadroAR.limpar();document.getElementById('lupa').classList.remove('quadro-ar');const b=document.getElementById('balao');b.classList.remove('on','q-ajuda');document.body.append(b);typeof Voz==='object'&&Voz.para();Q.classList.remove('on');Q.setAttribute('aria-hidden','true');callback=null;foco?.focus()}

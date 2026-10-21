@@ -2,7 +2,7 @@
 HTMLMediaElement.prototype.play=function(){this.muted=true;return Promise.reject(new DOMException('Media bloqueada no teste','NotAllowedError'))};
 for(const C of [window.AudioContext,window.webkitAudioContext])if(C)C.prototype.resume=()=>Promise.resolve();
 window.CB_CONFIG={backend:'local'};
-localStorage.clear();
+Object.keys(localStorage).filter(k=>k.startsWith('cb')).forEach(k=>localStorage.removeItem(k));
 localStorage.setItem('cb-ficha',JSON.stringify({id:'00000000-0000-4000-8000-000000000001',nome:'Teste AR',contato:'teste@example.invalid',tipo:'email',carimbos:[],resolvido:false,em:'2026-10-21T12:00:00Z'}));
 window.__fake={id:300,hidden:false,moving:true,pose:0,frames:0,wide:false};
 Object.defineProperty(navigator.mediaDevices,'getUserMedia',{configurable:true,value:async()=>{
@@ -15,7 +15,7 @@ Object.defineProperty(navigator.mediaDevices,'getUserMedia',{configurable:true,v
   let lastId=-1,rects=[],t0=performance.now();
   f.project=(u,v,t=performance.now())=>{
     const time=f.moving?(t-t0)/1000:0,pose=f.pose,side=62*(1+pose*.075+.025*Math.sin(time*.4));
-    const ang=.025+pose*.035+.025*Math.sin(time*.35),cx=195+pose*10+9*Math.sin(time*.45),cy=104+pose*13+6*Math.sin(time*.3);
+    const ang=.025+pose*.035+.025*Math.sin(time*.35),cx=(f.cx??195)+pose*10+9*Math.sin(time*.45),cy=(f.cy??104)+pose*13+6*Math.sin(time*.3);
     const z=1+.012*(u-.5)+(.008+pose*.003)*(v-.5),px=(u-.5)*side/z,py=(v-.5)*side/z;
     const screen={x:cx+px*Math.cos(ang)-py*Math.sin(ang),y:cy+px*Math.sin(ang)+py*Math.cos(ang)};
     const cover=Math.max(390/c.width,844/c.height);return {x:(screen.x-(390-c.width*cover)/2)/cover,y:(screen.y-(844-c.height*cover)/2)/cover};

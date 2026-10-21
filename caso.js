@@ -203,24 +203,26 @@ $('.prog').addEventListener('click', abrirFicha); $('.prog').style.cursor = 'poi
 
 /* ---------- leitura da placa pela lupa ---------- */
 const Placa = (() => {
-  let det=null,tolerante=null,quadro=0;const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
+  let det=null,tolerante=null,quadro=0,fora=false;const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
   function detector(){return det||(det=new AR.Detector({dictionaryName:'ARUCO_4X4_1000',maxHammingDistance:0}))}
-  function lerTudo(video,rastreio=null){if(!window.AR)return[];const vw=video.videoWidth||video.width,vh=video.videoHeight||video.height;if(!vw||!vh)return[];
+  function lerTudo(video,rastreio=null,externos=false){if(!window.AR)return[];const vw=video.videoWidth||video.width,vh=video.videoHeight||video.height;if(!vw||!vh)return[];
     function tentativa(limite,regiao=null){const {sx=0,sy=0,sw=vw,sh=vh}=regiao||{},f=Math.min(regiao?2:1,limite/Math.max(sw,sh));cv.width=Math.round(sw*f);cv.height=Math.round(sh*f);cx.drawImage(video,sx,sy,sw,sh,0,0,cv.width,cv.height);
       if(!tolerante){tolerante=new AR.Detector({dictionaryName:'ARUCO_4X4_1000',maxHammingDistance:1});
         // Nesta versão do vendor, find usa distance < tau: 2 inclui distância 1.
         tolerante.dictionary.tau=2}
       // Uma detecção só por quadro (exata vem primeiro no find); erro de 1 bit só vale para as placas.
-      const lidas=tolerante.detect(cx.getImageData(0,0,cv.width,cv.height)).filter(m=>m.id>=ARUCO0&&m.id<=ARUCO0+10),exatos=lidas.filter(m=>!m.hammingDistance);
+      const lidas=tolerante.detect(cx.getImageData(0,0,cv.width,cv.height)).filter(m=>m.id>=ARUCO0&&m.id<=ARUCO0+11),exatos=lidas.filter(m=>!m.hammingDistance);
       const marcas=exatos.length?exatos:lidas.filter(m=>m.id<ARUCO0+5&&m.hammingDistance<=1);
       return marcas.map(m=>({id:m.id,hammingDistance:m.hammingDistance,corners:m.corners.map(p=>({x:p.x*sw/cv.width+sx,y:p.y*sh/cv.height+sy}))}))}
     quadro++;
-    if(rastreio){const xs=rastreio.corners.map(p=>p.x),ys=rastreio.corners.map(p=>p.y),lado=Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)),pad=lado*.85;
+    // Um passe, inclusive na busca periódica da carta/selo fora da ROI.
+    if(rastreio&&(quadro%20||!externos)&&!fora){const xs=rastreio.corners.map(p=>p.x),ys=rastreio.corners.map(p=>p.y),lado=Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)),pad=lado*.85;
       const sx=Math.max(0,Math.floor(Math.min(...xs)-pad)),sy=Math.max(0,Math.floor(Math.min(...ys)-pad)),sw=Math.min(vw-sx,Math.ceil(Math.max(...xs)+pad-sx)),sh=Math.min(vh-sy,Math.ceil(Math.max(...ys)+pad-sy));
-      if(sw>8&&sh>8){const roi=tentativa(1080,{sx,sy,sw,sh});if(roi.some(m=>m.id===rastreio.id)){
-        // O selo continua sendo procurado fora da ROI, mesmo durante a tarefa.
-        return quadro%20?roi:[...roi,...tentativa(720).filter(m=>m.id===ARUCO0+5)]}}
-    }
+      if(sw>8&&sh>8){const roi=tentativa(1080,{sx,sy,sw,sh});fora=!roi.some(m=>m.id===rastreio.id);return roi}
+      fora=true;return [];
+    }else if(rastreio){const recuperando=fora;fora=false;const marcas=tentativa(1080);
+      // A busca externa não mistura a quantização do quadro inteiro com a pose da ROI.
+      return recuperando?marcas:marcas.filter(m=>m.id!==rastreio.id)}
     // Sem nada na tela, um passe por quadro: alterna inteiro (720), inteiro (1080) e centro ampliado.
     const fase=quadro%3;return fase===0?tentativa(720):fase===1?tentativa(1080):tentativa(1080,{sx:vw/4,sy:vh/4,sw:vw/2,sh:vh/2})
   }
