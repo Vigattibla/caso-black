@@ -207,11 +207,12 @@ const Placa = (() => {
   function detector(){return det||(det=new AR.Detector({dictionaryName:'ARUCO_4X4_1000',maxHammingDistance:0}))}
   function lerTudo(video,rastreio=null){if(!window.AR)return[];const vw=video.videoWidth||video.width,vh=video.videoHeight||video.height;if(!vw||!vh)return[];
     function tentativa(limite,regiao=null){const {sx=0,sy=0,sw=vw,sh=vh}=regiao||{},f=Math.min(regiao?2:1,limite/Math.max(sw,sh));cv.width=Math.round(sw*f);cv.height=Math.round(sh*f);cx.drawImage(video,sx,sy,sw,sh,0,0,cv.width,cv.height);
-      const dados=cx.getImageData(0,0,cv.width,cv.height),exatos=detector().detect(dados).filter(m=>m.id>=ARUCO0&&m.id<=ARUCO0+10);
       if(!tolerante){tolerante=new AR.Detector({dictionaryName:'ARUCO_4X4_1000',maxHammingDistance:1});
         // Nesta versão do vendor, find usa distance < tau: 2 inclui distância 1.
         tolerante.dictionary.tau=2}
-      const marcas=exatos.length?exatos:tolerante.detect(dados).filter(m=>m.id>=ARUCO0&&m.id<ARUCO0+5&&m.hammingDistance<=1);
+      // Uma detecção só por quadro (exata vem primeiro no find); erro de 1 bit só vale para as placas.
+      const lidas=tolerante.detect(cx.getImageData(0,0,cv.width,cv.height)).filter(m=>m.id>=ARUCO0&&m.id<=ARUCO0+10),exatos=lidas.filter(m=>!m.hammingDistance);
+      const marcas=exatos.length?exatos:lidas.filter(m=>m.id<ARUCO0+5&&m.hammingDistance<=1);
       return marcas.map(m=>({id:m.id,hammingDistance:m.hammingDistance,corners:m.corners.map(p=>({x:p.x*sw/cv.width+sx,y:p.y*sh/cv.height+sy}))}))}
     quadro++;
     if(rastreio){const xs=rastreio.corners.map(p=>p.x),ys=rastreio.corners.map(p=>p.y),lado=Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)),pad=lado*.85;
@@ -220,7 +221,8 @@ const Placa = (() => {
         // O selo continua sendo procurado fora da ROI, mesmo durante a tarefa.
         return quadro%20?roi:[...roi,...tentativa(720).filter(m=>m.id===ARUCO0+5)]}}
     }
-    const primeiro=tentativa(720);if(primeiro.length)return primeiro;return quadro%2?tentativa(1080):tentativa(1080,{sx:vw/4,sy:vh/4,sw:vw/2,sh:vh/2})
+    // Sem nada na tela, um passe por quadro: alterna inteiro (720), inteiro (1080) e centro ampliado.
+    const fase=quadro%3;return fase===0?tentativa(720):fase===1?tentativa(1080):tentativa(1080,{sx:vw/4,sy:vh/4,sw:vw/2,sh:vh/2})
   }
   return{lerTudo,ler:video=>{const m=lerTudo(video).find(m=>m.id>=ARUCO0&&m.id<ARUCO0+5);return m?m.id-ARUCO0:-1},svg:id=>detector().dictionary.generateSVG(id)};
 })();

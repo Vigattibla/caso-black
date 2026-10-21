@@ -993,9 +993,11 @@ async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;
     try{await fluxo.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'},{exposureMode:'continuous'}]})}catch(_){}
     try{const t=fluxo.getVideoTracks()[0],cp=t.getCapabilities?t.getCapabilities():{};if(cp.zoom)await t.applyConstraints({advanced:[{zoom:cp.zoom.min}]})}catch(_){}   // sem zoom: imagem inteira da câmera
     if(pedido!==pedidoLupa)return;const v=$('#lupaV');v.srcObject=fluxo;v.load();v.play().catch(()=>{});if(pedido!==pedidoLupa)return;const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
-    let ocupado=false,tempoVideo=-1,pausada=-1,visPausada=0;dec={};const confirmar=new Map(),suaves=new Map();
+    let ocupado=false,ultimaLeitura=-1e9,custo=0,tempoVideo=-1,pausada=-1,visPausada=0;dec={};const confirmar=new Map(),suaves=new Map();
     const proxima=()=>{if(fluxo&&pedido===pedidoLupa)leituraLupa=v.requestVideoFrameCallback?v.requestVideoFrameCallback(detectar):requestAnimationFrame(detectar)};
     function detectar(agora){if(!fluxo||pedido!==pedidoLupa)return;proxima();if(ocupado||v.readyState<2||v.currentTime===tempoVideo)return;
+      // Folga para a tela: no celular lento a leitura espera 1,5× o próprio custo antes da próxima.
+      const t0=performance.now();if(t0-ultimaLeitura<Math.max(45,custo*1.5))return;ultimaLeitura=t0;
       const vw=v.videoWidth,w=Math.min(1280,vw);ocupado=true;tempoVideo=v.currentTime;
         try{const marcas=Placa.lerTudo(v,QuadroAR.rastreio);lerSelo(marcas.find(mk=>mk.id===ARUCO0+5),w/vw);if(agora-visPausada>700)pausada=-1;
           if(QuadroAR.ativo){const mk=marcas.find(m=>m.id===QuadroAR.id);if(mk)QuadroAR.atualizar(mk,v,agora);return}
@@ -1008,7 +1010,7 @@ async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;
               const anterior=suaves.get(id);k.alvo=alvo.map((p,j)=>p.map((n,l)=>anterior?anterior[j][l]+(n-anterior[j][l])*.4:n));suaves.set(id,k.alvo);
               if(k.leituras.length>=3){vibra(40);pausada=id;visPausada=agora;confirmar.delete(id);investigar(id-ARUCO0,'placa',true);QuadroAR.atualizar(mk,v,agora);return}
             }}
-        }finally{ocupado=false}}
+        }finally{ocupado=false;custo=custo*.7+(performance.now()-t0)*.3}}
     proxima();
     (function quadro(agora=performance.now()){if(!fluxo||pedido!==pedidoLupa)return;
       const vw=v.videoWidth,vh=v.videoHeight;if(vw&&v.readyState>=2){const w=Math.min(1280,vw),h=Math.round(w*vh/vw);if(c.width!==w||c.height!==h){c.width=w;c.height=h}x.drawImage(v,0,0,w,h);
@@ -1160,7 +1162,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
 <link rel="stylesheet" href="quadro-ar.css?v=1">
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=16"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=7"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=17"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=7"></script>
 <script src="filtro.js?v=8"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>
