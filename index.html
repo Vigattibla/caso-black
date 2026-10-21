@@ -735,7 +735,7 @@ const ajNome=i=>i===4?'a turma toda':(i===3?'o ':i===2?'a ':'o ')+aj(i).nome;
 /* ---------- folha 02: estações (placa → lupa → prova) ---------- */
 function pintarEstacoes(novo=-1){const L=$('#estL');if(!L)return;const f=feitas(),px=PISTAS.findIndex((_,j)=>!f.has(j)),sv=typeof carimboSVG==='function';
   L.innerHTML=PISTAS.map((p,i)=>{const a=aj(i),ok=f.has(i);return `<button class="est${ok?' ok':''}${i===px?' prox':''}${i===novo?' novo':''}" data-i="${i}">
-    <span class="av foto"><img src="assets/est/${i+1}.svg" alt="${p.loc}"></span>
+    <span class="av foto"><img src="assets/locais/${i+1}.webp?v=2" alt="${p.loc}"></span>
     <span class="tx"><small>${dois(i+1)} · ${EVID[i]}</small><b>${p.loc}</b><i>com ${ajNome(i)}</i></span>
     <span class="st">${ok&&sv?carimboSVG(i+1,'e'+(i+1)):i===px?'PRÓXIMA':'A ENCONTRAR'}</span></button>`}).join('');
   $$('#estL .est').forEach(b=>b.onclick=()=>abrirPista(+b.dataset.i));
@@ -1148,7 +1148,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
 <link rel="stylesheet" href="quadro-ar.css?v=1">
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="voz.js?v=1"></script><script src="caso.js?v=13"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=3"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="voz.js?v=1"></script><script src="caso.js?v=13"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=4"></script>
 <script src="filtro.js?v=5"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>
