@@ -1,5 +1,14 @@
 #lupa video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
 #lupa canvas{object-fit:cover}
+#lupa #lupaFoto{object-fit:cover;pointer-events:none}
+#lupa.foto-parede video{visibility:hidden}
+#lupa.foto-parede .aro,#lupa.foto-parede .info{display:none}
+#lupa.lendo-parede .aro,#lupa.lendo-parede .info{display:none}
+#lupa #lupaLeitura{position:absolute;top:calc(72px + env(safe-area-inset-top));left:50%;translate:-50% 0;padding:10px 16px;background:#191816e8;color:#fdc72f;font:700 14px Montserrat,sans-serif;white-space:nowrap;pointer-events:none;z-index:3}
+#lupa #lupaReler{position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;z-index:3;min-height:44px;padding:8px 12px;background:#191816;color:#fdc72f;border:2px solid #fdc72f;font:700 13px Montserrat,sans-serif;touch-action:manipulation;cursor:pointer}
+#lupa [hidden]{display:none!important}
+#lupa.obturador::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;background:#fff;animation:qar-flash 220ms ease-out both}
+@keyframes qar-flash{from{opacity:.85}to{opacity:0}}
 #lupa.quadro-ar .aro,#lupa.quadro-ar .info{display:none}
 #lupa.mochila-foco .aro,#lupa.mochila-foco .info{display:none}
 body.mochila-carta #quadro.ar,body.mochila-carta #quadroHUD{visibility:hidden;pointer-events:none}
@@ -16,17 +25,18 @@ body.mochila-carta #quadro.ar,body.mochila-carta #quadroHUD{visibility:hidden;po
 #quadro.ar .q-tira{min-height:70px;font-size:15px;padding:7px}#quadro.ar .q-encaixe .q-tira{min-height:0;font-size:14px}
 #quadro.ar .q-rodape{height:90px;grid-template-columns:110px 1fr;gap:16px}#quadro.ar .q-caca{min-height:90px;transform:rotate(-3deg)}#quadro.ar .q-caca>svg{height:82px}#quadro.ar .q-conversa{display:none}#quadro.ar .q-rodape::after{content:'CASO 2026-BF · INVESTIGAÇÃO EM ANDAMENTO';align-self:center;font:700 16px/1.4 'Courier Prime',monospace;color:#432d1b;letter-spacing:.08em}
 #quadro.ar .q-alvo{min-width:70px;min-height:70px}#quadro.ar .q-cena{min-height:0}#quadro.ar .q-camtag{font-size:12px}#quadro.ar .q-contagem{font-size:17px}#quadro.ar .q-item{font-size:18px}#quadro.ar .q-opcoes button,#quadro.ar .q-rever{min-width:70px;min-height:70px;font-size:18px}
-#quadro.ar .q-alvo[data-dif="bola"]{top:auto!important;bottom:0}
+#quadro.ar .q-alvo[data-dif],#quadro.ar .q-alvo[data-marca]{min-width:96px;min-height:96px}
 #quadro.ar .q-tempo{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:10px;padding-left:14px}#quadro.ar .q-cartao{min-height:70px;padding:8px;gap:6px;font-size:16px}#quadro.ar .q-cartao strong{font-size:21px}#quadro.ar .q-progresso{font-size:17px}
 #quadro.ar .q-fim{inset:180px 16px 18px;background:#20160d22;pointer-events:none}#quadro.ar .q-carimbo{width:480px;padding:24px;transform:rotate(-9deg);animation:qar-carimbo 350ms ease-out both}#quadro.ar .q-st{font-size:42px;border-width:6px}#quadro.ar .q-carimbo p{font-size:23px}#quadro.ar .q-prova{font-size:19px}
 @keyframes qar-carimbo{from{transform:scale(1.5) rotate(-14deg);opacity:0}to{transform:scale(1) rotate(-9deg);opacity:1}}
 #quadroHUD{position:fixed;z-index:90;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;pointer-events:none;font-family:Montserrat,sans-serif}
 #quadroHUD [hidden]{display:none!important}#quadroHUD button{pointer-events:auto;touch-action:manipulation;cursor:pointer;min-height:48px;border:2px solid #fff;font:800 12px Montserrat,sans-serif;padding:8px 12px;background:#191816;color:#fff}#quadroHUD button:focus-visible{outline:3px solid #fdc72f}
-#quadroHUD .qar-status{align-self:center;color:#fff;background:#171611c9;padding:5px 12px;border-radius:4px;font:13px 'Courier Prime',monospace}#quadroHUD .qar-tela{align-self:center;background:#f6efd9;color:#21170f}
+#quadroHUD .qar-status{align-self:center;color:#fff;background:#171611c9;padding:5px 12px;border-radius:4px;font:13px 'Courier Prime',monospace}
 #quadroHUD #balao{position:relative;inset:auto;translate:none;transform:none;width:100%;opacity:1;border-radius:3px;padding:10px 12px;background:#f6efd9;color:#21170f;box-shadow:0 3px 12px #0005;font:500 12px/1.4 Montserrat,sans-serif;pointer-events:auto;margin:0}
 #quadroHUD #balao .beNome{display:block;position:static;border:0;background:none;padding:0;color:#a20c25;font:700 10px 'Courier Prime',monospace;margin-bottom:3px}#quadroHUD #balao .beQ,#quadroHUD #balao .beSeta{display:none}#quadroHUD #balao.q-ajuda{padding-left:56px}#quadroHUD #balao.q-ajuda .beQ{display:block;position:absolute;left:4px;bottom:6px;width:44px;height:52px;transform:none;opacity:1}#quadroHUD #balao.q-ajuda .beQ img{animation:none}#quadroHUD #balao.q-ajuda .detCorpo{display:none}
 #quadroHUD .qar-acoes{display:flex;gap:8px}#quadroHUD .q-dica{display:flex;gap:6px;align-items:center;justify-content:center;flex:1}#quadroHUD .q-dica img{width:28px;height:28px;object-fit:contain}#quadroHUD .q-dica span{color:#fdc72f}#quadroHUD .q-segue{flex:1;background:#fdc72f;color:#21170f;font:400 19px Anton,sans-serif}#quadroHUD.tela{display:none}
 @media(prefers-reduced-motion:reduce){#quadro.ar .q-carimbo{animation:none}}
+#quadroHUD[hidden]{display:none!important}
 #quadro.ar .q-x{display:none}#quadro.ar .q-topo b{max-width:200px;margin-top:6px;font:400 26px/1.05 Anton,sans-serif;letter-spacing:.02em}
 #quadro.ar .q-placa span{bottom:-30px;left:-16px;right:-16px;font:700 20px/30px 'Courier Prime',monospace;letter-spacing:.08em}
 #quadroHUD .q-dica,#quadroHUD .q-segue{flex:1 1 0;min-width:0;white-space:nowrap}#quadroHUD .qar-acoes .q-dica{font-size:clamp(11px,3.3vw,14px);padding-inline:6px}

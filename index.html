@@ -597,6 +597,7 @@ body.aberto .fita span{animation-play-state:paused}
 </div>
 <div id="lupa" aria-hidden="true">
   <video id="lupaV" autoplay playsinline muted></video><canvas id="lupaC"></canvas>
+  <div id="lupaLeitura" role="status" aria-live="polite" hidden></div><button id="lupaReler" hidden>📷 ler de novo</button>
   <div class="falso">QUEM ACHAR<br>AS 5 PISTAS<br>LEVA TUDO</div>
   <div class="aro"></div>
   <button class="x" id="lupaX" aria-label="Fechar lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -737,7 +738,7 @@ $('#sIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('#sOk').click()});
 $('#sDica').onclick=()=>{const nv=zoom[atual]||0;if(FOTO[atual]&&nv<ZOOM.length-1){zoom[atual]=nv+1;try{localStorage.setItem('cb-zoom',JSON.stringify(zoom))}catch(_){}return abrirPista(atual)}
   if(!dicas.includes(atual))dicas.push(atual);try{localStorage.setItem('cb-dicas',JSON.stringify(dicas))}catch(_){}abrirPista(atual);pintarEstacoes()};
 $('#sDemo').onclick=()=>registrar(atual,'demo');
-$('#sLun').onclick=()=>{fecharPista();try{localStorage.setItem('cbLupa','1')}catch(_){}abrirLupa('carta')};
+$('#sLun').onclick=()=>{fecharPista();try{localStorage.setItem('cbLupa','1')}catch(_){}abrirLupa('carta',true,ARUCO0+atual)};
 function atualizar(novo=-1){
   $$('#slots i').forEach((e,i)=>{const ok=achadas.includes(i);e.classList.toggle('ok',ok);e.textContent=ok?'✓':'';e.classList.toggle('novo',i===novo)});
   pintarChave();pintarEstacoes(novo);pintarAlbum();
@@ -1001,7 +1002,7 @@ const TXT={carta:['LUPA MÁGICA','Aponte para os <b style="display:inline;font:i
   final:['O SELO DA CARTA','Vire a carta e aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
 async function videoDe(e){const nome=`estacao${e+1}.mp4`;
   const {estacoes}=await Midias();return estacoes?.includes(nome)?`assets/v/${nome}`:null}
-async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
+async function abrirLupa(m='carta',usarFoto=true,fotoId=undefined){fecharLupa();const pedido=pedidoLupa;modo=m;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
   Mochila.iniciar();Placa.iniciar();
   $('#lupaTit').textContent=TXT[m][0];$('#lupaTxt').innerHTML=TXT[m][1];
   try{const recebido=Mochila.demo?Mochila.videoDemo():await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30}},audio:false});
@@ -1009,38 +1010,49 @@ async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;
     try{await fluxo.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'},{exposureMode:'continuous'}]})}catch(_){}
     try{const t=fluxo.getVideoTracks()[0],cp=t.getCapabilities?t.getCapabilities():{};if(cp.zoom)await t.applyConstraints({advanced:[{zoom:cp.zoom.min}]})}catch(_){}   // sem zoom: imagem inteira da câmera
     if(pedido!==pedidoLupa)return;const v=$('#lupaV');v.srcObject=fluxo;v.load();v.play().catch(()=>{});if(pedido!==pedidoLupa)return;const c=$('#lupaC'),x=c.getContext('2d');let tinta=false;
-    let ocupado=false,ultimaLeitura=-1e9,custo=0,tempoVideo=-1,pausada=-1,visPausada=0,ultimaTarefa='';dec={};const confirmar=new Map(),suaves=new Map();
+    let ocupado=false,ultimaLeitura=-1e9,custo=0,tempoVideo=-1,ultimaTarefa='';dec={};const confirmar=new Map();
     const proxima=()=>{if(fluxo&&pedido===pedidoLupa)leituraLupa=v.requestVideoFrameCallback?v.requestVideoFrameCallback(detectar):requestAnimationFrame(detectar)};
-    function detectar(agora){if(!fluxo||pedido!==pedidoLupa)return;proxima();
-      const resultado=Placa.consumir();if(resultado&&agora-resultado.t<700)receber(resultado.marcas,resultado.t);
+    function detectar(agora){if(!fluxo||pedido!==pedidoLupa||QuadroAR.foto)return;
+      const resultado=Placa.consumir();if(resultado){try{if(agora-resultado.t<350)receber(resultado.marcas,resultado.t,resultado.foto);else QuadroAR.reiniciar()}finally{resultado.foto?.close?.()}}
+      if(QuadroAR.foto)return;proxima();
       if(!fluxo||pedido!==pedidoLupa||ocupado||v.readyState<2||v.currentTime===tempoVideo)return;
       if(Mochila.lerMao(v,agora,ultimaTarefa==='aruco'&&!Placa.ocupado)){tempoVideo=v.currentTime;ultimaTarefa='mao';return}
       if(Mochila.lendoMao)return;
       // Folga para a tela: no celular lento a leitura espera 1,5× o próprio custo antes da próxima.
       const t0=performance.now();if(t0-ultimaLeitura<Math.max(45,custo*1.5))return;
-      if(Placa.assincrono){if(Placa.disparar(v,Mochila.rastreio||QuadroAR.rastreio,Mochila.procurarCarta,agora)){ultimaTarefa='aruco';tempoVideo=v.currentTime;ultimaLeitura=t0}return}
+      const capturar=!QuadroAR.ativo||QuadroAR.lendo,rastreio=capturar?QuadroAR.candidato:Mochila.rastreio||QuadroAR.rastreio;
+      if(Placa.assincrono){if(Placa.disparar(v,rastreio,capturar?false:Mochila.procurarCarta,agora,capturar)){ultimaTarefa='aruco';tempoVideo=v.currentTime;ultimaLeitura=t0}return}
       ultimaLeitura=t0;ocupado=true;tempoVideo=v.currentTime;
-      try{ultimaTarefa='aruco';receber(Placa.lerTudo(v,Mochila.rastreio||QuadroAR.rastreio,Mochila.procurarCarta),agora)}
+      try{ultimaTarefa='aruco';const foto=capturar?Placa.fotografia(v):null;receber(Placa.lerTudo(foto||v,rastreio,capturar?false:Mochila.procurarCarta),agora,foto)}
       finally{ocupado=false;custo=custo*.7+(performance.now()-t0)*.3}
     }
-    function receber(marcas,agora){const vw=v.videoWidth,w=Math.min(1280,vw);
-          Mochila.observar(marcas,v,agora);if(Mochila.demo){Mochila.quadroDemo(marcas,v,agora);return}lerSelo(marcas.find(mk=>mk.id===ARUCO0+5),w/vw,agora);if(agora-visPausada>700)pausada=-1;
-          if(QuadroAR.ativo){const mk=marcas.find(m=>m.id===QuadroAR.id);if(mk)QuadroAR.atualizar(mk,v,agora);return}
+    function receber(marcas,agora,foto){const vw=v.videoWidth,w=Math.min(1280,vw);
+          Mochila.observar(marcas,v,agora);if(Mochila.demo){Mochila.quadroDemo(marcas,v,agora);return}lerSelo(marcas.find(mk=>mk.id===ARUCO0+5),w/vw,agora);
+          if(!QuadroAR.ativo||QuadroAR.lendo){
+            const leitura=QuadroAR.observar(marcas,v,foto,agora);confirmar.clear();const candidato=QuadroAR.candidato;
+            if(candidato)confirmar.set(candidato.id,{vis:agora,alvo:candidato.corners.map(p=>[p.x*w/vw,p.y*w/vw])});
+            if(leitura){const {marca,foto}=leitura;vibra(40);confirmar.clear();
+              if(QuadroAR.id!==marca.id)investigar(marca.id-ARUCO0,'placa',true);
+              const vivo=marca.id===300&&Mochila.premioPendente||marca.id===303&&Mochila.naMao;
+              if(vivo){QuadroAR.retomar(false);QuadroAR.atualizar(marca,v,agora);$('#lupaReler').hidden=false}
+              else if(QuadroAR.congelar(marca,foto)){Placa.parar();v.pause();x.clearRect(0,0,c.width,c.height)}return;
+            }
+          }
+          if(QuadroAR.ativo){if(!QuadroAR.lendo){const mk=marcas.find(m=>m.id===QuadroAR.id);if(mk)QuadroAR.atualizar(mk,v,agora)}return}
           if(document.querySelector('#quadro.on'))return;
           for(const mk of marcas){if(mk.id===ARUCO0+5)continue;
             if(CODIGO[mk.id]){if(!ouroC){const s=w/vw,k=dec[mk.id]||(dec[mk.id]={t0:agora});if(!k.ok&&agora-k.t0>900){k.ok=1;vibra(30)}k.vis=agora;k.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}
-            else if(!ouroC&&mk.id>=ARUCO0&&mk.id<ARUCO0+5){const id=mk.id;if(id===pausada){visPausada=agora;continue}const alvo=mk.corners.map(p=>[p.x*w/vw,p.y*w/vw]);
-              if(!QuadroAR.geometria(mk,v))continue;
-              const k=confirmar.get(id)||{leituras:[]};k.leituras=k.leituras.filter(t=>agora-t<=700);k.leituras.push(agora);k.vis=agora;confirmar.set(id,k);
-              const anterior=suaves.get(id);k.alvo=alvo.map((p,j)=>p.map((n,l)=>anterior?anterior[j][l]+(n-anterior[j][l])*.4:n));suaves.set(id,k.alvo);
-              if(k.leituras.length>=3){vibra(40);pausada=id;visPausada=agora;confirmar.delete(id);investigar(id-ARUCO0,'placa',true);QuadroAR.atualizar(mk,v,agora);return}
-            }}
+          }
     }
-    proxima();
+    L._camera=(reler=true)=>{if(pedido!==pedidoLupa||!fluxo)return;QuadroAR.retomar(reler);confirmar.clear();QuadroAR.reiniciar();tempoVideo=-1;Placa.parar();Placa.iniciar();v.play().catch(()=>{});if(v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(leituraLupa);else cancelAnimationFrame(leituraLupa);proxima()};
+    $('#lupaReler').onclick=()=>L._camera(true);
+    const salva=usarFoto&&m==='carta'&&!Mochila.demo&&!Mochila.naMao&&!Mochila.premioPendente&&(!Mochila.procurarCarta||fotoId!==undefined)&&QuadroAR.restaurar(fotoId);
+    if(salva){investigar(salva.marca.id-ARUCO0,'placa',true);QuadroAR.congelar(salva.marca,salva.foto,false);Placa.parar();v.pause()}else proxima();
     (function quadro(agora=performance.now()){if(!fluxo||pedido!==pedidoLupa)return;
-      const vw=v.videoWidth,vh=v.videoHeight;if(vw&&v.readyState>=2){const w=Math.min(1280,vw),h=Math.round(w*vh/vw);if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+      if(QuadroAR.foto&&(Mochila.naMao||Mochila.premioPendente))L._camera(false);
+      const vw=v.videoWidth,vh=v.videoHeight;if(!QuadroAR.foto&&vw&&v.readyState>=2){const w=Math.min(1280,vw),h=Math.round(w*vh/vw);if(c.width!==w||c.height!==h){c.width=w;c.height=h}
         // O vídeo já é exibido pelo compositor; canvas transparente só para os efeitos.
-        const efeitos=!!ouroC||!QuadroAR.ativo&&(confirmar.size>0||Object.keys(dec).length>0);
+        const efeitos=!!ouroC||(!QuadroAR.ativo||QuadroAR.lendo)&&(confirmar.size>0||Object.keys(dec).length>0);
         if(tinta||efeitos)x.clearRect(0,0,w,h);tinta=efeitos;
         if(efeitos&&!ouroC){desenhaCodigos(x);for(const k of confirmar.values())if(agora-k.vis<250)desenhaLeitura(x,k.alvo)}if(ouroC)desenhaOuro(x,w,h)}
       QuadroAR.desenhar(agora);Mochila.desenhar(agora);laco=requestAnimationFrame(quadro)})();
@@ -1146,8 +1158,8 @@ const CacaMedia=(()=>{const c=document.createElement('canvas'),x=c.getContext('2
   function onda(x,w,h,o,v){const pr=v.duration?v.currentTime/v.duration:0,bw=w/(o.h.length*1.5);x.save();o.h.forEach((n,i)=>{const hh=Math.max(bw,n*h*.6);x.fillStyle=i/o.h.length<pr?'#fdc72f':'#ffffff77';x.fillRect(i*w/o.h.length,h/2-hh/2,bw,hh)});x.restore()}
   return{chave,onda}})();
 function desenhaLeitura(x,alvo){x.save();x.strokeStyle='#fdc72f';x.lineWidth=4;alvo.forEach((p,i)=>{const ant=alvo[(i+3)%4],prox=alvo[(i+1)%4];x.beginPath();x.moveTo(p[0]+(ant[0]-p[0])*.22,p[1]+(ant[1]-p[1])*.22);x.lineTo(...p);x.lineTo(p[0]+(prox[0]-p[0])*.22,p[1]+(prox[1]-p[1])*.22);x.stroke()});x.fillStyle='#fdc72f';x.font='bold 14px sans-serif';x.fillText('lendo...',Math.max(8,alvo[0][0]),Math.max(18,alvo[0][1]-12));x.restore()}
-function investigar(i,via,daLupa=false){const depois=()=>{if(daLupa)fecharLupa();resolver(i,via)};if(Quadro.tem(i)&&(!feitas().has(i)||daLupa&&(i===3&&Mochila.naMao||i===0&&Mochila.premioPendente)))Quadro.abrir(i,via,depois,daLupa);else depois()}
-function fecharLupa(){pedidoLupa++;if(typeof Placa!=='undefined')Placa.parar();if(typeof Mochila!=='undefined')Mochila.fechar();if(typeof QuadroAR!=='undefined'&&QuadroAR.ativo)Quadro.fechar();const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);const v=$('#lupaV');if(v.requestVideoFrameCallback&&v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(leituraLupa);else cancelAnimationFrame(leituraLupa);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}v.pause();v.srcObject=null;clearTimeout(ouroC?.timer);ouroC=null;seloLido=null}
+function investigar(i,via,daLupa=false){const depois=()=>{if(daLupa)fecharLupa();resolver(i,via)};if(Quadro.tem(i)&&(daLupa||!feitas().has(i)))Quadro.abrir(i,via,depois,daLupa);else depois()}
+function fecharLupa(){pedidoLupa++;$('#lupa')._camera=null;$('#lupaReler').hidden=true;$('#lupaLeitura').hidden=true;if(typeof QuadroAR!=='undefined')QuadroAR.reiniciar();if(typeof Placa!=='undefined')Placa.parar();if(typeof Mochila!=='undefined')Mochila.fechar();if(typeof QuadroAR!=='undefined'&&QuadroAR.ativo)Quadro.fechar();const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);const v=$('#lupaV');if(v.requestVideoFrameCallback&&v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(leituraLupa);else cancelAnimationFrame(leituraLupa);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}v.pause();v.srcObject=null;clearTimeout(ouroC?.timer);ouroC=null;seloLido=null}
 $('#lupaX').onclick=fecharLupa;
 $('#lupaBtn').onclick=()=>{if(!window.DEMO)try{localStorage.setItem('cbLupa','1')}catch(_){}$('#balao').classList.remove('on');abrirLupa(k===N-1&&chave().ok?'final':'carta')};
 
@@ -1189,8 +1201,8 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
     const k=document.createElement('button');k.textContent=r;k.style.cssText='padding:7px 10px;border-radius:99px;border:0;background:#fdc72fee;color:#1b1712;font:inherit';k.onclick=()=>{limpa();f()};b.appendChild(k)});
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
-<link rel="stylesheet" href="quadro-ar.css?v=2">
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=19"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=2"></script><script src="quadro.js?v=8"></script><script src="mochila.js?v=2"></script>
+<link rel="stylesheet" href="quadro-ar.css?v=3">
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=20"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=3"></script><script src="quadro.js?v=9"></script><script src="mochila.js?v=2"></script>
 <script src="filtro.js?v=8"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>

@@ -16,7 +16,7 @@ async function verify(){
   await ev(`__fake.hidden=false;window.__mainDetect=0;const detect=AR.Detector.prototype.detect;AR.Detector.prototype.detect=function(...a){__mainDetect++;return detect.apply(this,a)}`);
   // 62/31 px CSS: marcador com metade do tamanho angular (distância dobrada).
   for(const side of [62,31])for(const id of [300,301,302,303,304]){
-    await ev(`fecharLupa();__fake.id=${id};__fake.side=${side};abrirLupa()`);
+    await ev(`fecharLupa();__fake.id=${id};__fake.side=${side};abrirLupa('carta',false)`);
     try{await until(`QuadroAR.id===${id}&&!!QuadroAR.cantos`)}catch(e){throw Error(`Placa ${id}, lado ${side}px: ${e.message}`)}
     assert(await ev(`Placa.workerAtivo&&__mainDetect===0`));checks.push(`Placa ${id}, lado ${side}px, sem detecção na interface`);
   }
@@ -28,14 +28,14 @@ async function verify(){
   assert(await ev(`__take()===null&&__send(document.querySelector('#lupaV'))`));await until(`!!(window.__packet=__take())`);assert(await ev(`__packet.marcas.some(m=>m.id===301)&&!__packet.marcas.some(m=>m.id===300)`));checks.push('Fechar/reabrir descarta captura e resposta da geração anterior');
   await ev(`Placa.disparar=__send;Placa.consumir=__take;window.__features={Worker,OffscreenCanvas,createImageBitmap};`);
   for(const feature of ['Worker','OffscreenCanvas','createImageBitmap']){
-    await ev(`fecharLupa();window[${JSON.stringify(feature)}]=undefined;__fake.id=300;abrirLupa()`);await until(`QuadroAR.id===300&&!!QuadroAR.cantos`);assert(await ev(`!Placa.workerAtivo`));checks.push('Fallback sem '+feature);
+    await ev(`fecharLupa();window[${JSON.stringify(feature)}]=undefined;__fake.id=300;abrirLupa('carta',false)`);await until(`QuadroAR.id===300&&!!QuadroAR.cantos`);assert(await ev(`!Placa.workerAtivo`));checks.push('Fallback sem '+feature);
     await ev(`fecharLupa();window[${JSON.stringify(feature)}]=__features[${JSON.stringify(feature)}]`);
   }
   assert(await ev(`__mainDetect>0`));
-  await ev(`window.__VideoFrame=VideoFrame;window.VideoFrame=undefined;window.__antesFallback=__mainDetect;abrirLupa()`);await until(`QuadroAR.id===300&&!!QuadroAR.cantos`);
+  await ev(`window.__VideoFrame=VideoFrame;window.VideoFrame=undefined;window.__antesFallback=__mainDetect;abrirLupa('carta',false)`);await until(`QuadroAR.id===300&&!!QuadroAR.cantos`);
   assert(await ev(`Placa.workerAtivo&&__mainDetect===__antesFallback`));checks.push('Sem VideoFrame continua assíncrono com ImageBitmap');
   await ev(`fecharLupa();window.VideoFrame=__VideoFrame`);
-  await ev(`window.VideoFrame=undefined;window.createImageBitmap=()=>Promise.reject(Error('Falha de captura de teste'));abrirLupa()`);await until(`QuadroAR.id===300&&!!QuadroAR.cantos`);assert(await ev(`!Placa.assincrono`));checks.push('Falha assíncrona de captura ativa fallback');
+  await ev(`window.VideoFrame=undefined;window.createImageBitmap=()=>Promise.reject(Error('Falha de captura de teste'));abrirLupa('carta',false)`);await until(`QuadroAR.id===300&&!!QuadroAR.cantos`);assert(await ev(`!Placa.assincrono`));checks.push('Falha assíncrona de captura ativa fallback');
   const report={cpuThrottle:4,width:WIDTH,checks,errors};fs.writeFileSync(path.join(OUT,'worker-verificacao.json'),JSON.stringify(report,null,2));assert.deepEqual(errors,[]);console.log(checks.length+' OK · placas menores, worker, geração, fallback; CPU 4×');
 }
 async function main(){
@@ -52,7 +52,7 @@ async function main(){
   await cdp('Page.addScriptToEvaluateOnNewDocument',{source:fixture});
   await cdp('Page.navigate',{url:`http://127.0.0.1:${server.address().port}/?ar-performance`});await until(`typeof Placa!=='undefined'&&typeof Mochila!=='undefined'`);
   await ev(`document.querySelector('#abrir').click()`);await sleep(1000);
-  await ev(`window.__read=[];for(const key of ['lerTudo','disparar']){const fn=Placa[key];if(fn)Placa[key]=function(...a){const t=performance.now();try{return fn.apply(this,a)}finally{__read.push(performance.now()-t)}}}__fake.moving=false;__fake.hidden=true;abrirLupa()`);
+  await ev(`window.__read=[];for(const key of ['lerTudo','disparar']){const fn=Placa[key];if(fn)Placa[key]=function(...a){const t=performance.now();try{return fn.apply(this,a)}finally{__read.push(performance.now()-t)}}}__fake.moving=false;__fake.hidden=true;abrirLupa('carta',false)`);
   await until(`document.querySelector('#lupaV').readyState>=2`);await sleep(1000);
   await cdp('Emulation.setCPUThrottlingRate',{rate:4});
   if(process.env.AR_VERIFY){await verify();return}
@@ -64,11 +64,12 @@ async function main(){
     await until(`__hands.length>3`);
   }
   const results=[];
-  for(const scene of process.env.AR_HAND?['rastreando+mao']:['procurando','rastreando']){
-    if(scene.startsWith('rastreando')){await ev(`__fake.hidden=false`);await until(`!!QuadroAR.cantos`);await sleep(2000)}
+  for(const scene of process.env.AR_HAND?['rastreando+mao']:['procurando','foto-congelada']){
+    if(scene.startsWith('rastreando')||scene==='foto-congelada'){await ev(`__fake.hidden=false;window.__freezeStart=performance.now()`);await until(scene==='foto-congelada'?`QuadroAR.foto`:`!!QuadroAR.cantos`);if(scene==='foto-congelada')assert(await ev(`!Placa.workerAtivo&&!Placa.ocupado`),'Worker deve parar na foto');await sleep(2000)}
     if(process.env.AR_HAND)await ev(`__hands=[]`);
     trace=[];await cdp('Tracing.start',{categories:'toplevel,devtools.timeline,blink.user_timing',transferMode:'ReportEvents'});
     const measured=await ev(`new Promise(resolve=>{__read=[];const frames=[],longTasks=[],poses=[],t0=performance.now();let last=t0;const observer=new PerformanceObserver(list=>longTasks.push(...list.getEntries().map(e=>({start:e.startTime-t0,ms:e.duration}))));observer.observe({type:'longtask'});function frame(t){frames.push(t-last);last=t;if(QuadroAR.cantos)poses.push(QuadroAR.cantos.flatMap(p=>[p.x,p.y]));if(t-t0<${DURATION})return requestAnimationFrame(frame);observer.disconnect();const mean=poses[0]?.map((_,i)=>poses.reduce((s,r)=>s+r[i],0)/poses.length);const jitter=mean?Math.sqrt(poses.reduce((s,r)=>s+r.reduce((v,x,i)=>v+(x-mean[i])**2,0),0)/(poses.length*4)):null;resolve({fps:frames.length*1000/(t-t0),maxRafGapMs:Math.max(...frames),reads:__read.length,maxReadMainMs:Math.max(0,...__read),meanReadMainMs:__read.reduce((s,n)=>s+n,0)/__read.length,longTasks,jitterPx:jitter,video:{width:document.querySelector('#lupaV').videoWidth,height:document.querySelector('#lupaV').videoHeight},worker:Placa.workerAtivo??false})}requestAnimationFrame(frame)})`);
+    if(scene==='foto-congelada'){assert.equal(measured.reads,0,'Nenhuma detecção na foto');assert(measured.jitterPx<1e-8,'Foto sem tremor')}
     const done=new Promise(r=>tracingDone=r);await cdp('Tracing.end');await done;
     const main=trace.find(e=>e.name==='thread_name'&&e.args?.name==='CrRendererMain');
     const tasks=trace.filter(e=>e.pid===main?.pid&&e.tid===main?.tid&&e.ph==='X'&&/^(RunTask|ThreadControllerImpl::RunTask)$/.test(e.name));

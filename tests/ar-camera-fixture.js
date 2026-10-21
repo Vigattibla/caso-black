@@ -1,5 +1,5 @@
 /* Injected before page scripts. Only the silent canvas stream may autoplay. */
-HTMLMediaElement.prototype.play=function(){this.muted=true;return Promise.reject(new DOMException('Media bloqueada no teste','NotAllowedError'))};
+const playCamera=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){this.muted=true;if(this.id==='lupaV'&&this.srcObject)return playCamera.call(this);return Promise.reject(new DOMException('Media bloqueada no teste','NotAllowedError'))};
 for(const C of [window.AudioContext,window.webkitAudioContext])if(C)C.prototype.resume=()=>Promise.resolve();
 window.CB_CONFIG={backend:'local'};
 Object.keys(localStorage).filter(k=>k.startsWith('cb')).forEach(k=>localStorage.removeItem(k));
@@ -15,13 +15,13 @@ Object.defineProperty(navigator.mediaDevices,'getUserMedia',{configurable:true,v
   let lastId=-1,rects=[],t0=performance.now();
   f.project=(u,v,t=performance.now())=>{
     const time=f.moving?(t-t0)/1000:0,pose=f.pose,side=(f.side??62)*(1+pose*.075+.025*Math.sin(time*.4));
-    const ang=.025+pose*.035+.025*Math.sin(time*.35),cx=(f.cx??195)+pose*10+9*Math.sin(time*.45),cy=(f.cy??104)+pose*13+6*Math.sin(time*.3);
+    const ang=.025+pose*.035+.025*Math.sin(time*.35),cx=(f.cx??195)+(f.jitter?30*Math.sin(f.frames*1.7):0)+pose*10+9*Math.sin(time*.45),cy=(f.cy??104)+pose*13+6*Math.sin(time*.3);
     const z=1+.012*(u-.5)+(.008+pose*.003)*(v-.5),px=(u-.5)*side/z,py=(v-.5)*side/z;
     const screen={x:cx+px*Math.cos(ang)-py*Math.sin(ang),y:cy+px*Math.sin(ang)+py*Math.cos(ang)};
     const cover=Math.max(390/c.width,844/c.height);return {x:(screen.x-(390-c.width*cover)/2)/cover,y:(screen.y-(844-c.height*cover)/2)/cover};
   };
   function draw(){
-    x.drawImage(wall,0,0);if(!f.hidden){if(lastId!==f.id){lastId=f.id;const doc=new DOMParser().parseFromString(Placa.svg(f.id),'image/svg+xml');rects=[...doc.querySelectorAll('rect')].map(r=>({a:(+r.getAttribute('x')-1)/6,b:(+r.getAttribute('y')-1)/6,w:+r.getAttribute('width')/6,h:+r.getAttribute('height')/6,fill:r.getAttribute('fill')}))}
+    if(f.alternando)f.id=300+(f.frames%3);x.drawImage(wall,0,0);if(!f.hidden){if(lastId!==f.id){lastId=f.id;const doc=new DOMParser().parseFromString(Placa.svg(f.id),'image/svg+xml');rects=[...doc.querySelectorAll('rect')].map(r=>({a:(+r.getAttribute('x')-1)/6,b:(+r.getAttribute('y')-1)/6,w:+r.getAttribute('width')/6,h:+r.getAttribute('height')/6,fill:r.getAttribute('fill')}))}
       for(const r of rects){x.fillStyle=r.fill;x.beginPath();[[r.a,r.b],[r.a+r.w,r.b],[r.a+r.w,r.b+r.h],[r.a,r.b+r.h]].forEach(([u,v],i)=>{const p=f.project(u,v);i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y)});x.closePath();x.fill()}}
     f.frames++;
   }

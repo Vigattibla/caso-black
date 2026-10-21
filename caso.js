@@ -230,7 +230,7 @@ const Placa = (() => {
   const LIMITES=Object.freeze({inteiro:640,detalhe:1080,roi:720,centro:960});
   let worker=null,pronto=false,falhou=false,emVoo=null,resultado=null,geracao=0,sequencia=0,timer=0,wQuadro=0,wFora=false,usarFrame=true;
   const suporta=()=>typeof Worker==='function'&&typeof OffscreenCanvas==='function'&&typeof createImageBitmap==='function';
-  function parar(){geracao++;clearTimeout(timer);worker?.terminate();worker=null;pronto=false;emVoo=null;resultado=null;wQuadro=0;wFora=false}
+  function parar(){geracao++;clearTimeout(timer);worker?.terminate();worker=null;pronto=false;emVoo?.foto?.close?.();resultado?.foto?.close?.();emVoo=null;resultado=null;wQuadro=0;wFora=false}
   function falhar(){parar();falhou=true}
   function iniciar(){if(worker||falhou||!suporta())return;
     try{const g=geracao;worker=new Worker('aruco-worker.js?v=1');timer=setTimeout(falhar,4000);
@@ -239,7 +239,7 @@ const Placa = (() => {
         if(!emVoo||data.id!==emVoo.id)return;if(data.erro){falhar();return}
         clearTimeout(timer);const envio=emVoo;emVoo=null;
         if(envio.roi)wFora=!data.marcas.some(m=>m.id===envio.roi);
-        resultado={marcas:envio.ignorar===null?data.marcas:data.marcas.filter(m=>m.id!==envio.ignorar),t:envio.t};
+        resultado={marcas:envio.ignorar===null?data.marcas:data.marcas.filter(m=>m.id!==envio.ignorar),t:envio.t,foto:envio.foto};
       };
     }catch(_){falhar()}
   }
@@ -256,7 +256,7 @@ const Placa = (() => {
     const f=Math.min(ampliar?2:1,limite/Math.max(regiao.sw,regiao.sh));
     return {regiao,roi,ignorar,resizeWidth:Math.max(1,Math.round(regiao.sw*f)),resizeHeight:Math.max(1,Math.round(regiao.sh*f))};
   }
-  function disparar(video,rastreio=null,externos=false,t=performance.now()){
+  function disparar(video,rastreio=null,externos=false,t=performance.now(),fotografar=false){
     iniciar();if(!pronto||emVoo||resultado)return false;
     const vw=video.videoWidth||video.width,vh=video.videoHeight||video.height;if(!vw||!vh)return false;
     const p=plano(vw,vh,rastreio,externos);if(!p){resultado={marcas:[],t};return true}
@@ -265,18 +265,19 @@ const Placa = (() => {
     const {sx,sy,sw,sh}=p.regiao;
     // Evita também a cópia síncrona que createImageBitmap(video) faz no Chrome.
     let frame;try{if(usarFrame&&typeof VideoFrame==='function')frame=new VideoFrame(video)}catch(_){usarFrame=false}
-    if(frame){try{worker.postMessage({id:envio.id,frame,regiao:p.regiao,resizeWidth:p.resizeWidth,resizeHeight:p.resizeHeight},[frame])}
-      catch(_){frame.close();usarFrame=false}if(usarFrame)return true}
+    if(frame){try{if(fotografar)envio.foto=frame.clone();worker.postMessage({id:envio.id,frame,regiao:p.regiao,resizeWidth:p.resizeWidth,resizeHeight:p.resizeHeight},[frame])}
+      catch(_){frame.close();envio.foto?.close?.();envio.foto=null;usarFrame=false}if(usarFrame)return true}
     // resize no createImageBitmap(video) ainda bloqueia o Chrome: só captura aqui.
     // O worker aplica os mesmos limites ao desenhar o bitmap recortado.
-    try{createImageBitmap(video,sx,sy,sw,sh).then(bitmap=>{
+    try{const fonte=fotografar?fotografia(video):video;if(fotografar)envio.foto=fonte;createImageBitmap(fonte,sx,sy,sw,sh).then(bitmap=>{
       if(g!==geracao||!worker){bitmap.close();return}
       try{worker.postMessage({id:envio.id,bitmap,regiao:p.regiao,resizeWidth:p.resizeWidth,resizeHeight:p.resizeHeight},[bitmap])}catch(_){bitmap.close();falhar()}
     },()=>{if(g===geracao)falhar()})}catch(_){falhar()}
     return true;
   }
   function consumir(){const r=resultado;resultado=null;return r}
-  return{lerTudo,iniciar,parar,disparar,consumir,limites:LIMITES,get ocupado(){return !!emVoo},get assincrono(){return !falhou&&suporta()},get workerAtivo(){return !!worker&&pronto},
+  function fotografia(v){const c=document.createElement('canvas');c.width=v.videoWidth||v.displayWidth||v.width;c.height=v.videoHeight||v.displayHeight||v.height;c.getContext('2d').drawImage(v,0,0);return c}
+  return{lerTudo,iniciar,parar,disparar,consumir,fotografia,limites:LIMITES,get ocupado(){return !!emVoo},get assincrono(){return !falhou&&suporta()},get workerAtivo(){return !!worker&&pronto},
     ler:video=>{const m=lerTudo(video).find(m=>m.id>=ARUCO0&&m.id<ARUCO0+5);return m?m.id-ARUCO0:-1},svg:id=>detector().dictionary.generateSVG(id)};
 })();
 
