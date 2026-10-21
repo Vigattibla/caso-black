@@ -280,12 +280,12 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
 #vip.on{display:block}
 #vip .fita{position:absolute;left:-40%;right:-40%;height:34px;font-size:14px;z-index:1}
 #vip .fita.a{top:-12px;transform:translateX(-120%) rotate(-9deg);transition:transform .7s var(--ease)}
-#vip .fita.b{bottom:-12px;transform:translateX(120%) rotate(7deg);transition:transform .7s var(--ease) .1s}
+#vip .fita.b{display:none;bottom:-12px;transform:translateX(120%) rotate(7deg);transition:transform .7s var(--ease) .1s}
 #vip.on.go .fita.a{transform:rotate(-9deg)}#vip.on.go .fita.b{transform:rotate(7deg)}
 #vip .miolo{position:absolute;inset:0;max-width:420px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 52px) 24px calc(env(safe-area-inset-bottom) + 24px);display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2}
-#vip .bf{width:180px;opacity:0;transform:scale(2.2) rotate(-8deg)}
+#vip .bf{width:132px;opacity:0;transform:scale(2.2) rotate(-8deg)}
 #vip.go .bf{opacity:1;transform:rotate(-4deg);transition:opacity .2s .5s,transform .5s cubic-bezier(.3,1.6,.5,1) .5s}
-#vip .ac{margin:16px 0 10px;padding:9px 22px 7px;background:var(--amarelo);color:var(--preto);font:400 30px/1 Anton,sans-serif;letter-spacing:.02em;box-shadow:5px 5px 0 #000,5px 5px 0 1.5px #fdc72f55;rotate:-1.5deg;opacity:0;transform:translateY(12px)}
+#vip .ac{margin:16px 0 10px;padding:9px 22px 7px;background:var(--amarelo);color:var(--preto);font:400 26px/1 Anton,sans-serif;letter-spacing:.02em;opacity:0;transform:translateY(12px)}
 #vip .ok{font:700 10px "Courier Prime",monospace;letter-spacing:.2em;color:var(--amarelo);margin-top:14px;opacity:0}
 #vip p.t{color:#e8e8e8;font-size:14px;line-height:1.5;margin-top:8px;max-width:310px;opacity:0;transform:translateY(12px)}
 #vip p.t b{color:var(--amarelo)}
@@ -293,7 +293,7 @@ body:not(.pronto) #app,body:not(.pronto) .introTxt{opacity:0}
 #vip .sair{margin-top:10px;font:600 12px Montserrat;color:#8a8a8a;text-decoration:underline;text-underline-offset:3px;padding:8px;opacity:0}
 #vip.go .ac,#vip.go p.t,#vip.go .btn,#vip.go .ok,#vip.go .sair{opacity:1;transform:none;transition:opacity .5s,transform .5s var(--ease)}
 #vip.go .ok{transition-delay:.85s}#vip.go .ac{transition-delay:.95s}#vip.go p.t{transition-delay:1.1s}#vip.go .btn{transition-delay:2.3s}#vip.go .sair{transition-delay:2.5s}
-#vip.em-aberto .ok{color:var(--verm)}
+#vip.em-aberto .ok{color:#bbb}
 @media(max-height:740px){#vip .fita{display:none}#vip .miolo{padding-top:calc(env(safe-area-inset-top) + 20px)}#vip .bf{width:120px}#vip .ac{font-size:26px;margin:12px 0 6px}#vip .ok{margin-top:8px}#vip p.t{font-size:13px}#vip .btn{margin-top:16px}}
 .moeda{position:absolute;top:-70px;z-index:0;opacity:.9;will-change:transform}
 
@@ -394,8 +394,8 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 #fimAnim.fim .carta .k{transition-delay:.9s}#fimAnim.fim .carta .ola{transition-delay:1.1s}#fimAnim.fim .carta p:nth-of-type(2){transition-delay:1.4s}#fimAnim.fim .carta .forte{transition-delay:1.9s}#fimAnim.fim .carta p:nth-of-type(4){transition-delay:2.3s}#fimAnim.fim .carta .ass{transition-delay:2.7s}
 .revela .btn{width:100%;max-width:320px;margin-top:12px}
 .revela .btn.alt{background:#f2f2f2;margin-top:10px}
-.revela .par{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:320px}
-.revela .par .btn{font-size:12px;padding-left:6px;padding-right:6px}
+.revela .par{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:340px;margin-top:14px}
+.revela .par .btn{margin:0;min-height:44px;font-size:11px;line-height:1.2;padding:8px 4px;background:none;color:#ddd;border:1px solid #ffffff33;box-shadow:none}
 #fimAnim.fim .revela .opina{transition-delay:2.9s}#fimAnim.fim .revela .btn{transition-delay:3.1s}#fimAnim.fim .revela .btn.alt,#fimAnim.fim .revela .par,#fimAnim.fim .revela .demos{transition-delay:3.25s}
 .opina{display:flex;align-items:center;gap:6px;margin-top:10px;font:700 17px Caveat;color:#ddd}
 .opina button{font-size:24px;line-height:1;width:42px;height:42px;border-radius:50%;background:#ffffff14;border:1.5px solid #ffffff2a;transition:transform .15s,background .15s}
@@ -546,12 +546,10 @@ body.aberto .fita span{animation-play-state:paused}
       <p>Como prometido: entra no <b>grupo VIP</b> e vê as ofertas antes de todo mundo.</p>
       <div class="ass"><span>— Bê</span><canvas id="digA" width="150" height="200"></canvas></div>
     </div>
-    <div class="opina" id="opina"><span>Curtiu o caso?</span><button data-n="1" aria-label="Não curti">😕</button><button data-n="2" aria-label="Curti">🙂</button><button data-n="3" aria-label="Amei">😍</button></div>
     <button class="btn brilho" id="grupoVip">Entrar no grupo VIP</button>
-    <button class="btn alt" id="fotoDet">📸 Foto de detetive</button>
-    <button class="btn alt" id="verVip">Ver envelopes</button>
     <section data-envelopes aria-label="Envelopes selados da Black Friday"></section>
-    <div class="par"><button class="btn alt" id="postAlb2">Postar o álbum</button><button class="btn alt" id="baixaDossie">Baixar dossiê</button></div>
+    <div class="par"><button class="btn alt" id="fotoDet">Foto de detetive</button><button class="btn alt" id="postAlb2">Postar álbum</button><button class="btn alt" id="baixaDossie">Baixar dossiê</button></div>
+    <div class="opina" id="opina"><span>Curtiu o caso?</span><button data-n="1" aria-label="Não curti">😕</button><button data-n="2" aria-label="Curti">🙂</button><button data-n="3" aria-label="Amei">😍</button></div>
     <div class="demos"><button class="demo" id="muPor2">pôr no mural</button></div>
   </div>
 </div>
@@ -582,7 +580,7 @@ body.aberto .fita span{animation-play-state:paused}
     <img class="bf" src="assets/cb-logo.png" alt="Caso Black">
     <div class="ok">CASO RESOLVIDO · O BÊ APARECEU</div>
     <div class="ac">ACESSO ANTECIPADO</div>
-    <p class="t">Parabéns, investigador(a). Você entrou na <b>lista VIP da Black Friday Village</b> e vê as ofertas <b>antes de todo mundo</b>.</p>
+    <p class="t">Você está na <b>lista VIP</b>: vê as ofertas da Black antes de todo mundo.</p>
     <section data-envelopes aria-label="Envelopes selados da Black Friday"></section>
     <button class="btn" id="garantir">Garantir meu acesso</button>
     <button class="sair" id="voltar">voltar ao caso</button>
@@ -904,17 +902,16 @@ async function abrirFim(via,daCam){if(abrindo)return;abrindo=true;
 const fechaFim=()=>{const A=$('#fimAnim');A.className='';A.setAttribute('aria-hidden','true')};
 $('#grupoVip').onclick=()=>LINK_GRUPO?open(LINK_GRUPO,'_blank','noopener'):toast('Link do grupo VIP: em breve.');
 $('#baixaDossie').onclick=()=>dossie();
-$('#verVip').onclick=()=>{fechaFim();location.hash='#vip';liberar()};
 $$('[data-ver-vip]').forEach(b=>b.onclick=()=>{location.hash='#vip';liberar()});
 $('#fotoDet').onclick=()=>window.Filtro?Filtro.abrir():toast('Foto de detetive: em breve.');
 function pintarVip(){const v=$('#vip'),fim=window.Envelopes?Envelopes.resolvido():resolvido();v.classList.toggle('em-aberto',!fim);
   v.querySelector('.ok').textContent=fim?'CASO RESOLVIDO · O BÊ APARECEU':'CASO EM ABERTO';
-  v.querySelector('p.t').innerHTML=fim?'Parabéns, investigador(a). Você entrou na <b>lista VIP da Black Friday Village</b> e vê as ofertas <b>antes de todo mundo</b>.':'Tem desconto já liberado esperando por você. Termine o caso para abrir os envelopes.';
+  v.querySelector('p.t').innerHTML=fim?'Você está na <b>lista VIP</b>: vê as ofertas da Black antes de todo mundo.':'Tem desconto já liberado esperando por você. Termine o caso para abrir os envelopes.';
   $('#garantir').textContent=fim?'Garantir meu acesso':'Voltar ao caso'}
 function liberar(){const v=$('#vip'),ja=v.classList.contains('on');pintarVip();window.Envelopes?.atualizar();v.classList.add('on');if(ja)return;v.querySelector('.miolo').scrollTop=0;requestAnimationFrame(()=>requestAnimationFrame(()=>v.classList.add('go')));
   if(!v.classList.contains('em-aberto')){typeof Voz==='object'&&setTimeout(()=>{if(v.classList.contains('on'))Voz.toca(['21-be-revelacao','22-be-grupo-vip'])},1500);chuva()}}
 function chuva(){const v=$('#vip');v.querySelectorAll('.moeda').forEach(m=>m.remove());if(calmo())return;
-  const h=innerHeight+140;for(let i=0;i<16;i++){const m=document.createElement('img');m.src='assets/moeda.png';m.className='moeda';m.alt='';
+  const h=innerHeight+140;for(let i=0;i<10;i++){const m=document.createElement('img');m.src='assets/moeda.png';m.className='moeda';m.alt='';
     const w=30+Math.random()*30;m.style.cssText=`left:${Math.random()*100}%;width:${w}px`;v.appendChild(m);
     m.animate([{transform:'none'},{transform:`translateY(${h}px) rotate(${(Math.random()*2-1)*540}deg)`}],{duration:2400+Math.random()*1800,delay:400+Math.random()*1400,easing:'linear',fill:'forwards'}).onfinish=()=>m.remove()}}
 function voltarVip(){const v=$('#vip');v.classList.remove('go','on');v.querySelectorAll('.moeda').forEach(m=>m.remove());irPara(1,false);location.hash='#estacoes'}
@@ -1152,7 +1149,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
 <link rel="stylesheet" href="quadro-ar.css?v=1">
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=16"></script><script src="envelopes.js?v=5"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=7"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=16"></script><script src="envelopes.js?v=6"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=1"></script><script src="quadro.js?v=7"></script>
 <script src="filtro.js?v=8"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>

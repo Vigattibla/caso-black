@@ -23,7 +23,7 @@ const Envelopes = window.Envelopes = (() => {
   const esgotado = n => n.quantidade !== undefined && Number(n.restantes) <= 0;
   const pendencia = n => n.regra.resolvido ? 'só para quem resolve o caso' : `faltam ${Math.max(0, n.regra.carimbos - carimbos().length)} provas`;
   const status = (n, livre = liberado(n), aberto = (/^#demo/.test(location.hash) ? demoAbertos : abertos).has(n.id)) => esgotado(n) ? 'ESGOTADO' : !livre ? pendencia(n) : aberto ? 'carta aberta' : 'segure o lacre';
-  const perda = (n, livre) => !resolveu() && !livre && !esgotado(n) ? '<strong class="en-perda">VOCÊ ESTÁ PERDENDO ESTE DESCONTO</strong>' : '';
+  const perda = (n, livre) => !resolveu() && !livre && !esgotado(n) ? '<strong class="en-perda">desconto em risco</strong>' : '';
   // Ícones próprios gravados no lacre: cópia clara deslocada + cópia escura = relevo na cera.
   const GLIFOS = {
     bronze: '<path fill="currentColor" d="M12.4 22c-2.6 0-3.9-2-3.5-4.8.3-2.2 1.6-3.2 1.4-5.2-.2-1.8 1-3 2.7-3 2.2 0 3.3 1.9 3 4.3-.3 2.4-1.2 3.3-1 5.4.2 1.9-.7 3.3-2.6 3.3z"/><g fill="currentColor"><circle cx="10.1" cy="6.3" r="1.7"/><circle cx="13" cy="5" r="1.5"/><circle cx="15.5" cy="5.6" r="1.25"/><circle cx="17.3" cy="7.1" r="1.05"/><circle cx="18.3" cy="9.1" r=".9"/></g>',
@@ -49,6 +49,8 @@ const Envelopes = window.Envelopes = (() => {
 .en-icone{overflow:visible}.en-ico-luz{color:#fff7;transform:translate(.6px,.9px)}.en-ico{color:#1a0e05c0}
 .f5 .fimW{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;touch-action:pan-y;padding:0 4px 8px 0}.f5 .fimW>*{flex-shrink:0}.f5 #fimLupa{margin-top:12px}
 #vip .miolo{overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}#vip .miolo>*{flex-shrink:0}
+#vip .envelopes-secao h3,#fimAnim .envelopes-secao h3{font:700 10px/1.4 'Courier Prime',monospace;letter-spacing:.2em;color:#f4f1ea99;margin-bottom:8px}#vip .envelopes-secao>p,#fimAnim .envelopes-secao>p{display:none}
+.envelopes-resumo .en-perda{margin:6px 0 0;font:700 9px/1.3 'Courier Prime',monospace;letter-spacing:.04em;color:#e8736b}
 #vip .envelopes-secao{margin-top:20px}#vip .envelopes-resumo{gap:10px}
 #vip .envelopes-resumo button{flex-direction:column;align-items:flex-start;min-width:0;min-height:100px;padding:12px 10px}
 #vip .envelopes-resumo button>span:last-child{min-width:0}#vip .envelopes-resumo b{font-size:18px}
