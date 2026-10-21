@@ -8,12 +8,13 @@ window.Filtro = (() => {
   const MODELO = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
   const W = 1080, H = 1920, img = {};
   const ARROBA = '@villageresortmg';
-  let rosto = null, carregando = null, fluxo = null, laco = 0, ui = null, ultimo = null, suave = null;
+  let rosto = null, carregando = null, fluxo = null, laco = 0, ui = null, ultimo = null, suave = null, pedidoCam = 0;
 
-  const carregaImg = n => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `assets/filtro/${n}.png` });
   async function prepara() {
     if (carregando) return carregando;
     carregando = (async () => {
+      const carregaImg = n => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `assets/filtro/${n}.png` });
+      // Artes opcionais (chapéu/óculos/selo): sem o PNG, usa o desenho reserva.
       [img.chapeu, img.oculos, img.selo] = await Promise.all(['chapeu', 'oculos', 'selo'].map(carregaImg));
       img.logo = await new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = 'assets/cb-logo.png' });
       try {
@@ -99,16 +100,22 @@ window.Filtro = (() => {
   }
 
   async function abrir() {
+    fechar();
+    const pedido = pedidoCam;
     if (!ui) monta();
     ui.className = 'on'; ui.setAttribute('aria-hidden', 'false'); $('#fiMsg').textContent = 'PREPARANDO O DISFARCE…';
     try {
-      fluxo = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'user', width: {ideal: 1280}, height: {ideal: 720}}, audio: false});
+      const recebido = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'user', width: {ideal: 1280}, height: {ideal: 720}}, audio: false});
+      if (pedido !== pedidoCam) { recebido.getTracks().forEach(t => t.stop()); return }
+      fluxo = recebido;
       const v = $('#fiV'); v.srcObject = fluxo; await v.play();
-    } catch (e) { $('#fiMsg').textContent = 'SEM CÂMERA AQUI. PERMITA A CÂMERA E TENTE DE NOVO.'; return }
+      if (pedido !== pedidoCam) return;
+    } catch (e) { if (pedido !== pedidoCam) return; fechar(); ui.className = 'on'; ui.setAttribute('aria-hidden', 'false'); $('#fiMsg').textContent = 'SEM CÂMERA AQUI. PERMITA A CÂMERA E TENTE DE NOVO.'; return }
     prepara().then(() => { suave = null });
     cancelAnimationFrame(laco); quadro();
   }
   function fechar() {
+    pedidoCam++;
     cancelAnimationFrame(laco); if (fluxo) { fluxo.getTracks().forEach(t => t.stop()); fluxo = null }
     if (ui) { ui.className = ''; ui.setAttribute('aria-hidden', 'true') }
   }

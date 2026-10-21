@@ -7,7 +7,7 @@
    Envio que falhar entra numa fila local e é reenviado na próxima abertura. */
 window.CB_CONFIG = Object.assign({backend: 'local', supabaseUrl: '', supabaseAnon: '', endpoint: ''}, window.CB_CONFIG || {});
 
-const Dados = (() => {
+const Dados = window.Dados = (() => {
   const C = window.CB_CONFIG, LS = 'cb-ficha', FILA = 'cb-fila';
   const ler = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch (e) { return d } };
   const gravar = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) {} };

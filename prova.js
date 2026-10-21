@@ -57,7 +57,7 @@ const Prova = (() => {
     <button class="pul" id="pvPul">pular a foto</button>
   </div></div>`);
 
-  let est = -1, fim = null, fluxo = null, laco = 0, frente = true, foto = null;
+  let est = -1, fim = null, fluxo = null, laco = 0, frente = true, foto = null, pedidoCam = 0;
   const q = s => document.querySelector(s), P = q('#prova'), ch = () => q('#pvCh');
 
   /* ---------- som e fala ---------- */
@@ -92,14 +92,18 @@ const Prova = (() => {
 
   async function ligarCam() {
     pararCam(); foto = null; botoes(false);
-    try { fluxo = await navigator.mediaDevices.getUserMedia({video: {facingMode: frente ? 'user' : 'environment', width: {ideal: 1280}}, audio: false});
+    const pedido = pedidoCam;
+    try { const recebido = await navigator.mediaDevices.getUserMedia({video: {facingMode: frente ? 'user' : 'environment', width: {ideal: 1280}}, audio: false});
+      if (pedido !== pedidoCam) { recebido.getTracks().forEach(t => t.stop()); return }
+      fluxo = recebido;
       const v = Object.assign(document.createElement('video'), {playsInline: true, muted: true}); v.srcObject = fluxo; await v.play();
+      if (pedido !== pedidoCam) return;
       (function q2() { if (!fluxo || foto) return; molde(cx(), v, v.videoWidth, v.videoHeight, frente); laco = requestAnimationFrame(q2) })();
       ligarCam.v = v; q('#pvVira').hidden = false; q('#pvDisp').hidden = false;
-    } catch (e) { molde(cx(), null); q('#pvVira').hidden = true; q('#pvDisp').hidden = true;
+    } catch (e) { if (pedido !== pedidoCam) return; pararCam(); molde(cx(), null); q('#pvVira').hidden = true; q('#pvDisp').hidden = true;
       fala('#pvBl2', 'SEM CÂMERA AQUI', 'Escolha uma foto da equipe na galeria.') }
   }
-  function pararCam() { cancelAnimationFrame(laco); if (fluxo) { fluxo.getTracks().forEach(t => t.stop()); fluxo = null } }
+  function pararCam() { pedidoCam++; cancelAnimationFrame(laco); q('#pvN').textContent = ''; q('#pvDisp').disabled = false; if (fluxo) { fluxo.getTracks().forEach(t => t.stop()); fluxo = null } }
   function botoes(tem) { q('#pvB1').hidden = tem; q('#pvB2').hidden = !tem; q('#pvGu').hidden = !tem; passo(tem ? 1 : 0) }
   function congelar(src, sw, sh, esp) {   // guarda a foto crua (pro PDF/álbum) e mostra com molde
     const r = document.createElement('canvas'), k = Math.min(1, 900 / Math.max(sw, sh)); r.width = sw * k; r.height = sh * k;

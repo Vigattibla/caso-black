@@ -163,7 +163,7 @@ h2.tit{font:400 33px/0.98 Anton;letter-spacing:.01em;margin:14px 0 2px;text-tran
 .f3 .btn{width:100%;margin-top:12px}
 
 /* marcas de manuseio */
-.face.frente{box-shadow:0 1px 2px #0003,0 6px 16px #0002,inset 0 0 34px #8a6a3a1f}
+.face.frente{transform:translateZ(.1px);box-shadow:0 1px 2px #0003,0 6px 16px #0002,inset 0 0 34px #8a6a3a1f}
 .digital{position:absolute;width:58px;height:80px;pointer-events:none;z-index:16;mix-blend-mode:multiply;background-size:contain;background-repeat:no-repeat;font-style:normal}
 .cafe{position:absolute;width:118px;height:118px;border-radius:50%;pointer-events:none;z-index:16;mix-blend-mode:multiply;
   background:radial-gradient(closest-side,#0000 80%,#7a4a1a30 86%,#7a4a1a55 91%,#7a4a1a18 96%,#0000 100%),radial-gradient(closest-side,#9b6a3012,#0000 80%)}
@@ -960,18 +960,19 @@ let notas={};try{notas=JSON.parse(localStorage.getItem('cb-notas')||'{}')}catch(
 $('#sNota').addEventListener('input',e=>{notas[atual]=e.target.value;try{localStorage.setItem('cb-notas',JSON.stringify(notas))}catch(e){}});
 
 /* lupa: câmera limpa · decifra os códigos da carta (ArUco 306..310) · leitura das placas · Caca em AR */
-let fluxo=null,laco=0,modo='carta',ar=null,avisou=0,ouroC=null;
+let fluxo=null,laco=0,modo='carta',ar=null,avisou=0,ouroC=null,pedidoLupa=0;
 const TXT={carta:['LUPA MÁGICA','Aponte para os <b style="display:inline;font:inherit;color:#fdc72f">códigos secretos</b> da carta (o quadradinho preto ao lado dos símbolos). Achou uma <b style="display:inline;font:inherit;color:#fdc72f">placa do caso</b>? Aponte pro quadriculado e veja a pista aparecer.'],
   final:['O SELO DA CARTA','Vire a carta e aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
 const temVideo={};
 async function videoDe(e){const u=`assets/v/estacao${e+1}.mp4`;
   if(!(u in temVideo)){try{const r=await fetch(u,{method:'HEAD'});temVideo[u]=r.ok&&/video/.test(r.headers.get('content-type')||'video')}catch(_){temVideo[u]=false}}
   return temVideo[u]?u:null}
-async function abrirLupa(m='carta'){modo=m;ar=null;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
+async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;ar=null;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
   $('#lupaTit').textContent=TXT[m][0];$('#lupaTxt').innerHTML=TXT[m][1];
-  try{fluxo=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280}},audio:false});
+  try{const recebido=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280}},audio:false});
+    if(pedido!==pedidoLupa){recebido.getTracks().forEach(t=>t.stop());return}fluxo=recebido;
     try{const t=fluxo.getVideoTracks()[0],cp=t.getCapabilities?t.getCapabilities():{};if(cp.zoom)await t.applyConstraints({advanced:[{zoom:cp.zoom.min}]})}catch(_){}   // sem zoom: imagem inteira da câmera
-    const v=$('#lupaV');v.srcObject=fluxo;await v.play();const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
+    if(pedido!==pedidoLupa)return;const v=$('#lupaV');v.srcObject=fluxo;await v.play();if(pedido!==pedidoLupa)return;const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
     let nq=0;dec={};
     (function quadro(){if(!fluxo)return;const vw=v.videoWidth||960,vh=v.videoHeight||1280,w=c.width=Math.min(960,vw),h=c.height=Math.round(w*vh/vw);
       x.drawImage(v,0,0,w,h);
@@ -988,7 +989,7 @@ async function abrirLupa(m='carta'){modo=m;ar=null;const L=$('#lupa');L.classNam
       if(!ouroC)desenhaCodigos(x);
       if(ouroC)desenhaOuro(x,w,h);
       laco=requestAnimationFrame(quadro)})();
-  }catch(e){L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
+  }catch(e){if(pedido!==pedidoLupa)return;if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
 }
 /* códigos da carta: selo ArUco + frase no alfabeto do Bê; geometria em lados do quadrado preto (gerada com as faixas) */
 let dec={};
@@ -1100,7 +1101,7 @@ function desenhaCaca(x,w,h){const V=$('#cacaV');if(V.readyState<2||!V.videoWidth
     sz=(Math.hypot(p[1][0]-p[0][0],p[1][1]-p[0][1])+Math.hypot(p[2][0]-p[1][0],p[2][1]-p[1][1]))/2;base=my-sz/2}
   const g=ar.g||(ar.g={cx,base,sz});g.cx+=(cx-g.cx)*.25;g.base+=(base-g.base)*.25;g.sz+=(sz-g.sz)*.25;
   const dh=Math.min(h*.78,Math.max(h*.35,g.sz*3.4)),dw=dh*kw/kh;x.drawImage(kc,g.cx-dw/2,Math.max(0,g.base-dh+g.sz*.1),dw,dh)}
-function fecharLupa(){const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}
+function fecharLupa(){pedidoLupa++;const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}
   const V=$('#cacaV');V.pause();V.onended=null;ar=null;ouroC=null}
 $('#lupaX').onclick=()=>ar&&ar.u?fimAR():fecharLupa();
 $('#lupaPular').onclick=fimAR;
