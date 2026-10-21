@@ -1,0 +1,23 @@
+{
+  "imagePath": "./alvos/placa-1_luminance.png",
+  "metadata": null,
+  "name": "placa-1",
+  "type": "PLANAR",
+  "properties": {
+    "left": 0,
+    "top": 0,
+    "width": 1200,
+    "height": 1600,
+    "isRotated": false,
+    "originalWidth": 1200,
+    "originalHeight": 1600
+  },
+  "resources": {
+    "originalImage": "placa-1_original.png",
+    "croppedImage": "placa-1_cropped.png",
+    "thumbnailImage": "placa-1_thumbnail.png",
+    "luminanceImage": "placa-1_luminance.png"
+  },
+  "created": 1792617247948,
+  "updated": 1792617247948
+}

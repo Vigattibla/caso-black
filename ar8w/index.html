@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Caso Black · Lupa AR (teste)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Courier+Prime:wght@400;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="./xr/xr.js" async data-preload-chunks="slam"></script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-family:Montserrat,sans-serif;overscroll-behavior:none}
+#camera{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+#css3d{position:fixed;inset:0;pointer-events:none;overflow:hidden}#css3d .e1{pointer-events:auto}
+#inicio,#erro{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:#111 url(../assets/ruido.webp);text-align:center}
+#inicio[hidden],#erro[hidden],[hidden]{display:none!important}
+.caixa{max-width:340px}.caixa img{width:190px;margin:0 auto 10px;display:block}
+.caixa h1{font:400 34px/1.05 Anton,sans-serif;color:#fdc72f;text-transform:uppercase;margin:0 0 10px}
+.caixa p{font:500 15px/1.45 Montserrat,sans-serif;margin:0 0 20px;color:#ddd}
+#abrir,#erro button{min-height:52px;padding:0 28px;border:0;background:#fdc72f;color:#111;font:800 16px Montserrat,sans-serif;cursor:pointer}
+#abrir:disabled{opacity:.6}
+#status{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:10;background:#111d;color:#fdc72f;font:700 14px 'Courier Prime',monospace;padding:10px 14px;max-width:calc(100% - 32px);text-align:center}
+#limitado{position:fixed;right:12px;top:calc(62px + env(safe-area-inset-top));z-index:10;background:#c8102e;color:#fff;font:700 11px Montserrat;padding:5px 8px}
+#credito{position:fixed;left:0;right:0;bottom:calc(6px + env(safe-area-inset-bottom));z-index:10;text-align:center;font:600 10px Montserrat,sans-serif;color:#fffb;text-shadow:0 1px 2px #000}
+#credito a{color:inherit}
+</style>
+</head>
+<body>
+<canvas id="camera"></canvas>
+<div id="css3d"></div>
+<div id="status" hidden></div>
+<div id="limitado" hidden>Mexa o celular devagar</div>
+<section id="inicio"><div class="caixa">
+  <img src="../assets/cb-logo.png" alt="Caso Black">
+  <h1>Lupa de teste</h1>
+  <p>Aponte o celular para a placa da Estação 1. O quadro fica preso na parede: você pode andar e voltar.</p>
+  <button id="abrir" disabled>Carregando…</button>
+</div></section>
+<section id="erro" hidden><div class="caixa"><h1>Ops</h1><p></p><button onclick="location.reload()">Recarregar</button></div></section>
+<div id="credito">AR por 8th Wall · Niantic Spatial · <a href="./xr/LICENSE" target="_blank">licença</a></div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
