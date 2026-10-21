@@ -1,16 +1,14 @@
 /* Caso Black · rodada de cada placa: pista física achada → foto da equipe com o molde da prova → álbum.
-   Índices 0-based (0 Água · 1 Sabor · 2 Kids · 3 Lojinha · 4 Lobby). Sprites provisórios (vêm do Turma do Bê 2D.ai). */
+   Índices 0-based (0 Água · 1 Sabor · 2 Kids · 3 Lojinha · 4 Lobby). Artes resolvidas pelo helper Detetive. */
 const Prova = (() => {
   const W = 1080, H = 1350, F = {x: 24, y: 24, w: 1032, h: 1212};   // molde 4:5 · janela da foto
-  const LU = 'assets/lucas.webp', GA = 'assets/gabi.webp', PI = 'assets/pipoca.webp', BE = 'assets/be-cabeca.png';
   const AJ = {
-    0: {nome: 'Lucas', imgs: [LU], cab: ['lucas'], lugar: 'ÁGUA'},
-    1: {nome: 'Lucas', imgs: [LU], cab: ['lucas'], lugar: 'SABOR'},
-    2: {nome: 'Gabi', imgs: [GA], cab: ['gabi'], lugar: 'KIDS'},
-    3: {nome: 'Pipoca', imgs: [PI], cab: ['pipoca'], lugar: 'LOJINHA'},
-    4: {nome: 'Turma', imgs: [LU, GA, PI], cab: ['lucas', 'gabi', 'pipoca'], lugar: 'LOBBY'}};
-  const imgs = {}; const img = u => imgs[u] || (imgs[u] = Object.assign(new Image(), {src: u}));
-  [LU, GA, PI, BE].forEach(img);
+    0: {nome: 'Lucas', cab: ['lucas'], lugar: 'ÁGUA'},
+    1: {nome: 'Lucas', cab: ['lucas'], lugar: 'SABOR'},
+    2: {nome: 'Gabi', cab: ['gabi'], lugar: 'KIDS'},
+    3: {nome: 'Pipoca', cab: ['pipoca'], lugar: 'LOJINHA'},
+    4: {nome: 'Turma', cab: ['lucas', 'gabi', 'pipoca'], lugar: 'LOBBY'}};
+  const sprites = {}, prontas = Promise.all(['lucas', 'gabi', 'pipoca'].map(async n => { sprites[n] = await Detetive.carregar(n) }));
 
   document.head.insertAdjacentHTML('beforeend', `<style>
 #prova{position:fixed;inset:0;z-index:90;background:#141210 radial-gradient(120% 70% at 50% 0,#2a231c,#141210 70%);color:#F4F1EA;display:none;flex-direction:column;align-items:center;padding:12px 16px calc(18px + env(safe-area-inset-bottom));overflow:auto;overflow-x:hidden}
@@ -70,10 +68,10 @@ const Prova = (() => {
 
   /* ---------- molde da prova ---------- */
   function ajudantes(x) {   // sprites no canto de baixo à direita, pequenos
-    const gs = AJ[est].imgs.map(img).filter(g => g.complete && g.naturalWidth); if (!gs.length) return;
-    const um = gs.length === 1, mh = um ? 230 : 170, mw = um ? 190 : 130; let dir = W - 18;
+    const gs = AJ[est].cab.map(n => sprites[n]?.img).filter(g => g?.naturalWidth); if (!gs.length) return;
+    const um = gs.length === 1, mh = um ? 230 : 170, mw = um ? 190 : 130; let dir = F.x + F.w - 12;
     [...gs].reverse().forEach(g => { const s = Math.min(mw / g.naturalWidth, mh / g.naturalHeight), w = g.naturalWidth * s, h = g.naturalHeight * s;
-      x.drawImage(g, dir - w, H - h - 6, w, h); dir -= w * .74 });
+      x.drawImage(g, dir - w, F.y + F.h - h - 12, w, h); dir -= w * .74 });
   }
   function molde(x, src, sw, sh, espelho) {
     const a = AJ[est];
@@ -131,9 +129,10 @@ const Prova = (() => {
     passo(0); P.scrollTop = 0; ligarCam() }
 
   function fechar(ok) { const b = q('#balao'); b.classList.remove('on'); document.body.append(b); pararCam(); P.classList.remove('on'); P.setAttribute('aria-hidden', 'true'); const f = fim; fim = null; if (ok && f) f() }
-  function abrir(i, depois) {
+  async function abrir(i, depois) {
     est = i; fim = depois; foto = null; q('#pvK').textContent = `PROVA ${dois(i + 1)} · ${AJ[i].lugar}`;
-    P.classList.add('on'); P.setAttribute('aria-hidden', 'false'); document.fonts && document.fonts.load('400 46px Anton'); passoFoto();
+    P.classList.add('on'); P.setAttribute('aria-hidden', 'false'); document.fonts && document.fonts.load('400 46px Anton');
+    await prontas; if (est === i && P.classList.contains('on')) passoFoto();
   }
   return {tem: i => !!AJ[i], aj: i => AJ[i], abrir, foto: i => abrir(i, null)};
 })();

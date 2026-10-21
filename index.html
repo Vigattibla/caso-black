@@ -334,6 +334,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 .beQ img{position:absolute;left:0;bottom:-2px;width:100%}
 .beQ.cab img{left:6%;width:88%;bottom:-3px;animation:cabPop .35s cubic-bezier(.3,1.6,.5,1)}.beQ.cab.g{display:block}.beQ.cab.g img{position:absolute;top:auto;bottom:9px;width:52%;margin:0}.beQ.cab.g img:nth-child(1){left:-6%}.beQ.cab.g img:nth-child(2){left:24%;bottom:-3px;z-index:1}.beQ.cab.g img:nth-child(3){left:54%}@keyframes cabPop{from{transform:translateY(30%) scale(.8)}}
 .beQ.corpo img{top:5px;bottom:auto;left:-8%;width:116%}.beQ.g{display:flex}.beQ.g img{position:static;width:34%;margin-top:6px;object-fit:cover;object-position:top}
+.beQ.cab img.detCorpo{top:5px;bottom:auto;left:-8%;width:116%}.beQ.cab.g img.detCorpo{top:6px;width:52%;left:-6%}.beQ.cab.g img.detCorpo:nth-child(2){left:24%}.beQ.cab.g img.detCorpo:nth-child(3){left:54%}
 .beNome{position:absolute;left:65px;top:-18px;background:var(--amarelo);color:var(--preto);font:400 11px/1 Anton;letter-spacing:.08em;padding:4px 7px 3px;border:2px solid var(--preto);border-radius:3px}
 .beSeta{position:absolute;right:9px;bottom:4px;color:var(--amarelo);font-size:10px;animation:beSeta 1s steps(2) infinite}@keyframes beSeta{50%{opacity:0}}
 #sheet textarea{width:100%;border:1.5px dashed #0005;border-radius:4px;background:repeating-linear-gradient(#fff0 0 23px,#0000001a 23px 24px),#fffdf6;padding:2px 10px;font:700 19px/24px Caveat;color:#1b2a6b;resize:none;outline:none}
@@ -371,7 +372,7 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 .env .envC{position:absolute;inset:0;border-radius:4px;background:linear-gradient(160deg,#efe6d1,#ddd0b2);box-shadow:0 24px 50px #000c}
 .env .envC::before{content:"";position:absolute;inset:0;border-radius:4px;background:linear-gradient(#e2d6bb,#d4c49f);clip-path:polygon(0 100%,50% 52%,100% 100%)}
 .env .tampa{position:absolute;left:0;right:0;top:0;height:64%;background:linear-gradient(#ddd0b2,#cbb98f);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 2px 2px #0003);transform-origin:50% 0;transition:transform .7s var(--ease)}
-.env .lacre{position:absolute;left:50%;top:64%;width:78px;height:78px;margin:-39px 0 0 -39px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 35% 30%,#fff3c4,#fdc72f 35%,#c48a00 80%,#8a5c00);box-shadow:0 4px 10px #0007,inset 0 0 0 4px #fdc72f88;opacity:0;transform:scale(1.8);transition:opacity .25s,transform .45s cubic-bezier(.5,0,.6,1.6)}
+.env .lacre{position:absolute;left:50%;top:54%;width:78px;height:78px;margin:-39px 0 0 -39px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 35% 30%,#fff3c4,#fdc72f 35%,#c48a00 80%,#8a5c00);box-shadow:0 4px 10px #0007,inset 0 0 0 4px #fdc72f88;opacity:0;transform:scale(1.8);transition:opacity .25s,transform .45s cubic-bezier(.5,0,.6,1.6)}
 #fimAnim.ouro .env .lacre{opacity:1;transform:none}
 .env .lacre canvas{position:absolute;left:14px;top:9px;width:50px;height:62px;opacity:0;filter:blur(4px);transition:opacity .8s,filter .8s}
 #fimAnim.dig .env .lacre canvas{opacity:.92;filter:none}
@@ -539,7 +540,7 @@ body.aberto .fita span{animation-play-state:paused}
   <div class="rola"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>OU ARRASTE PRO LADO</div>
 </div>
 <button class="fab" id="lupaBtn" aria-label="Abrir a lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>LUPA</button>
-<div class="balao" id="balao" role="status"><div class="beQ corpo"><img src="assets/lucas.webp" alt=""></div><span class="beNome">LUCAS</span><div id="beTx"></div><span class="beSeta" aria-hidden="true">▼</span></div>
+<div class="balao" id="balao" role="status"><div class="beQ cab"><img src="assets/cab/lucas-01.webp?v=2" alt=""></div><span class="beNome">LUCAS</span><div id="beTx"></div><span class="beSeta" aria-hidden="true">▼</span></div>
 
 <div id="fimAnim" aria-hidden="true">
   <div class="luzC"></div>
@@ -736,7 +737,7 @@ const OFERTAS=['','','','',''];      // PENDENTE: ofertas da Black 2026 (texto c
 const cupom=(i,t)=>t&&/\.(png|webp|jpe?g|svg)$/.test(t)?`<img src="${t}" alt="">`:`<div class="cupom"><small>OFERTA</small><b>${t||dois(i+1)}</b><i>${t?'':'a revelar'}</i></div>`;
 const feitas=()=>{const c=window.Dados&&Dados.ficha()?Dados.carimbos():[];return new Set([...achadas,...c.filter(x=>x<=5).map(x=>x-1)])};
 const resolvido=()=>{if(window.Dados&&Dados.ficha()&&Dados.ficha().resolvido)return true;try{return localStorage.getItem('cb-resolvido')==='1'}catch(_){return false}};
-const aj=i=>typeof Prova!=='undefined'?Prova.aj(i):{nome:'',imgs:[]};
+const aj=i=>typeof Prova!=='undefined'?Prova.aj(i):{nome:'',cab:[]};
 const ajNome=i=>i===4?'a turma toda':(i===3?'o ':i===2?'a ':'o ')+aj(i).nome;
 
 /* ---------- folha 02: estações (placa → lupa → prova) ---------- */
@@ -748,7 +749,7 @@ function pintarEstacoes(novo=-1){const L=$('#estL');if(!L)return;const f=feitas(
   $$('#estL .est').forEach(b=>b.onclick=()=>abrirPista(+b.dataset.i));
   $('#estP').textContent=f.size>=5?'5 de 5! Agora vira pra última folha.':`${f.size} de 5 · toque numa estação pra ver a pista`}
 function proxima(){const f=feitas(),i=PISTAS.findIndex((_,j)=>!f.has(j));if(i<0)return;const a=aj(i);
-  beFala(PISTAS[i].enig,`PRÓXIMA · ${PISTAS[i].loc.toUpperCase()}`,{nome:a.nome,imgs:a.imgs,cab:a.cab})}
+  beFala(PISTAS[i].enig,`PRÓXIMA · ${PISTAS[i].loc.toUpperCase()}`,{nome:a.nome,cab:a.cab})}
 window.proxima=proxima;
 
 /* ---------- álbum: foto da equipe em cada estação (fica só no aparelho) ---------- */
@@ -827,8 +828,9 @@ async function folhaDossie(){
   for(const [i,p] of PISTAS.entries()){const Y=915+i*118,ok=fd.has(i),a=aj(i);
     x.fillStyle=ok?'#fff':'#ECE7DB';x.fillRect(90,Y,1060,100);
     x.fillStyle='#FDC72F';x.fillRect(100,Y+10,80,80);x.strokeStyle='#111';x.lineWidth=3;x.strokeRect(100,Y+10,80,80);
-    const gs=(await Promise.all(a.imgs.map(imgDe))).filter(Boolean);x.save();x.beginPath();x.rect(101,Y+11,78,78);x.clip();
-    gs.forEach((g,j)=>{const w=gs.length>1?30:92,h=w*g.height/g.width;x.drawImage(g,gs.length>1?101+j*26:94,Y+16,w,h)});x.restore();
+    const gs=(await Promise.all(a.cab.map(n=>Detetive.carregar(n)))).map(a=>a.img).filter(Boolean);x.save();x.beginPath();x.rect(101,Y+11,78,78);x.clip();
+    gs.forEach((g,j)=>{const w=gs.length>1?30:72,hmax=74,s=Math.min(w/g.width,hmax/g.height),iw=g.width*s,ih=g.height*s;
+      x.drawImage(g,gs.length>1?101+j*24+(30-iw)/2:140-iw/2,Y+87-ih,iw,ih)});x.restore();
     txt(dois(i+1),205,Y+68,'400 50px Anton');txt(p.loc.toUpperCase(),280,Y+50,'400 36px Anton');txt('com '+ajNome(i),280,Y+84,'700 24px "Courier Prime"','#666');
     txt(ok?'ENCONTRADA':'a encontrar',1125,Y+62,ok?'400 32px Anton':'700 32px Caveat',ok?'#C8102E':'#777','right')}
   x.save();x.translate(930,1590);x.rotate(-12*Math.PI/180);x.globalAlpha=.88;x.strokeStyle='#C8102E';x.lineWidth=7;x.strokeRect(-190,-70,380,140);
@@ -928,14 +930,29 @@ $('#garantir').onclick=()=>{const f=Dados.ficha();if(!f)return pedirCadastro(()=
 const DICAS={relatorio:'Oi, eu sou o Lucas! O Bê sumiu e deixou essa pasta com a lupa mágica dele. Arraste a folha pro lado pra virar.',
  estacoes:'São 5 placas pelo resort, e em cada uma tem alguém da turma esperando. Toque numa estação pra ver a pista.',
  album:'A cada placa, uma foto da equipe. No fim, vocês postam o álbum inteiro no story.'};
-const NARR={nome:'Lucas',imgs:['assets/lucas.webp'],cab:['lucas']};
+const NARR={nome:'Lucas',cab:['lucas']};
 // cabeças com expressão (assets/cab): o humor sai do texto da fala, ou vem em quem.humor
 const CAB={be:{feliz:6,surpresa:1,duvida:7,serio:4,piscada:3},gabi:{feliz:3,surpresa:2,duvida:1,serio:4,piscada:9},
  lucas:{feliz:5,surpresa:3,duvida:1,serio:2,piscada:9},pipoca:{feliz:10,surpresa:1,duvida:7,serio:9,piscada:12}};
 const humor=x=>/errad|falta|ainda|n[ãa]o /i.test(x)?'serio':/certa|complet|fechad|parab|boa|isso/i.test(x)?'feliz':/\?/.test(x)?'duvida':/!/.test(x)?'surpresa':'piscada';
 const cabUrl=(n,h)=>`assets/cab/${n}-${String(CAB[n][h]).padStart(2,'0')}.webp?v=2`;   // o Bê sumiu: quem guia é a turma
-function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createElement('i'),Q=B.querySelector('.beQ'),q=quem||NARR,hu=q.humor||humor((tit||'')+' '+t),im=q.cab?q.cab.map(n=>cabUrl(n,hu)):q.imgs;   // quem={nome,imgs,fixo}: outro ajudante no mesmo balão
-  Q.className='beQ'+(q.cabeca||q.cab?' cab':' corpo')+(im.length>1?' g':'');Q.innerHTML=im.map(u=>`<img src="${u}" alt="">`).join('');B.querySelector('.beNome').textContent=q.nome.toUpperCase();
+// Uma tentativa por corpo e uma carga por cabeça/expressão. Só troca uma arte já decodificada.
+const Detetive=(()=>{const imagens=new Map(),corpos=new Map(),prontas=new Map();
+  const imagem=u=>{if(!imagens.has(u))imagens.set(u,new Promise(ok=>{const i=new Image();i.onload=()=>{prontas.set(u,i);ok(i)};i.onerror=()=>{prontas.set(u,null);ok(null)};i.src=u}));return imagens.get(u)};
+  async function carregar(n,h='feliz'){if(!corpos.has(n))corpos.set(n,imagem(`assets/corpo/${n}.webp`));
+    const corpo=await corpos.get(n);return{img:corpo||await imagem(cabUrl(n,h)),corpo:!!corpo}}
+  function balao(Q,nomes,h){const vez=Q._vez=(Q._vez||0)+1;
+    Q.className='beQ cab'+(nomes.length>1?' g':'');
+    const mostrar=artes=>{if(Q._vez!==vez)return;
+      Q.replaceChildren(...artes.map((a,j)=>{const i=a.img?a.img.cloneNode():new Image();i.alt='';if(a.corpo)i.className='detCorpo';
+        i.onerror=()=>{i.onerror=null;i.classList.remove('detCorpo');i.src=cabUrl(nomes[j],h)};return i}))};
+    const atuais=nomes.map(n=>{const corpo=prontas.get(`assets/corpo/${n}.webp`);return{img:corpo||prontas.get(cabUrl(n,h)),corpo:!!corpo}});
+    if(atuais.every(a=>a.img))mostrar(atuais);
+    else Q.replaceChildren(...nomes.map(n=>{const i=new Image();i.alt='';i.src=cabUrl(n,h);return i}));
+    Promise.all(nomes.map(n=>carregar(n,h))).then(mostrar)}
+  return{carregar,balao}})();
+function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createElement('i'),Q=B.querySelector('.beQ'),q=quem||NARR,hu=q.humor||humor((tit||'')+' '+t),nomes=q.cab||[q.nome.toLowerCase()];
+  Detetive.balao(Q,nomes,hu);B.querySelector('.beNome').textContent=q.nome.toUpperCase();
   $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;typeof Voz==='object'&&Voz.diz(t,q.nome);B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
 function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
@@ -960,7 +977,7 @@ let notas={};try{notas=JSON.parse(localStorage.getItem('cb-notas')||'{}')}catch(
 $('#sNota').addEventListener('input',e=>{notas[atual]=e.target.value;try{localStorage.setItem('cb-notas',JSON.stringify(notas))}catch(e){}});
 
 /* lupa: câmera limpa · decifra os códigos da carta (ArUco 306..310) · leitura das placas · Caca em AR */
-let fluxo=null,laco=0,modo='carta',ar=null,avisou=0,ouroC=null,pedidoLupa=0;
+let fluxo=null,laco=0,modo='carta',ar=null,avisou=-Infinity,ouroC=null,pedidoLupa=0,seloLido=null;
 const TXT={carta:['LUPA MÁGICA','Aponte para os <b style="display:inline;font:inherit;color:#fdc72f">códigos secretos</b> da carta (o quadradinho preto ao lado dos símbolos). Achou uma <b style="display:inline;font:inherit;color:#fdc72f">placa do caso</b>? Aponte pro quadriculado e veja a pista aparecer.'],
   final:['O SELO DA CARTA','Vire a carta e aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
 const temVideo={};
@@ -977,19 +994,32 @@ async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;
     (function quadro(){if(!fluxo)return;const vw=v.videoWidth||960,vh=v.videoHeight||1280,w=c.width=Math.min(960,vw),h=c.height=Math.round(w*vh/vw);
       x.drawImage(v,0,0,w,h);
       if(ar&&ar.u)ar.onda?desenhaOnda(x,w,h):desenhaCaca(x,w,h);
-      if(++nq%(ouroC?2:5)===0)for(const mk of Placa.lerTudo(v)){
-        if(mk.id===ARUCO0+5){const ch=chave();   // selo do arquivo, no verso da carta: só abre pelo botão do final
-          if(ch.ok&&modo==='final'){if(!ouroC){ouroC={t0:performance.now()};L.classList.add('ouro');vibra(40);setTimeout(()=>vibra([30,40,30]),3500);setTimeout(()=>{fecharLupa();abrirFim('carta-lupa',true)},6600)}
-            const s=w/vw;ouroC.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}
-          else if(performance.now()-avisou>4000){avisou=performance.now();toast(ch.ok?'Esse é o selo final! Abre ele pelo botão "Ler o selo da carta".':ch.n<5?`Esse é o selo! Faltam ${5-ch.n} carimbos.`:'Esse é o selo! Falta a palavra do retrato.')}}
-        else if(CODIGO[mk.id]){if(!ouroC){const s=w/vw,k=dec[mk.id]||(dec[mk.id]={t0:performance.now()});if(!k.ok&&performance.now()-k.t0>900){k.ok=1;vibra(30)}k.vis=performance.now();k.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}
-        else if(!ouroC){const e=mk.id-ARUCO0;
+      if(++nq%(ouroC?2:5)===0){const marcas=Placa.lerTudo(v);
+        lerSelo(marcas.find(mk=>mk.id===ARUCO0+5),w/vw);
+        for(const mk of marcas){
+        if(mk.id===ARUCO0+5)continue;
+        if(CODIGO[mk.id]){if(!ouroC){const s=w/vw,k=dec[mk.id]||(dec[mk.id]={t0:performance.now()});if(!k.ok&&performance.now()-k.t0>900){k.ok=1;vibra(30)}k.vis=performance.now();k.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}
+        else if(!ouroC&&mk.id>=ARUCO0&&mk.id<ARUCO0+5){const e=mk.id-ARUCO0;
           if(!ar){ar={e,onda:ONDA[e]};(ONDA[e]?Promise.resolve(ONDA[e].u):videoDe(e)).then(u=>{if(!ar||ar.e!==e)return;if(!u){fecharLupa();vibra(40);resolver(e,'placa');return}iniciarAR(u)})}
-          if(ar&&ar.e===e){const s=w/vw;ar.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}}
+          if(ar&&ar.e===e){const s=w/vw;ar.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}}}
       if(!ouroC)desenhaCodigos(x);
       if(ouroC)desenhaOuro(x,w,h);
       laco=requestAnimationFrame(quadro)})();
   }catch(e){if(pedido!==pedidoLupa)return;if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
+}
+// O 305 nunca é estação. Exige leituras consecutivas e posição contínua por 600 ms.
+function lerSelo(mk,s,agora=performance.now()){
+  if(!mk){seloLido=null;return}
+  if(modo!=='final'||!chave().ok){seloLido=null;
+    if(agora-avisou>4000){avisou=agora;toast('Esse é o selo do arquivo. Ele só abre no fim do caso.')}return}
+  const alvo=mk.corners.map(p=>[p.x*s,p.y*s]);
+  if(ouroC){ouroC.alvo=alvo;ouroC.vis=agora;return}
+  const lado=Math.max(1,Math.hypot(alvo[1][0]-alvo[0][0],alvo[1][1]-alvo[0][1]));
+  if(!seloLido||agora-seloLido.vis>250||alvo.some((p,i)=>Math.hypot(p[0]-seloLido.alvo[i][0],p[1]-seloLido.alvo[i][1])>lado*.35))seloLido={t0:agora,n:0};
+  Object.assign(seloLido,{vis:agora,alvo,n:seloLido.n+1});
+  if(agora-seloLido.t0<600||seloLido.n<4)return;
+  const ouro=ouroC={t0:agora,alvo,vis:agora};$('#lupa').classList.add('ouro');vibra(40);
+  ouro.timer=setTimeout(()=>{if(ouroC!==ouro||modo!=='final'||!chave().ok)return;fecharLupa();abrirFim('carta-lupa',true)},3200)
 }
 /* códigos da carta: selo ArUco + frase no alfabeto do Bê; geometria em lados do quadrado preto (gerada com as faixas) */
 let dec={};
@@ -1008,46 +1038,19 @@ function desenhaCodigos(x){const t=performance.now();
     g.l.forEach((l,i)=>{const s=l.slice(0,Math.max(0,lim));lim-=l.length;const tw=x.measureText(l).width,sc=Math.min(1,W*.92/tw);
       x.save();x.translate(X0+W/2,g.y0+H*(i+.5)/n);x.scale(sc,1);x.textAlign='left';x.fillText(s,-tw/2,0);x.restore()});
     x.restore()}}
-/* selo lido: AR presa ao selo; a folha vira ouro, as digitais do Bê andam pelo papel e a última acende o B */
-const FOLHA={x0:-9.4,x1:1.65,y0:-.45,y1:15.2,px:40};   // verso da carta em lados do selo (selo de 19 mm no canto superior direito)
-const DIGB={x:-3.7,y:5.6,h:3.4};                       // a digital grande, no meio das pistas
-const TRILHA=(()=>{const P=[[.2,1.6],[-1,6.4],[-3.2,5.2]],n=6,o=[];
-  for(let i=0;i<n;i++){const t=(i+.4)/(n+.4),u=1-t,x=u*u*P[0][0]+2*u*t*P[1][0]+t*t*P[2][0],y=u*u*P[0][1]+2*u*t*P[1][1]+t*t*P[2][1],
-    dx=2*u*(P[1][0]-P[0][0])+2*t*(P[2][0]-P[1][0]),dy=2*u*(P[1][1]-P[0][1])+2*t*(P[2][1]-P[1][1]),L=Math.hypot(dx,dy),s=i%2?1:-1;
-    o.push({x:x-dy/L*.42*s,y:y+dx/L*.42*s,r:Math.atan2(dy,dx)+Math.PI/2+s*.35,t:1300+i*290,a:.5+.2*DIG.fbm(i*3.1,i)})}
-  return o})();
-const OURO=(()=>{const F=FOLHA,TW=Math.round((F.x1-F.x0)*F.px),TH=Math.round((F.y1-F.y0)*F.px),NW=TW>>1,NH=TH>>1;
-  const mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
-  const tm=mk(TW,TH),ts=mk(TW,TH),sm=mk(NW,NH),xm=tm.getContext('2d'),xs=ts.getContext('2d'),xn=sm.getContext('2d'),sd=xn.createImageData(NW,NH);
-  const N=new Float32Array(NW*NH);   // campo da tinta: distância ao selo + ruído (a borda avança irregular, como líquido no papel)
-  for(let j=0;j<NH;j++)for(let i=0;i<NW;i++){const u=F.x0+(i+.5)/NW*(F.x1-F.x0),v=F.y0+(j+.5)/NH*(F.y1-F.y0);
-    N[j*NW+i]=Math.hypot(u-.5,v-.5)+(DIG.fbm(u*.55+7,v*.55)-.5)*1.6+(DIG.fbm(u*2.2,v*2.2)-.5)*.4}
-  const{W,H,m,bd}=DIG,dc=mk(W,H),dx=dc.getContext('2d'),dd=dx.createImageData(W,H),gc=mk(W,H),gx=gc.getContext('2d'),gd=gx.createImageData(W,H);
-  const rr=new Float32Array(W*H);for(let y=0;y<H;y++)for(let x=0;x<W;x++)rr[y*W+x]=Math.hypot(x-W/2,(y-H*.52)*.8);
-  for(let i=0;i<W*H;i++){gd.data[i*4]=255;gd.data[i*4+1]=243;gd.data[i*4+2]=196;gd.data[i*4+3]=m[i]*255*Math.exp(-bd[i]/4.5)}gx.putImageData(gd,0,0);
-  const P=(u,v)=>[(u-F.x0)*F.px,(v-F.y0)*F.px];
-  function marca(x,img,u,v,h,r,s,a){const[px,py]=P(u,v),hh=h*F.px*s,ww=hh*img.width/img.height;x.save();x.translate(px,py);x.rotate(r);x.globalAlpha=a;x.drawImage(img,-ww/2,-hh/2,ww,hh);x.restore()}
-  function anel(x,u,v,r,lw,cor,a){if(a<=0)return;const[px,py]=P(u,v);x.globalAlpha=a;x.strokeStyle=cor;x.lineWidth=lw*F.px;x.beginPath();x.arc(px,py,r*F.px,0,7);x.stroke();x.globalAlpha=1}
-  // desenha as duas camadas do papel no tempo t (ms): tm = tinta (multiply), ts = luz (screen)
-  function quadro(t){
-    const R=ez(cl((t-300)/2700))*21,sec=1-cl((t-3000)/900),a=sd.data;
-    for(let i=0;i<NW*NH;i++){const k=R-N[i],v=cl(k/1.3),rim=k>0?Math.exp(-((k-.3)**2)/.06)*sec:0,j=i*4;
-      a[j]=253-55*rim;a[j+1]=199-70*rim;a[j+2]=47-30*rim;a[j+3]=255*Math.max(v*.94,rim*.9)}
-    xn.putImageData(sd,0,0);
-    xm.clearRect(0,0,TW,TH);xm.imageSmoothingEnabled=true;xm.drawImage(sm,0,0,TW,TH);
-    for(const p of TRILHA){const q=cl((t-p.t)/160);if(q>0)marca(xm,digCam,p.x,p.y,.95,p.r,1.25-.25*ez(q),q*p.a)}
-    const tb=t-3500,pb=cl(tb/220);
-    if(pb>0){const Rb=ez(cl((tb-40)/1300))*120,o=dd.data;   // a digital grande se revela do centro pra fora, como tinta absorvendo
-      for(let i=0;i<W*H;i++){const j=i*4;o[j]=92;o[j+1]=52;o[j+2]=8;o[j+3]=m[i]*255*cl((Rb-rr[i])/10)}
-      dx.putImageData(dd,0,0);marca(xm,dc,DIGB.x,DIGB.y,DIGB.h,-.18,1.14-.14*ez(pb),.95)}
-    xs.clearRect(0,0,TW,TH);
-    const sw=(t-2800)/1600;if(sw>0&&sw<1){const g=xs.createLinearGradient(0,0,TW,TH),c=ez(sw)*1.5-.25;   // feixe só depois da folha toda dourada, de canto a canto
-      g.addColorStop(cl(c-.14),'#fff3c400');g.addColorStop(cl(c),'#fff3c4cc');g.addColorStop(cl(c+.14),'#fff3c400');
-      xs.fillStyle=g;xs.fillRect(0,0,TW,TH);xs.globalCompositeOperation='destination-in';xs.drawImage(sm,0,0,TW,TH);xs.globalCompositeOperation='source-over'}
-    for(let k=0;k<3;k++){const q=cl((t-k*260)/1100);anel(xs,.5,.5,.75+q*3.4,.12*(1-q),'#fdc72f',1-q)}
-    if(pb>0){const q=cl(tb/900);anel(xs,DIGB.x,DIGB.y,.6+q*3.6,.16*(1-q),'#fff3c4',1-q);
-      const gl=cl((tb-1200)/700);if(gl>0)marca(xs,gc,DIGB.x,DIGB.y,DIGB.h,-.18,1,gl*(.75+.25*Math.sin(t/160)))}
-    return{tm,ts}}
+/* Selo dourado: textura pequena, homografia só do marcador; partículas em coordenadas da tela. */
+const OURO=(()=>{const tm=document.createElement('canvas'),base=document.createElement('canvas');
+  tm.width=tm.height=base.width=base.height=256;
+  const xb=base.getContext('2d'),xt=tm.getContext('2d');
+  const g=xb.createLinearGradient(0,0,256,256);g.addColorStop(0,'#fff3c4');g.addColorStop(.3,'#fdc72f');g.addColorStop(.65,'#b77b13');g.addColorStop(1,'#ffe6a0');xb.fillStyle=g;xb.fillRect(0,0,256,256);
+  xb.strokeStyle='#704719';xb.lineWidth=6;xb.strokeRect(8,8,240,240);
+  xb.beginPath();for(let i=0;i<48;i++){const a=i*Math.PI/24,r=i%2?99:110;const px=128+Math.cos(a)*r,py=128+Math.sin(a)*r;i?xb.lineTo(px,py):xb.moveTo(px,py)}xb.closePath();xb.fillStyle='#e9b641';xb.fill();xb.stroke();
+  xb.beginPath();xb.arc(128,128,84,0,Math.PI*2);xb.strokeStyle='#fff1b9';xb.lineWidth=4;xb.stroke();
+  xb.beginPath();xb.moveTo(128,68);xb.lineTo(172,87);xb.lineTo(166,139);xb.quadraticCurveTo(158,174,128,188);xb.quadraticCurveTo(98,174,90,139);xb.lineTo(84,87);xb.closePath();xb.fillStyle='#704719';xb.fill();
+  xb.strokeStyle='#ffe8a1';xb.lineWidth=8;xb.lineCap='round';xb.lineJoin='round';xb.beginPath();xb.moveTo(106,127);xb.lineTo(122,143);xb.lineTo(151,108);xb.stroke();
+  function quadro(t){xt.clearRect(0,0,256,256);xt.drawImage(base,0,0);
+    const p=(t%1800)/1800*512-128,g=xt.createLinearGradient(p-65,0,p+65,32);g.addColorStop(0,'#fff8da00');g.addColorStop(.5,'#fff8dabb');g.addColorStop(1,'#fff8da00');
+    xt.fillStyle=g;xt.fillRect(0,0,256,256);return tm}
   // projeção: WebGL com textura em perspectiva correta presa ao selo; sem WebGL, afim pelos 3 cantos
   const gc2=document.createElement('canvas');let gl=null,pr,bv,bt,tx;
   try{gl=gc2.getContext('webgl',{premultipliedAlpha:true,preserveDrawingBuffer:true})}catch(_){}
@@ -1068,14 +1071,32 @@ const OURO=(()=>{const F=FOLHA,TW=Math.round((F.x1-F.x0)*F.px),TH=Math.round((F.
       const lp=gl.getAttribLocation(pr,'p'),lu=gl.getAttribLocation(pr,'uv');gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,3,gl.FLOAT,false,0,0);
       gl.bindBuffer(gl.ARRAY_BUFFER,bt);gl.enableVertexAttribArray(lu);gl.vertexAttribPointer(lu,2,gl.FLOAT,false,0,0);
       gl.uniform2f(gl.getUniformLocation(pr,'sz'),w,h);gl.drawArrays(gl.TRIANGLE_FAN,0,4);x.drawImage(gc2,0,0)}
-    else{const[a,b,,d]=cs;x.setTransform((b[0]-a[0])/img.width,(b[1]-a[1])/img.width,(d[0]-a[0])/img.height,(d[1]-a[1])/img.height,a[0],a[1]);x.drawImage(img,0,0)}
+    else{ // malha em perspectiva também quando WebGL não está disponível
+      const M=homog(cs),n=6;
+      function tri(src,dst){const[a,b,c]=src,[A,B,C]=dst,den=(b[0]-a[0])*(c[1]-a[1])-(c[0]-a[0])*(b[1]-a[1]);
+        const k=(z,j)=>((z[1][j]-z[0][j])*(c[1]-a[1])-(z[2][j]-z[0][j])*(b[1]-a[1]))/den,
+          l=(z,j)=>((z[2][j]-z[0][j])*(b[0]-a[0])-(z[1][j]-z[0][j])*(c[0]-a[0]))/den;
+        const aa=k(dst,0),bb=k(dst,1),cc=l(dst,0),dd=l(dst,1);
+        x.save();x.beginPath();x.moveTo(...A);x.lineTo(...B);x.lineTo(...C);x.closePath();x.clip();
+        x.setTransform(aa,bb,cc,dd,A[0]-aa*a[0]-cc*a[1],A[1]-bb*a[0]-dd*a[1]);x.drawImage(img,0,0);x.restore()}
+      for(let j=0;j<n;j++)for(let i=0;i<n;i++){const uv=[[i/n,j/n],[(i+1)/n,j/n],[(i+1)/n,(j+1)/n],[i/n,(j+1)/n]],
+        src=uv.map(([u,v])=>[u*img.width,v*img.height]),dst=uv.map(([u,v])=>M(u,v).slice(0,2));
+        tri([src[0],src[1],src[2]],[dst[0],dst[1],dst[2]]);tri([src[0],src[2],src[3]],[dst[0],dst[2],dst[3]])}}
+
     x.restore()}
   return{quadro,homog,projeta}})();
-function desenhaOuro(x,w,h){const t=performance.now()-ouroC.t0,a=ouroC.alvo;if(!a)return;
-  const s=ouroC.q||(ouroC.q=a.map(p=>p.slice()));for(let i=0;i<4;i++)for(let k=0;k<2;k++)s[i][k]+=(a[i][k]-s[i][k])*.12;   // suaviza o tremido (a folha fica a 15 selos de distância)
-  const M=OURO.homog(s),F=FOLHA,cs=[M(F.x0,F.y0),M(F.x1,F.y0),M(F.x1,F.y1),M(F.x0,F.y1)];if(cs.some(c=>c[2]<=.05))return;
-  const q=ez(cl(t/700));x.save();x.fillStyle=`rgba(0,0,0,${.5*q})`;x.beginPath();x.rect(0,0,w,h);x.moveTo(cs[0][0],cs[0][1]);cs.slice(1).forEach(c=>x.lineTo(c[0],c[1]));x.closePath();x.fill('evenodd');x.restore();
-  const L=OURO.quadro(t);OURO.projeta(x,L.tm,cs,w,h,'multiply');OURO.projeta(x,L.ts,cs,w,h,'screen')}
+function desenhaOuro(x,w,h,ouro=ouroC){const agora=performance.now(),t=agora-ouro.t0,a=ouro.alvo;if(!a)return;
+  const vis=ouro.vis===undefined?1:cl(1-(agora-ouro.vis-120)/180),M=OURO.homog(a),cs=[M(0,0),M(1,0),M(1,1),M(0,1)],centro=M(.5,.5),cx=centro[0],cy=centro[1];
+  const lado=(Math.hypot(a[1][0]-a[0][0],a[1][1]-a[0][1])+Math.hypot(a[3][0]-a[0][0],a[3][1]-a[0][1]))/2;
+  x.save();x.globalAlpha=vis*ez(cl(t/260))*(.88+.12*Math.sin(t/150));x.beginPath();x.moveTo(...a[0]);a.slice(1).forEach(p=>x.lineTo(...p));x.closePath();x.clip();
+  OURO.projeta(x,OURO.quadro(t),cs,w,h,'source-over');x.restore();
+  // Nenhuma geometria da folha: raios e faíscas são desenhados diretamente na tela.
+  x.save();x.globalCompositeOperation='lighter';const intensidade=vis*cl(t/450)*(1-cl((t-2600)/500)),raio=Math.max(16,lado*.55);
+  for(let i=0;i<12;i++){const ang=i*Math.PI/6+t/7500,r=raio*(1.15+.13*Math.sin(t/250+i)),lon=raio*(1.1+.5*Math.sin(t/330+i));
+    x.globalAlpha=intensidade*(.22+.12*Math.sin(t/210+i));x.strokeStyle='#ffd86b';x.lineWidth=Math.max(1,lado*.025);x.beginPath();x.moveTo(cx+Math.cos(ang)*r,cy+Math.sin(ang)*r);x.lineTo(cx+Math.cos(ang)*(r+lon),cy+Math.sin(ang)*(r+lon));x.stroke()}
+  for(let i=0;i<22;i++){const p=((t+i*97)%1500)/1500,ang=i*2.39996,dist=raio+p*Math.min(w,h)*.22,px=cx+Math.cos(ang)*dist,py=cy+Math.sin(ang)*dist-p*p*30;
+    x.globalAlpha=intensidade*(1-p);x.fillStyle=i%3?'#fdc72f':'#fff4ce';x.beginPath();x.arc(px,py,Math.max(1,Math.min(4,lado*.04))*(1-p*.6),0,Math.PI*2);x.fill()}
+  x.restore();const flash=ez(cl((t-2600)/500));if(flash){x.save();x.globalAlpha=flash;x.fillStyle='#fff0ba';x.fillRect(0,0,w,h);x.restore()}}
 /* folha com código de áudio: marcador + barras do próprio áudio (medidas em lados do marcador, iguais à folha impressa) */
 const ONDA={0:{u:'assets/a/estacao1.mp3',s0:1.35,s1:5.5,h:[.34,.8,.15,.26,.54,.66,.59,.15,.98,1,.15,.2,.42,.5,.43,.64,.96,.48,.89,.49,.15,.2,.74,.22,.72,.5,.43,.15,.36,.42,.72,.52,.54,.46,.71,.15]}};
 function desenhaOnda(x,w,h){const o=ar.onda,V=$('#cacaV'),pr=V.duration?V.currentTime/V.duration:0,n=o.h.length,pt=(o.s1-o.s0)/n,bw=pt*.62;
@@ -1102,7 +1123,7 @@ function desenhaCaca(x,w,h){const V=$('#cacaV');if(V.readyState<2||!V.videoWidth
   const g=ar.g||(ar.g={cx,base,sz});g.cx+=(cx-g.cx)*.25;g.base+=(base-g.base)*.25;g.sz+=(sz-g.sz)*.25;
   const dh=Math.min(h*.78,Math.max(h*.35,g.sz*3.4)),dw=dh*kw/kh;x.drawImage(kc,g.cx-dw/2,Math.max(0,g.base-dh+g.sz*.1),dw,dh)}
 function fecharLupa(){pedidoLupa++;const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}
-  const V=$('#cacaV');V.pause();V.onended=null;ar=null;ouroC=null}
+  const V=$('#cacaV');V.pause();V.onended=null;ar=null;clearTimeout(ouroC?.timer);ouroC=null;seloLido=null}
 $('#lupaX').onclick=()=>ar&&ar.u?fimAR():fecharLupa();
 $('#lupaPular').onclick=fimAR;
 $('#lupaSom').onclick=()=>{const V=$('#cacaV');V.muted=false;V.play().catch(()=>{});$('#lupa').classList.remove('mudo')};
@@ -1118,15 +1139,17 @@ setTimeout(()=>document.body.classList.add('pronto'),2500);
 /* demos sem câmera: #demos abre a galeria; #demo-selo só o selo em loop. Nada é gravado (window.DEMO) */
 window.DEMO=/^#demo/.test(location.hash);
 function demoSelo(fim){const c=document.createElement('canvas'),x=c.getContext('2d'),im=new Image();
-  c.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;z-index:99999;background:#1b1712';document.body.appendChild(c);im.src='assets/demo-verso.jpg';
-  let t0=performance.now(),vivo=true;c.onclick=()=>{t0=performance.now();ouroC=null};c.parar=()=>{vivo=false;c.remove();ouroC=null};
+  c.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;z-index:99999;background:#1b1712';document.body.appendChild(c);
+  let t0=performance.now(),vivo=true,marcador=null;
+  im.onload=()=>{marcador=Placa.lerTudo(im).find(m=>m.id===ARUCO0+5);t0=performance.now()};im.src='assets/demo-verso.jpg';
+  c.onclick=()=>{t0=performance.now()};c.parar=()=>{vivo=false;c.remove()};
   (function q(){if(!vivo)return;const d=devicePixelRatio||1,w=c.width=innerWidth*d,h=c.height=innerHeight*d,t=performance.now()-t0,u=t/1000;
-    if(t>(fim?6800:8000)){if(fim){vivo=false;fim();setTimeout(()=>{c.remove();ouroC=null},700);return}t0=performance.now();ouroC=null}
-    const k=Math.min(w/826,h/1170)*.86,r=-.06+.025*Math.sin(u*.9),sx=w/2+6*d*Math.sin(u*1.3),sy=h/2+5*d*Math.cos(u*1.1);
-    const T=(px,py)=>{const X=(px-413)*k,Y=(py-585)*k;return[sx+X*Math.cos(r)-Y*Math.sin(r),sy+X*Math.sin(r)+Y*Math.cos(r)]};
+    if(t>(fim?3800:4800)){if(fim){vivo=false;fim();setTimeout(()=>c.remove(),700);return}t0=performance.now()}
+    const iw=im.naturalWidth||826,ih=im.naturalHeight||1169,k=Math.min(w/iw,h/ih)*.86,r=-.06+.025*Math.sin(u*.9),sx=w/2+6*d*Math.sin(u*1.3),sy=h/2+5*d*Math.cos(u*1.1);
+    const T=(px,py)=>{const X=(px-iw/2)*k,Y=(py-ih/2)*k;return[sx+X*Math.cos(r)-Y*Math.sin(r),sy+X*Math.sin(r)+Y*Math.cos(r)]};
     x.fillStyle='#1b1712';x.fillRect(0,0,w,h);
-    if(im.complete){x.save();x.translate(sx,sy);x.rotate(r);x.drawImage(im,-413*k,-585*k,826*k,1170*k);x.restore()}
-    if(t>600){ouroC=ouroC||{t0:t0+600};ouroC.alvo=[T(704,30.5),T(779,30.5),T(779,105.5),T(704,105.5)];desenhaOuro(x,w,h)}
+    if(im.complete&&im.naturalWidth){x.save();x.translate(sx,sy);x.rotate(r);x.drawImage(im,-iw/2*k,-ih/2*k,iw*k,ih*k);x.restore()}
+    if(t>600&&marcador)desenhaOuro(x,w,h,{t0:t0+600,alvo:marcador.corners.map(p=>T(p.x,p.y))});
     x.fillStyle='#fff8';x.font=13*d+'px sans-serif';x.fillText('toque para repetir',12*d,h-14*d);
     requestAnimationFrame(q)})();return c}
 
@@ -1143,7 +1166,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
     const k=document.createElement('button');k.textContent=r;k.style.cssText='padding:7px 10px;border-radius:99px;border:0;background:#fdc72fee;color:#1b1712;font:inherit';k.onclick=()=>{limpa();f()};b.appendChild(k)});
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="voz.js?v=1"></script><script src="caso.js?v=12"></script><script src="prova.js?v=8"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="voz.js?v=1"></script><script src="caso.js?v=12"></script><script src="prova.js?v=9"></script>
 <script src="filtro.js?v=5"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>
