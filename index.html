@@ -355,11 +355,6 @@ body.aberto .vira.prox.chama{animation:chama 1.3s ease-in-out 1s 3}@keyframes ch
 #lupa .x svg{width:18px;height:18px}
 
 /* retrato ao vivo na ficha do suspeito */
-/* lupa · Caca em AR */
-#lupa.ar .aro,#lupa.ar .info{display:none}
-#lupa .pular,#lupa .som{position:absolute;z-index:3;display:none;height:40px;padding:0 16px;border-radius:20px;font:400 14px Anton;letter-spacing:.1em}
-#lupa.ar .pular{display:block;right:14px;bottom:calc(env(safe-area-inset-bottom) + 24px);background:#000a;color:#fff;border:1.5px solid #fff6}
-#lupa.ar.mudo .som{display:block;left:50%;top:calc(env(safe-area-inset-top) + 16px);transform:translateX(-50%);background:var(--amarelo);color:var(--preto)}
 /* final: a carta fica dourada e revela a digital do Bê */
 #fimAnim{position:fixed;inset:0;z-index:88;display:none;overflow:hidden;background:radial-gradient(90% 60% at 50% 32%,#232323,#070707);color:var(--off)}
 #fimAnim.on{display:block}
@@ -598,12 +593,9 @@ body.aberto .fita span{animation-play-state:paused}
 </div>
 <div id="lupa" aria-hidden="true">
   <video id="lupaV" playsinline muted style="display:none"></video><canvas id="lupaC"></canvas>
-  <video id="cacaV" playsinline preload="auto" style="display:none"></video>
   <div class="falso">QUEM ACHAR<br>AS 5 PISTAS<br>LEVA TUDO</div>
   <div class="aro"></div>
   <button class="x" id="lupaX" aria-label="Fechar lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  <button class="som" id="lupaSom">TOQUE PRA OUVIR</button>
-  <button class="pular" id="lupaPular">PULAR</button>
   <div class="info"><b id="lupaTit">LUPA MÁGICA</b><p id="lupaTxt"></p></div>
 </div>
 <div id="toast" role="status"></div>
@@ -681,8 +673,8 @@ $('#viraA').onclick=()=>virar(-1);$('#viraP').onclick=()=>virar(1);
     irPara(cl(j,Math.floor(p0)-1,Math.ceil(p0)+1))};
   el.addEventListener('pointerup',solta);el.addEventListener('pointercancel',solta);
   el.addEventListener('click',e=>{if(bloq){e.stopPropagation();e.preventDefault()}},true);
-  let roda=0;addEventListener('wheel',e=>{if(e.target.closest('.ov,#lupa,#fimAnim,#filtro'))return;const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;if(Math.abs(d)<12||performance.now()-roda<550)return;roda=performance.now();virar(d>0?1:-1)},{passive:true});
-  addEventListener('keydown',e=>{if(e.target.closest('input,textarea')||document.querySelector('.ov.on,#lupa.on,#fimAnim.on,#filtro.on'))return;if(['ArrowRight','PageDown'].includes(e.key)){e.preventDefault();virar(1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();virar(-1)}})}
+  let roda=0;addEventListener('wheel',e=>{if(e.target.closest('.ov,#lupa,#quadro,#fimAnim,#filtro'))return;const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;if(Math.abs(d)<12||performance.now()-roda<550)return;roda=performance.now();virar(d>0?1:-1)},{passive:true});
+  addEventListener('keydown',e=>{if(e.target.closest('input,textarea')||document.querySelector('.ov.on,#lupa.on,#quadro.on,#fimAnim.on,#filtro.on'))return;if(['ArrowRight','PageDown'].includes(e.key)){e.preventDefault();virar(1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();virar(-1)}})}
 $('#rail').onclick=e=>{const b=e.target.closest('button');if(b)irPara(+b.dataset.j)};
 $('#abrir').onclick=()=>irPara(0);capa.onclick=()=>irPara(0);
 
@@ -718,7 +710,7 @@ $('#veu').onclick=fecharPista;$('#sFechar').onclick=fecharPista;
 function marcar(i,via){const novo=!achadas.includes(i);if(novo){achadas.push(i);salvar()}atualizar(novo?i:-1);carimbarEstacao(i,via)}
 function registrar(i,via='codigo'){
   $('#sErro').textContent='Código confere!';$('#sErro').className='erro ok';vibra(40);
-  setTimeout(()=>{fecharPista();resolver(i,via)},650);
+  fecharPista();investigar(i,via);
 }
 $('#sOk').onclick=()=>{const v=$('#sIn').value.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
   if(v===PISTAS[atual].cod)registrar(atual);
@@ -936,10 +928,11 @@ const CAB={be:{feliz:6,surpresa:1,duvida:7,serio:4,piscada:3},gabi:{feliz:3,surp
  lucas:{feliz:5,surpresa:3,duvida:1,serio:2,piscada:9},pipoca:{feliz:10,surpresa:1,duvida:7,serio:9,piscada:12}};
 const humor=x=>/errad|falta|ainda|n[ãa]o /i.test(x)?'serio':/certa|complet|fechad|parab|boa|isso/i.test(x)?'feliz':/\?/.test(x)?'duvida':/!/.test(x)?'surpresa':'piscada';
 const cabUrl=(n,h)=>`assets/cab/${n}-${String(CAB[n][h]).padStart(2,'0')}.webp?v=2`;   // o Bê sumiu: quem guia é a turma
+const Midias=(()=>{let pedido;return()=>pedido||(pedido=fetch('assets/v/manifest.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).catch(()=>({})))})();
 // Uma tentativa por corpo e uma carga por cabeça/expressão. Só troca uma arte já decodificada.
 const Detetive=(()=>{const imagens=new Map(),corpos=new Map(),prontas=new Map();
   const imagem=u=>{if(!imagens.has(u))imagens.set(u,new Promise(ok=>{const i=new Image();i.onload=()=>{prontas.set(u,i);ok(i)};i.onerror=()=>{prontas.set(u,null);ok(null)};i.src=u}));return imagens.get(u)};
-  async function carregar(n,h='feliz'){if(!corpos.has(n))corpos.set(n,imagem(`assets/corpo/${n}.webp`));
+  async function carregar(n,h='feliz'){if(!corpos.has(n))corpos.set(n,Midias().then(m=>m.corpos?.includes(n)?imagem(`assets/corpo/${n}.webp`):null));
     const corpo=await corpos.get(n);return{img:corpo||await imagem(cabUrl(n,h)),corpo:!!corpo}}
   function balao(Q,nomes,h){const vez=Q._vez=(Q._vez||0)+1;
     Q.className='beQ cab'+(nomes.length>1?' g':'');
@@ -952,8 +945,8 @@ const Detetive=(()=>{const imagens=new Map(),corpos=new Map(),prontas=new Map();
     Promise.all(nomes.map(n=>carregar(n,h))).then(mostrar)}
   return{carregar,balao}})();
 function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createElement('i'),Q=B.querySelector('.beQ'),q=quem||NARR,hu=q.humor||humor((tit||'')+' '+t),nomes=q.cab||[q.nome.toLowerCase()];
-  Detetive.balao(Q,nomes,hu);B.querySelector('.beNome').textContent=q.nome.toUpperCase();
-  $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;typeof Voz==='object'&&Voz.diz(t,q.nome);B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
+  if(q.cabeca){Q._vez=(Q._vez||0)+1;Q.className='beQ cab'+(nomes.length>1?' g':'');Q.innerHTML=nomes.map(n=>`<img src="${cabUrl(n,hu)}" alt="">`).join('')}else Detetive.balao(Q,nomes,hu);B.querySelector('.beNome').textContent=q.nome.toUpperCase();
+  $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;!q.soTexto&&typeof Voz==='object'&&Voz.diz(t,q.nome);B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
 function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
   const ch=chave();beFala(ch.feito?'Caso fechado! E o Bê apareceu, finalmente.':ch.ok?'Provas completas! Pega sua carta, abre a lupa e aponta pro selo no verso. De quem será essa digital?':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra que aparece.')}
@@ -976,35 +969,36 @@ pags.forEach(p=>{const f=p.querySelector('.face.frente');(MARCAS[p.dataset.nome]
 let notas={};try{notas=JSON.parse(localStorage.getItem('cb-notas')||'{}')}catch(e){}
 $('#sNota').addEventListener('input',e=>{notas[atual]=e.target.value;try{localStorage.setItem('cb-notas',JSON.stringify(notas))}catch(e){}});
 
-/* lupa: câmera limpa · decifra os códigos da carta (ArUco 306..310) · leitura das placas · Caca em AR */
-let fluxo=null,laco=0,modo='carta',ar=null,avisou=-Infinity,ouroC=null,pedidoLupa=0,seloLido=null;
+/* lupa: câmera limpa · códigos da carta (ArUco 306..310) · leitura das placas */
+let fluxo=null,laco=0,modo='carta',avisou=-Infinity,ouroC=null,pedidoLupa=0,seloLido=null;
 const TXT={carta:['LUPA MÁGICA','Aponte para os <b style="display:inline;font:inherit;color:#fdc72f">códigos secretos</b> da carta (o quadradinho preto ao lado dos símbolos). Achou uma <b style="display:inline;font:inherit;color:#fdc72f">placa do caso</b>? Aponte pro quadriculado e veja a pista aparecer.'],
   final:['O SELO DA CARTA','Vire a carta e aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
-const temVideo={};
-async function videoDe(e){const u=`assets/v/estacao${e+1}.mp4`;
-  if(!(u in temVideo)){try{const r=await fetch(u,{method:'HEAD'});temVideo[u]=r.ok&&/video/.test(r.headers.get('content-type')||'video')}catch(_){temVideo[u]=false}}
-  return temVideo[u]?u:null}
-async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;ar=null;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
+async function videoDe(e){const nome=`estacao${e+1}.mp4`;
+  const {estacoes}=await Midias();return estacoes?.includes(nome)?`assets/v/${nome}`:null}
+async function abrirLupa(m='carta'){fecharLupa();const pedido=pedidoLupa;modo=m;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
   $('#lupaTit').textContent=TXT[m][0];$('#lupaTxt').innerHTML=TXT[m][1];
-  try{const recebido=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280}},audio:false});
+  try{const recebido=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30}},audio:false});
     if(pedido!==pedidoLupa){recebido.getTracks().forEach(t=>t.stop());return}fluxo=recebido;
+    try{await fluxo.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'},{exposureMode:'continuous'}]})}catch(_){}
     try{const t=fluxo.getVideoTracks()[0],cp=t.getCapabilities?t.getCapabilities():{};if(cp.zoom)await t.applyConstraints({advanced:[{zoom:cp.zoom.min}]})}catch(_){}   // sem zoom: imagem inteira da câmera
     if(pedido!==pedidoLupa)return;const v=$('#lupaV');v.srcObject=fluxo;await v.play();if(pedido!==pedidoLupa)return;const c=$('#lupaC'),x=c.getContext('2d',{willReadFrequently:true});
-    let nq=0;dec={};
-    (function quadro(){if(!fluxo)return;const vw=v.videoWidth||960,vh=v.videoHeight||1280,w=c.width=Math.min(960,vw),h=c.height=Math.round(w*vh/vw);
-      x.drawImage(v,0,0,w,h);
-      if(ar&&ar.u)ar.onda?desenhaOnda(x,w,h):desenhaCaca(x,w,h);
-      if(++nq%(ouroC?2:5)===0){const marcas=Placa.lerTudo(v);
-        lerSelo(marcas.find(mk=>mk.id===ARUCO0+5),w/vw);
-        for(const mk of marcas){
-        if(mk.id===ARUCO0+5)continue;
-        if(CODIGO[mk.id]){if(!ouroC){const s=w/vw,k=dec[mk.id]||(dec[mk.id]={t0:performance.now()});if(!k.ok&&performance.now()-k.t0>900){k.ok=1;vibra(30)}k.vis=performance.now();k.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}
-        else if(!ouroC&&mk.id>=ARUCO0&&mk.id<ARUCO0+5){const e=mk.id-ARUCO0;
-          if(!ar){ar={e,onda:ONDA[e]};(ONDA[e]?Promise.resolve(ONDA[e].u):videoDe(e)).then(u=>{if(!ar||ar.e!==e)return;if(!u){fecharLupa();vibra(40);resolver(e,'placa');return}iniciarAR(u)})}
-          if(ar&&ar.e===e){const s=w/vw;ar.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}}}
-      if(!ouroC)desenhaCodigos(x);
-      if(ouroC)desenhaOuro(x,w,h);
-      laco=requestAnimationFrame(quadro)})();
+    let ultima=0,ocupado=false,pausada=-1,visPausada=0;dec={};const confirmar=new Map(),suaves=new Map();
+    (function quadro(agora=performance.now()){if(!fluxo||pedido!==pedidoLupa)return;
+      if(document.querySelector('#quadro.on')){visPausada=agora;laco=requestAnimationFrame(quadro);return}const vw=v.videoWidth,vh=v.videoHeight;if(!vw||v.readyState<2){laco=requestAnimationFrame(quadro);return}
+      const w=Math.min(960,vw),h=Math.round(w*vh/vw);if(c.width!==w||c.height!==h){c.width=w;c.height=h}x.drawImage(v,0,0,w,h);
+      if(!ocupado&&agora-ultima>=1000/30){ocupado=true;ultima=agora;
+        try{const marcas=Placa.lerTudo(v);lerSelo(marcas.find(mk=>mk.id===ARUCO0+5),w/vw);if(agora-visPausada>700)pausada=-1;
+          for(const mk of marcas){if(mk.id===ARUCO0+5)continue;
+            if(CODIGO[mk.id]){if(!ouroC){const s=w/vw,k=dec[mk.id]||(dec[mk.id]={t0:agora});if(!k.ok&&agora-k.t0>900){k.ok=1;vibra(30)}k.vis=agora;k.alvo=mk.corners.map(p=>[p.x*s,p.y*s])}}
+            else if(!ouroC&&mk.id>=ARUCO0&&mk.id<ARUCO0+5){const id=mk.id;if(id===pausada){visPausada=agora;continue}const alvo=mk.corners.map(p=>[p.x*w/vw,p.y*w/vw]);
+              const k=confirmar.get(id)||{leituras:[]};k.leituras=k.leituras.filter(t=>agora-t<=700);k.leituras.push(agora);k.vis=agora;confirmar.set(id,k);
+              const anterior=suaves.get(id);k.alvo=alvo.map((p,j)=>p.map((n,l)=>anterior?anterior[j][l]+(n-anterior[j][l])*.4:n));suaves.set(id,k.alvo);
+              if(k.leituras.length>=3){vibra(40);pausada=id;visPausada=agora;confirmar.delete(id);laco=requestAnimationFrame(quadro);investigar(id-ARUCO0,'placa',true);return}
+            }}
+        }finally{ocupado=false}}
+      if(!ouroC){desenhaCodigos(x);for(const k of confirmar.values())if(agora-k.vis<250)desenhaLeitura(x,k.alvo)}
+      if(ouroC)desenhaOuro(x,w,h);laco=requestAnimationFrame(quadro)
+    })();
   }catch(e){if(pedido!==pedidoLupa)return;if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
 }
 // O 305 nunca é estação. Exige leituras consecutivas e posição contínua por 600 ms.
@@ -1085,7 +1079,8 @@ const OURO=(()=>{const tm=document.createElement('canvas'),base=document.createE
 
     x.restore()}
   return{quadro,homog,projeta}})();
-function desenhaOuro(x,w,h,ouro=ouroC){const agora=performance.now(),t=agora-ouro.t0,a=ouro.alvo;if(!a)return;
+function desenhaOuro(x,w,h,ouro=ouroC){const agora=performance.now(),t=agora-ouro.t0,alvo=ouro.alvo;if(!alvo)return;
+  const a=ouro.suave||(ouro.suave=alvo.map(p=>p.slice()));a.forEach((p,i)=>p.forEach((n,j)=>p[j]+=(alvo[i][j]-n)*.4));
   const vis=ouro.vis===undefined?1:cl(1-(agora-ouro.vis-120)/180),M=OURO.homog(a),cs=[M(0,0),M(1,0),M(1,1),M(0,1)],centro=M(.5,.5),cx=centro[0],cy=centro[1];
   const lado=(Math.hypot(a[1][0]-a[0][0],a[1][1]-a[0][1])+Math.hypot(a[3][0]-a[0][0],a[3][1]-a[0][1]))/2;
   x.save();x.globalAlpha=vis*ez(cl(t/260))*(.88+.12*Math.sin(t/150));x.beginPath();x.moveTo(...a[0]);a.slice(1).forEach(p=>x.lineTo(...p));x.closePath();x.clip();
@@ -1099,34 +1094,16 @@ function desenhaOuro(x,w,h,ouro=ouroC){const agora=performance.now(),t=agora-our
   x.restore();const flash=ez(cl((t-2600)/500));if(flash){x.save();x.globalAlpha=flash;x.fillStyle='#fff0ba';x.fillRect(0,0,w,h);x.restore()}}
 /* folha com código de áudio: marcador + barras do próprio áudio (medidas em lados do marcador, iguais à folha impressa) */
 const ONDA={0:{u:'assets/a/estacao1.mp3',s0:1.35,s1:5.5,h:[.34,.8,.15,.26,.54,.66,.59,.15,.98,1,.15,.2,.42,.5,.43,.64,.96,.48,.89,.49,.15,.2,.74,.22,.72,.5,.43,.15,.36,.42,.72,.52,.54,.46,.71,.15]}};
-function desenhaOnda(x,w,h){const o=ar.onda,V=$('#cacaV'),pr=V.duration?V.currentTime/V.duration:0,n=o.h.length,pt=(o.s1-o.s0)/n,bw=pt*.62;
-  let m=[1,0,0,1,w*.5-(o.s0+o.s1)/2*w*.17,h*.72];m[0]=m[3]=w*.17;   // sem marcador à vista: onda no rodapé
-  if(ar.alvo){const p=ar.alvo;m=[p[1][0]-p[0][0],p[1][1]-p[0][1],p[3][0]-p[0][0],p[3][1]-p[0][1],p[0][0],p[0][1]]}
-  const g=ar.g||(ar.g=m.slice());for(let i=0;i<6;i++)g[i]+=(m[i]-g[i])*.3;
-  x.save();x.setTransform(...g);x.shadowColor='#fdc72f';
-  o.h.forEach((v,i)=>{const lit=i/n<pr,hh=Math.max(bw,v*(lit?1+.15*Math.sin(performance.now()/90+i):1)),bx=o.s0+i*pt+(pt-bw)/2;
-    x.shadowBlur=lit?12:0;x.fillStyle=lit?'#fdc72f':'#ffffff55';x.beginPath();x.roundRect(bx,.5-hh/2,bw,hh,bw/2);x.fill()});
-  x.restore()}
-/* Caca (fundo verde) em pé em cima da placa */
-function iniciarAR(u){const V=$('#cacaV'),L=$('#lupa');ar.u=u;L.classList.add('ar');V.src=u;V.muted=false;
-  V.play().catch(()=>{V.muted=true;L.classList.add('mudo');V.play().catch(()=>{})});V.onended=fimAR}
-function fimAR(){if(!ar)return;const e=ar.e;fecharLupa();vibra(40);resolver(e,'placa')}
-const kc=document.createElement('canvas'),kx=kc.getContext('2d',{willReadFrequently:true});
-function desenhaCaca(x,w,h){const V=$('#cacaV');if(V.readyState<2||!V.videoWidth)return;
-  const kw=kc.width=240,kh=kc.height=Math.round(kw*V.videoHeight/V.videoWidth);
-  kx.drawImage(V,0,0,kw,kh);const d=kx.getImageData(0,0,kw,kh),a=d.data;
-  for(let i=0;i<a.length;i+=4){const r=a[i],g=a[i+1],b=a[i+2],m=r>b?r:b,dd=g-m;if(dd>0){a[i+1]=m;if(dd>18){const al=1-(dd-18)/50;a[i+3]=al<0?0:al*255}}}
-  kx.putImageData(d,0,0);
-  let cx=w/2,base=h*.8,sz=Math.min(w,h)*.22;
-  if(ar.alvo){const p=ar.alvo;cx=(p[0][0]+p[1][0]+p[2][0]+p[3][0])/4;const my=(p[0][1]+p[1][1]+p[2][1]+p[3][1])/4;
-    sz=(Math.hypot(p[1][0]-p[0][0],p[1][1]-p[0][1])+Math.hypot(p[2][0]-p[1][0],p[2][1]-p[1][1]))/2;base=my-sz/2}
-  const g=ar.g||(ar.g={cx,base,sz});g.cx+=(cx-g.cx)*.25;g.base+=(base-g.base)*.25;g.sz+=(sz-g.sz)*.25;
-  const dh=Math.min(h*.78,Math.max(h*.35,g.sz*3.4)),dw=dh*kw/kh;x.drawImage(kc,g.cx-dw/2,Math.max(0,g.base-dh+g.sz*.1),dw,dh)}
-function fecharLupa(){pedidoLupa++;const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}
-  const V=$('#cacaV');V.pause();V.onended=null;ar=null;clearTimeout(ouroC?.timer);ouroC=null;seloLido=null}
-$('#lupaX').onclick=()=>ar&&ar.u?fimAR():fecharLupa();
-$('#lupaPular').onclick=fimAR;
-$('#lupaSom').onclick=()=>{const V=$('#cacaV');V.muted=false;V.play().catch(()=>{});$('#lupa').classList.remove('mudo')};
+/* Chroma e onda compartilhados pelo painel do quadro. */
+const CacaMedia=(()=>{const c=document.createElement('canvas'),x=c.getContext('2d',{willReadFrequently:true});
+  function chave(v){if(v.readyState<2||!v.videoWidth)return null;const w=240,h=Math.round(w*v.videoHeight/v.videoWidth);if(c.width!==w||c.height!==h){c.width=w;c.height=h}x.drawImage(v,0,0,w,h);
+    const d=x.getImageData(0,0,w,h),a=d.data;for(let i=0;i<a.length;i+=4){const r=a[i],g=a[i+1],b=a[i+2],m=Math.max(r,b),dd=g-m;if(dd>0){a[i+1]=m;if(dd>18)a[i+3]=Math.max(0,1-(dd-18)/50)*255}}x.putImageData(d,0,0);return c}
+  function onda(x,w,h,o,v){const pr=v.duration?v.currentTime/v.duration:0,bw=w/(o.h.length*1.5);x.save();o.h.forEach((n,i)=>{const hh=Math.max(bw,n*h*.6);x.fillStyle=i/o.h.length<pr?'#fdc72f':'#ffffff77';x.fillRect(i*w/o.h.length,h/2-hh/2,bw,hh)});x.restore()}
+  return{chave,onda}})();
+function desenhaLeitura(x,alvo){x.save();x.strokeStyle='#fdc72f';x.lineWidth=4;alvo.forEach((p,i)=>{const ant=alvo[(i+3)%4],prox=alvo[(i+1)%4];x.beginPath();x.moveTo(p[0]+(ant[0]-p[0])*.22,p[1]+(ant[1]-p[1])*.22);x.lineTo(...p);x.lineTo(p[0]+(prox[0]-p[0])*.22,p[1]+(prox[1]-p[1])*.22);x.stroke()});x.fillStyle='#fdc72f';x.font='bold 14px sans-serif';x.fillText('lendo...',Math.max(8,alvo[0][0]),Math.max(18,alvo[0][1]-12));x.restore()}
+function investigar(i,via,daLupa=false){const depois=()=>{if(daLupa)fecharLupa();resolver(i,via)};if(Quadro.tem(i)&&!feitas().has(i))Quadro.abrir(i,via,depois);else depois()}
+function fecharLupa(){pedidoLupa++;const L=$('#lupa');L.className='';L.setAttribute('aria-hidden','true');cancelAnimationFrame(laco);if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}clearTimeout(ouroC?.timer);ouroC=null;seloLido=null}
+$('#lupaX').onclick=fecharLupa;
 $('#lupaBtn').onclick=()=>{try{localStorage.setItem('cbLupa','1')}catch(_){}$('#balao').classList.remove('on');abrirLupa(k===N-1&&chave().ok?'final':'carta')};
 
 /* início */
@@ -1166,7 +1143,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
     const k=document.createElement('button');k.textContent=r;k.style.cssText='padding:7px 10px;border-radius:99px;border:0;background:#fdc72fee;color:#1b1712;font:inherit';k.onclick=()=>{limpa();f()};b.appendChild(k)});
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="voz.js?v=1"></script><script src="caso.js?v=12"></script><script src="prova.js?v=9"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=4"></script><script src="voz.js?v=1"></script><script src="caso.js?v=12"></script><script src="prova.js?v=9"></script><script src="quadro.js?v=1"></script>
 <script src="filtro.js?v=5"></script><script src="vitrine.js?v=2"></script>
 </body>
 </html>

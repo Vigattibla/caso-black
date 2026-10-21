@@ -198,28 +198,19 @@ $('.prog').addEventListener('click', abrirFicha); $('.prog').style.cursor = 'poi
 
 /* ---------- leitura da placa pela lupa ---------- */
 const Placa = (() => {
-  let det = null; const cv = document.createElement('canvas'), cx = cv.getContext('2d', {willReadFrequently: true});
-  return {
-    ler(video) {   // retorna índice da estação (0..4) ou -1
-      if (!window.AR) return -1;
-      det = det || new AR.Detector({dictionaryName: 'ARUCO_4X4_1000', maxHammingDistance: 0});
-      const vw = video.videoWidth || video.width, vh = video.videoHeight || video.height; if (!vw) return -1;
-      const f = Math.min(1, 720 / Math.max(vw, vh)); cv.width = Math.round(vw * f); cv.height = Math.round(vh * f);
-      cx.drawImage(video, 0, 0, cv.width, cv.height);
-      for (const m of det.detect(cx.getImageData(0, 0, cv.width, cv.height))) if (m.id >= ARUCO0 && m.id < ARUCO0 + 5) return m.id - ARUCO0;
-      return -1;
-    },
-    lerTudo(video) {   // todos os marcadores do caso: [{id, corners:[{x,y}] em pixels do vídeo}]
-      if (!window.AR) return [];
-      det = det || new AR.Detector({dictionaryName: 'ARUCO_4X4_1000', maxHammingDistance: 0});
-      const vw = video.videoWidth || video.width, vh = video.videoHeight || video.height; if (!vw) return [];
-      const f = Math.min(1, 720 / Math.max(vw, vh)); cv.width = Math.round(vw * f); cv.height = Math.round(vh * f);
-      cx.drawImage(video, 0, 0, cv.width, cv.height);
-      return det.detect(cx.getImageData(0, 0, cv.width, cv.height)).filter(m => m.id >= ARUCO0 && m.id <= ARUCO0 + 10)
-        .map(m => ({id: m.id, corners: m.corners.map(p => ({x: p.x / f, y: p.y / f}))}));
-    },
-    svg: id => { det = det || new AR.Detector({dictionaryName: 'ARUCO_4X4_1000', maxHammingDistance: 0}); return det.dictionary.generateSVG(id) },
-  };
+  let det=null,tolerante=null,quadro=0;const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
+  function detector(){return det||(det=new AR.Detector({dictionaryName:'ARUCO_4X4_1000',maxHammingDistance:0}))}
+  function lerTudo(video){if(!window.AR)return[];const vw=video.videoWidth||video.width,vh=video.videoHeight||video.height;if(!vw||!vh)return[];
+    function tentativa(limite,recorte=false){const sw=recorte?vw/2:vw,sh=recorte?vh/2:vh,sx=(vw-sw)/2,sy=(vh-sh)/2,f=Math.min(1,limite/Math.max(sw,sh));cv.width=Math.round(sw*f);cv.height=Math.round(sh*f);cx.drawImage(video,sx,sy,sw,sh,0,0,cv.width,cv.height);
+      const dados=cx.getImageData(0,0,cv.width,cv.height),exatos=detector().detect(dados).filter(m=>m.id>=ARUCO0&&m.id<=ARUCO0+10);
+      if(!tolerante){tolerante=new AR.Detector({dictionaryName:'ARUCO_4X4_1000',maxHammingDistance:1});
+        // Nesta versão do vendor, find usa distance < tau: 2 inclui distância 1.
+        tolerante.dictionary.tau=2}
+      const marcas=exatos.length?exatos:tolerante.detect(dados).filter(m=>m.id>=ARUCO0&&m.id<ARUCO0+5&&m.hammingDistance<=1);
+      return marcas.map(m=>({id:m.id,hammingDistance:m.hammingDistance,corners:m.corners.map(p=>({x:p.x/f+sx,y:p.y/f+sy}))}))}
+    const primeiro=tentativa(720);if(primeiro.length)return primeiro;return ++quadro%2?tentativa(1080):tentativa(1080,true)
+  }
+  return{lerTudo,ler:video=>{const m=lerTudo(video).find(m=>m.id>=ARUCO0&&m.id<ARUCO0+5);return m?m.id-ARUCO0:-1},svg:id=>detector().dictionary.generateSVG(id)};
 })();
 
 pintarFicha();
