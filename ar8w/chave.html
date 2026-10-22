@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Caso Black · Chave do arquivo (teste)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="./xr/xr.js" async data-preload-chunks="slam"></script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+<style>
+:root{--amarelo:#fdc72f;--preto:#16140f}
+html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-family:Montserrat,sans-serif;overscroll-behavior:none}
+#camera{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+#inicio,#erro{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:#111 url(../assets/ruido.webp);text-align:center}
+[hidden]{display:none!important}
+.caixa{max-width:340px}.caixa img{width:150px;margin:0 auto 10px;display:block}
+.caixa h1{font:400 34px/1.05 Anton,sans-serif;color:var(--amarelo);text-transform:uppercase;margin:0 0 10px}
+.caixa p{font:500 15px/1.45 Montserrat,sans-serif;margin:0 0 20px;color:#ddd}
+.caixa button{min-height:52px;padding:0 28px;border:0;background:var(--amarelo);color:#111;font:800 16px Montserrat,sans-serif;cursor:pointer}
+.caixa button:disabled{opacity:.6}
+#status{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:10;background:#111d;color:var(--amarelo);font:700 14px 'Courier Prime',monospace;padding:10px 14px;max-width:calc(100% - 32px);text-align:center}
+#dentes{position:fixed;left:50%;top:calc(62px + env(safe-area-inset-top));transform:translateX(-50%);z-index:10;display:flex;gap:6px}
+#dentes span{background:#111c;color:#aaa;font:700 13px 'Courier Prime',monospace;padding:5px 8px}#dentes span.ok{color:#fff}
+#mochila{position:fixed;right:10px;top:calc(110px + env(safe-area-inset-top));z-index:10;width:84px;padding:6px;background:var(--amarelo);border:2px solid var(--preto);text-align:center;font:400 12px Anton;color:var(--preto);letter-spacing:.04em}
+#mochila img{display:block;width:100%;margin-top:4px}
+#credito{position:fixed;left:0;right:0;bottom:calc(6px + env(safe-area-inset-bottom));z-index:10;text-align:center;font:600 10px Montserrat,sans-serif;color:#fffb;text-shadow:0 1px 2px #000}
+#credito a{color:inherit}
+/* Balão do Lucas: mesmo componente do site (index.html #balao). */
+.balao{position:fixed;left:50%;translate:-50% 0;bottom:calc(env(safe-area-inset-bottom) + 84px);z-index:47;width:min(340px,calc(100vw - 24px));background:#16140f;color:#fffdf6;border:0;border-radius:8px;border-top-left-radius:0;padding:15px 16px 19px;font:500 13px/1.4 Montserrat;box-sizing:border-box;
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .25s,transform .3s cubic-bezier(.3,1.4,.5,1)}
+.balao.on{opacity:1;transform:none;pointer-events:auto}
+.balao b{display:block;font:400 13px Anton;letter-spacing:.06em;color:var(--amarelo);margin-bottom:2px}
+.beQ{position:absolute;left:0;bottom:100%;width:72px;height:72px;border:2px solid var(--preto);border-bottom:0;border-radius:6px 6px 0 0;background:var(--amarelo) radial-gradient(#e0a800 1.2px,transparent 1.4px) 0 0/6px 6px;overflow:hidden;opacity:0;transform:translateX(-28px);transition:transform .4s cubic-bezier(.3,1.4,.5,1) .05s,opacity .2s .05s}
+.balao.on .beQ{opacity:1;transform:none}
+.beQ.cab img{position:absolute;left:6%;width:88%;bottom:-3px;animation:cabPop .35s cubic-bezier(.3,1.6,.5,1)}@keyframes cabPop{from{transform:translateY(30%) scale(.8)}}
+.beNome{position:absolute;left:80px;top:-20px;font:400 12px Anton;letter-spacing:.08em;color:var(--amarelo)}
+.beSeta{position:absolute;right:12px;bottom:4px;font-size:9px;color:#fff8}
+</style>
+</head>
+<body>
+<canvas id="camera"></canvas>
+<div id="status" hidden></div>
+<div id="dentes"></div>
+<div id="mochila" hidden>NA MOCHILA<img alt="Sua chave"></div>
+<section id="inicio"><div class="caixa">
+  <img src="../assets/cb-logo.png" alt="Caso Black">
+  <h1>A chave do arquivo</h1>
+  <p>Desenhe a chave no verso da carta com caneta escura. Depois aponte a lupa para o verso inteiro.</p>
+  <button id="abrir" disabled>Carregando…</button>
+</div></section>
+<section id="erro" hidden><div class="caixa"><h1>Ops</h1><p></p><button onclick="location.reload()">Recarregar</button></div></section>
+<div class="balao" id="balao" role="status"><div class="beQ cab"><img src="../assets/cab/lucas-01.webp?v=2" alt=""></div><span class="beNome">LUCAS</span><div id="beTx"></div><span class="beSeta" aria-hidden="true">▼</span></div>
+<div id="credito">AR por 8th Wall · Niantic Spatial · <a href="./xr/LICENSE" target="_blank">licença</a></div>
+<script type="module" src="./chave/app.js?v=1"></script>
+</body>
+</html>
