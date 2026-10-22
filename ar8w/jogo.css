@@ -34,3 +34,5 @@ body.fixado #mirar{display:none}
 #estacoes .numeros{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
 #estacoes .numeros button{aspect-ratio:1;border:0;background:#fdc72f;color:#111;font:400 34px Anton,sans-serif;cursor:pointer}
 .caixa .link{display:block;margin:14px auto 0;background:none;border:0;color:#fdc72fcc;font:600 13px Montserrat,sans-serif;text-decoration:underline;cursor:pointer}
+/* Legibilidade: texto solto sobre a cortiça vira etiqueta escura (preto na cortiça some na câmera) */
+.e1 .progresso,.e1 .instrucao-chave,.e1 .montagem small{align-self:flex-start;background:#111e;color:#fdc72f;padding:4px 10px}

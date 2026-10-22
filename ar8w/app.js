@@ -28,8 +28,8 @@ let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, cssScene, cssRen
 est.ancora = ancora;
 const bruto = new THREE.Object3D(), M = new THREE.Matrix4(), escala = new THREE.Matrix4(), tmp = new THREE.Vector3();
 const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? estado.valor.itens.lente ? historia.lupa.naCarta : historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
-// Placas: quadro 1,5× maior que o papel; verso/frente ficam 1:1 porque a guia de leitura casa com o impresso.
-const ampliar = () => /^placa/.test(alvoAtual) ? 1.5 : 1;
+// Placas: quadro 2× maior que o papel; verso/frente ficam 1:1 porque a guia de leitura casa com o impresso.
+const ampliar = () => /^placa/.test(alvoAtual) ? 2 : 1;
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
 function selecionar(nome) {
   if (!/^(placa-[1-5]|verso|frente)$/.test(nome)) return false;
