@@ -8,7 +8,7 @@ import {criarEstacao3} from './estacao3.js';
 import {criarEstacao4} from './estacao4.js';
 import {criarEstacao5} from './estacao5.js';
 import {criarVerso} from './verso.js';
-import {criarRetrato, lerRetrato} from './retrato.js';
+import {criarRetrato, lerRetrato} from './retrato.js?v=18';
 import {criarEstado} from './estado.js';
 import {criarMochila} from './mochila.js?v=17';
 import {falar, sequencia, calar} from './fala.js';

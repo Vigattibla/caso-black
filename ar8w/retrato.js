@@ -114,6 +114,7 @@ export function criarRetrato({estado, demo}) {
 
   function tirarDisfarce(vivo, img) {
     const url = img.toDataURL('image/png'), C = 6, L = 7;
+    enviarTela(url);
     vivo.querySelectorAll('canvas').forEach(c => c.remove());
     const be = document.createElement('img'); be.className = 'ret-be'; be.src = '../assets/be-cabeca.png'; be.alt = 'Bê'; vivo.append(be);
     for (let j = 0; j < L; j++) for (let i = 0; i < C; i++) {
@@ -183,4 +184,12 @@ export function criarRetrato({estado, demo}) {
     };
   }
   return el;
+}
+
+// Telão (tv.html): guarda os últimos retratos; o telão no mesmo navegador recebe pelo evento de storage.
+function enviarTela(img) {
+  try {
+    const lista = JSON.parse(localStorage.getItem('cb_tv') || '[]');
+    localStorage.setItem('cb_tv', JSON.stringify([...lista, {id: Date.now() + '-' + Math.random().toString(36).slice(2, 6), img}].slice(-12)));
+  } catch (e) {}
 }
