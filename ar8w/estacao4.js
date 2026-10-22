@@ -4,21 +4,23 @@ import {historia} from './historia.js';
 // Fotos/itens da vitrine original; pares embaralhados, sem solução indicada no DOM.
 const itens = [['Chapéu preto', 'chapeu'], ['Casquinha', 'casquinha'], ['Picolé', 'picole'], ['Café', 'cafe'], ['Taça', 'taca'], ['Cookie', 'cookie']];
 export function criarEstacao4(ctx) {
-  const p = criarPainel(4, ctx); let iniciou = false, primeiro, ocupado = false, pares = 0, timer;
+  const p = criarPainel(4, ctx); let iniciou = false, primeiro, ocupado = false, pares = 0, timer, socorro;
   p.jogo.innerHTML = '<div class="lente-alvo" data-ferramenta="lente"><span class="pegadas-pipoca" hidden>🐾 🐾 🐾</span><button class="e1-rec usar-lente">ARRASTE A LUPA PRA CÁ</button></div>';
   function usar(item) {
     if (item !== 'lente' || iniciou || p.venceu) return false;
     if (ctx.estado.valor.mao !== 'lente') { falar(ctx.estado.valor.itens.lente ? historia.lupa.naCarta : p.texto['sem lente']); return false; }
     iniciou = true; p.q('.pegadas-pipoca').hidden = false; p.q('.usar-lente').hidden = true;
     // Na placa: o Pipoca leva até a folha escondida (rastro AR no chão). Sem rastro (pista, demo) o jogo abre aqui.
-    if (ctx.pista || !ctx.estado.rastro()) sequencia([p.texto['lente usada'], p.texto.jogo], memoria);
+    if ((ctx.pista && ctx.demo) || !ctx.estado.rastro()) sequencia([p.texto['lente usada'], p.texto.jogo], memoria);
     else sequencia([p.texto['lente usada']], seguir);
     return true;
   }
   function seguir() {
     if (!p.el.isConnected || p.venceu) return;
     const ligou = ctx.rastro?.(true);
-    p.q('.lente-alvo').innerHTML = `<div class="rastro-aviso"><span class="pegadas-pipoca">🐾</span><b>SIGA AS PATINHAS NO CHÃO</b><small>A pista está escondida perto daqui</small>${ctx.demo ? '<button class="e1-rec usar-lente achei">🐾 Achei a pista (teste)</button>' : ''}<button class="e1-rec nao-sigo">Não consigo seguir</button></div>`;
+    p.q('.lente-alvo').innerHTML = `<div class="rastro-aviso"><span class="pegadas-pipoca">🐾</span><b>SIGA AS PATINHAS NO CHÃO</b><small>A pista está escondida perto daqui</small>${ctx.demo ? '<button class="e1-rec usar-lente achei">🐾 Achei a pista (teste)</button>' : ''}<button class="e1-rec nao-sigo" hidden>Não achei a pista</button></div>`;
+    // Atalho só depois de procurar um bom tempo: o jogo é chegar andando até a folha.
+    clearTimeout(socorro); socorro = setTimeout(() => { const b = p.el.isConnected && p.q('.nao-sigo'); if (b) b.hidden = false; }, ctx.demo ? 0 : 180000);
     p.q('.nao-sigo').onclick = () => { ctx.rastro?.(false); falar(p.texto.jogo, 'Pipoca'); memoria(); };
     if (ctx.demo) p.q('.achei').onclick = () => { ctx.rastro?.(false); falar(p.texto.achou, 'Pipoca'); memoria(); };
     falar(ligou === false ? p.texto['rastro dica'] : p.texto.rastro, 'Pipoca');
@@ -38,12 +40,13 @@ export function criarEstacao4(ctx) {
       else { ocupado = true; p.erro(b); timer = setTimeout(() => { virar(a, false); virar(b, false); ocupado = false; }, 800); }
     };
   }
-  p.el.usarFerramenta = usar; p.el.limpar = () => clearTimeout(timer);
+  p.el.usarFerramenta = usar; p.el.limpar = () => { clearTimeout(timer); clearTimeout(socorro); };
   p.q('.usar-lente').onclick = () => { if (usar('lente')) ctx.estado.soltar(); };
   const v = ctx.estado.valor;
   if (v.concluidas.includes(4)) p.iniciar();
   else if (ctx.pista && v.rastro4) { iniciou = true; falar(p.texto.achou, 'Pipoca'); memoria(true); } // chegou pelo rastro: sem repetir o vídeo
   else if (v.rastro4) { iniciou = true; p.q('.usar-lente').hidden = true; seguir(); } // voltou à placa no meio do caminho
+  else if (ctx.pista && !ctx.demo) { iniciou = true; p.q('.lente-alvo').innerHTML = '<div class="rastro-aviso"><span class="pegadas-pipoca">🐾</span><b>COMECE PELA PLACA DA CAFETERIA</b><small>Use a lupa lá e siga as patinhas até aqui</small></div>'; falar(p.texto['pista cedo'] ?? p.texto['rastro dica'], 'Pipoca'); } // folha achada antes da hora
   else p.iniciar();
   return p.el;
 }

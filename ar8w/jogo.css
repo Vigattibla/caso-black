@@ -25,7 +25,14 @@ body.demo{background:#191511}#demo-palco{position:absolute;top:8px;left:50%;tran
 .verso-lupa{position:absolute;left:45px;top:690px;width:240px;height:57px;pointer-events:auto;cursor:pointer;background:#fdc72f33;border:4px solid #fdc72f;border-radius:10px;animation:lupa-chama 1.2s ease-in-out infinite alternate}.verso-lupa img{position:absolute;right:8px;top:6px;height:42px}.verso-lupa[hidden]{display:none}@keyframes lupa-chama{to{box-shadow:0 0 22px 6px #fdc72f;background:#fdc72f66}}.verso .verso-rodape{left:300px}
 /* Resgate sem AR: painel preso na tela e escolha da estação pelo número da placa */
 body.fixado::before{content:'';position:fixed;inset:0;z-index:7;background:#191511f2}
-body.fixado #demo-palco{position:fixed;z-index:8}
+body.fixado #demo-palco{position:fixed;z-index:8;top:calc(84px + env(safe-area-inset-top));animation:tc-entra .35s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes tc-entra{from{opacity:0;transform:translateX(-50%) scale(.9)}to{opacity:1;transform:translateX(-50%)}}
+body.fixado #fixar{display:none}
+#tela-cheia{position:fixed;z-index:14;left:0;right:0;top:0;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;background:#fdc72f;color:#191511;font:13px Montserrat,sans-serif;box-shadow:0 4px 14px #0008;animation:tc-desce .3s ease-out}
+#tela-cheia[hidden]{display:none}#tela-cheia div{flex:1;display:grid;line-height:1.25}#tela-cheia b{font-weight:900;letter-spacing:.06em}#tela-cheia .tc-onde{font-weight:700}#tela-cheia small{font-size:11px;opacity:.75}
+#tela-cheia .tc-sair{min-height:44px;padding:0 16px;border:2px solid #191511;background:#191511;color:#fdc72f;font:900 14px Montserrat,sans-serif;cursor:pointer}
+@keyframes tc-desce{from{transform:translateY(-100%)}to{transform:none}}
+#aviso{position:fixed;z-index:26;left:50%;bottom:calc(190px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:88vw;padding:12px 18px;background:#191511f0;border:2px solid #fdc72f;color:#fff;font:800 14px Montserrat,sans-serif;text-align:center;animation:tc-entra .3s ease-out}#aviso[hidden]{display:none}
 #fixar,#mirar{position:fixed;z-index:13;min-height:44px;padding:0 14px;border:2px solid #fdc72f;background:#111e;color:#fdc72f;font:800 13px Montserrat,sans-serif;cursor:pointer}
 #fixar{left:12px;bottom:calc(122px + env(safe-area-inset-bottom))}
 #mirar{left:12px;top:calc(62px + env(safe-area-inset-top));font-size:11px;min-height:36px;border-width:1px}

@@ -38,6 +38,7 @@ export const historia = {
       "jogo": "Agora ajuda o faro dele: acha os pares.",
       "rastro": "Farejei! Segue minhas patinhas no chão até a pista escondida!",
       "rastro dica": "Aponta o celular pro chão perto do quadro e anda devagar seguindo as patinhas.",
+      "pista cedo": "Ei, achou cedo demais! Primeiro usa a lupa na placa da Cafeteria e segue minhas patinhas até aqui.",
       "achou": "Au au! Achou a pista! Agora ajuda o faro dele: acha os pares.",
       "erro": "Au!",
       "dica": "Au! Era algo de usar na cabeça.",

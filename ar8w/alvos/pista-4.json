@@ -3,18 +3,26 @@
   "metadata": {
     "placeholder": false,
     "local": "PISTA ESCONDIDA",
-    "personagens": {}
+    "personagens": {},
+    "recorte": {
+      "x": 240,
+      "y": 640,
+      "w": 720,
+      "h": 960,
+      "W": 1200,
+      "H": 1600
+    }
   },
   "name": "pista-4",
   "type": "PLANAR",
   "properties": {
     "left": 0,
     "top": 0,
-    "width": 1200,
-    "height": 1600,
+    "width": 720,
+    "height": 960,
     "isRotated": false,
-    "originalWidth": 1200,
-    "originalHeight": 1600
+    "originalWidth": 720,
+    "originalHeight": 960
   },
   "resources": {
     "originalImage": "pista-4.png",

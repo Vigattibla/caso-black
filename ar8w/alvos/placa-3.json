@@ -3,18 +3,26 @@
   "metadata": {
     "placeholder": false,
     "local": "ESPAÇO KIDS",
-    "personagens": {}
+    "personagens": {},
+    "recorte": {
+      "x": 300,
+      "y": 380,
+      "w": 600,
+      "h": 800,
+      "W": 1200,
+      "H": 1600
+    }
   },
   "name": "placa-3",
   "type": "PLANAR",
   "properties": {
     "left": 0,
     "top": 0,
-    "width": 1200,
-    "height": 1600,
+    "width": 600,
+    "height": 800,
     "isRotated": false,
-    "originalWidth": 1200,
-    "originalHeight": 1600
+    "originalWidth": 600,
+    "originalHeight": 800
   },
   "resources": {
     "originalImage": "placa-3.png",

@@ -5,7 +5,7 @@ import {criarAncora} from './ancora.js';
 import {criarEstacao1, CSS} from './estacao1.js';
 import {criarEstacao2} from './estacao2.js';
 import {criarEstacao3} from './estacao3.js?v=19';
-import {criarEstacao4} from './estacao4.js?v=20';
+import {criarEstacao4} from './estacao4.js?v=21';
 import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v=21';
 import {criarEstacao5} from './estacao5.js';
 import {criarVerso} from './verso.js';
@@ -25,7 +25,7 @@ $('#reset').onclick = () => { estado.reset(); location.reload(); };
 const style = document.createElement('style'); style.textContent = CSS + CSS_INV; document.head.append(style);
 const status = t => { $('#status').textContent = t; $('#status').hidden = !t; };
 const est = window.__ar8w = {estado, eventos: [], demo: !!DEMO};
-let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, cssScene, cssRenderer, raiz, quadroObj, ultimo = 0, rodando = false, gl, ultimaLeitura = 0;
+let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, recortes = {}, achadoEm = 0, querRastro = false, cssScene, cssRenderer, raiz, quadroObj, ultimo = 0, rodando = false, gl, ultimaLeitura = 0;
 est.ancora = ancora;
 const bruto = new THREE.Object3D(), M = new THREE.Matrix4(), escala = new THREE.Matrix4(), tmp = new THREE.Vector3();
 const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? estado.valor.itens.lente ? historia.lupa.naCarta : historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
@@ -64,7 +64,7 @@ const gravar = Q.has('gravar') && !DEMO ? (() => {
     },
   };
 })() : null;
-const ligarRastro = liga => { if (!liga) { rastro.esconder(); return true; } if (!pose4) return false; est.caminho = rastro.mostrar(pose4); return true; };
+const ligarRastro = liga => { querRastro = liga; if (!liga) { rastro.esconder(); return true; } if (!pose4) return false; est.caminho = rastro.mostrar(pose4); return true; };
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
 function selecionar(nome) {
   if (!/^(placa-[1-5]|pista-4|verso|frente)$/.test(nome)) return false;
@@ -72,7 +72,7 @@ function selecionar(nome) {
   calar(); $('#fala-espera').append(balao); painel?.limpar?.();
   fixar(false); if (quadroObj) raiz.remove(quadroObj);
   painel?.remove(); alvoAtual = nome; est.alvo = nome;
-  if (nome === 'pista-4') rastro.esconder();
+  if (nome === 'pista-4') { rastro.esconder(); querRastro = false; }
   const ctx = {estado, demo: !!DEMO, pista: nome === 'pista-4', rastro: DEMO ? undefined : ligarRastro, premiar: (item, origem) => mochila.premiar(item, origem), onGanhar: n => { est.eventos.push('concluiu-' + n); }};
   painel = nome === 'verso' ? criarVerso(ctx) : nome === 'frente' ? criarRetrato(ctx) : criar[Number(nome.slice(-1)) - 1](ctx);
   painel.querySelector('.fala-slot').append(balao); est.quadro = painel;
@@ -86,12 +86,25 @@ function selecionar(nome) {
 }
 // Resgate sem AR: o mesmo painel sai do alvo e fica preso na tela (criança que não alcança a placa).
 let fixado = false;
-function fixar(sim) {
+let avisoT;
+function aviso(t) { const a = $('#aviso'); a.textContent = t; a.hidden = false; clearTimeout(avisoT); avisoT = setTimeout(() => { a.hidden = true; }, 2600); }
+function fixar(sim, motivo) {
   if (DEMO || !painel || sim === fixado) return;
   fixado = sim; document.body.classList.toggle('fixado', sim); $('#demo-palco').hidden = !sim; est.fixado = sim;
+  $('#tela-cheia').hidden = !sim; $('#tela-cheia .tc-onde').textContent = alvoAtual === 'pista-4' ? 'Pista da estação 4' : 'Estação ' + alvoAtual?.slice(-1);
+  if (motivo === 'placa') aviso('📷 Placa encontrada · voltou pra câmera'); else if (motivo === 'sair') { aviso('📷 Câmera ligada · mire a placa'); status(historia.abertura[2]); }
   $('#fixar').textContent = sim ? '📷 Voltar pra câmera' : '📌 Trazer pra tela';
   if (sim) { $('#demo-palco').append(painel); Object.assign(painel.style, {display: '', visibility: 'visible'}); status(''); redimensionarDemo(); }
   else { Object.assign(painel.style, {transform: '', transformOrigin: '', visibility: 'hidden'}); } // CSS3D devolve o painel ao alvo no próximo render
+}
+// O alvo é só a foto da placa (recorte); o painel continua centrado na folha inteira.
+function centralizar() {
+  const rc = recortes[alvoAtual]; if (!rc || !quadroObj) return;
+  quadroObj.position.set(-((rc.x + rc.w / 2) - rc.W / 2) / rc.W * alvoLargura, ((rc.y + rc.h / 2) - rc.H / 2) / rc.W * alvoLargura, .01);
+}
+function descartar() {
+  calar(); painel?.limpar?.(); if (quadroObj) raiz.remove(quadroObj); painel?.remove();
+  painel = quadroObj = alvoAtual = est.alvo = null; raiz.visible = false; $('#fixar').hidden = true; status(historia.abertura[2]);
 }
 function montarCss() {
   cssScene = new THREE.Scene(); cssRenderer = new CSS3DRenderer({element: $('#css3d')}); cssRenderer.setSize(innerWidth, innerHeight);
@@ -99,7 +112,7 @@ function montarCss() {
 }
 function redimensionarDemo() {
   if ((!DEMO && !fixado) || !painel) return;
-  const alto = painel.offsetHeight || 800, k = Math.min((innerWidth - 12) / 600, (innerHeight - 118) / alto);
+  const alto = painel.offsetHeight || 800, k = Math.min((innerWidth - 12) / 600, (innerHeight - (fixado ? 200 : 118)) / alto);
   $('#demo-palco').style.width = 600 * k + 'px'; $('#demo-palco').style.height = alto * k + 'px';
   painel.style.transform = `scale(${k})`; painel.style.transformOrigin = '0 0';
 }
@@ -115,10 +128,10 @@ function receber(detail, found) {
     // Achar a folha no fim do rastro assume na hora, mesmo com a placa ainda à vista.
     if (alvoAtual && !(detail.name === 'pista-4' && rastro.ligado) && (rastreando || performance.now() - perdidoEm < TROCA_MS)) return;
   }
-  rastreando = true; if (found && detail.name === alvoAtual) fixar(false);
-  alvoLargura = detail.scaledWidth || 1; selecionar(detail.name);
+  rastreando = true; if (found && detail.name === alvoAtual) fixar(false, 'placa');
+  const rc = recortes[detail.name]; alvoLargura = (detail.scaledWidth || 1) * (rc ? rc.W / rc.w : 1); selecionar(detail.name);
   bruto.position.set(detail.position.x, detail.position.y, detail.position.z); bruto.quaternion.set(detail.rotation.x, detail.rotation.y, detail.rotation.z, detail.rotation.w); bruto.scale.setScalar(detail.scale);
-  if (found) { ancora.found(detail); est.eventos.push('found-' + detail.name); } else ancora.updated(detail);
+  if (found) { achadoEm = performance.now(); ancora.found(detail); est.eventos.push('found-' + detail.name); } else ancora.updated(detail);
   status('');
 }
 const leitorMod = {
@@ -147,9 +160,10 @@ const modulo = {
     const p = ancora.passo(dt); rastro.passo();
     if (p && alvoAtual === 'placa-4' && rastreando) pose4 = {p: [...p.p], q: [...p.q], s: p.s * alvoLargura};
     if (PEGADAS && pose4 && !pegadasVistas) { pegadasVistas = true; ligarRastro(true); }
+    if (querRastro && pose4 && !rastro.ligado) est.caminho = rastro.mostrar(pose4); // lupa usada com a placa fora da mira
     gravar?.andar(XR8.Threejs.xrScene().camera);
     if (!p || !quadroObj || fixado) return;
-    raiz.position.set(...p.p); raiz.quaternion.set(...p.q); raiz.scale.setScalar(p.s); raiz.visible = true; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600);
+    raiz.position.set(...p.p); raiz.quaternion.set(...p.q); raiz.scale.setScalar(p.s); raiz.visible = true; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600); centralizar();
     const {camera} = XR8.Threejs.xrScene(); tmp.set(...p.p).applyMatrix4(camera.matrixWorldInverse);
     painel.style.visibility = tmp.z < -.05 ? 'visible' : 'hidden'; cssRenderer.render(cssScene, camera);
     if (Q.has('debug')) $('#debug').textContent = `${alvoAtual} · vídeo ${est.video} · canvas ${$('#camera').width}x${$('#camera').height}`;
@@ -157,7 +171,9 @@ const modulo = {
   listeners: [
     {event: 'reality.imagefound', process: ({detail}) => receber(detail, true)},
     {event: 'reality.imageupdated', process: ({detail}) => receber(detail, false)},
-    {event: 'reality.imagelost', process: ({detail}) => { if (detail.name !== alvoAtual) return; rastreando = false; perdidoEm = performance.now(); ancora.lost(); est.eventos.push('lost-' + detail.name); if (rastro.ligado) status('Siga as patinhas no chão 🐾'); else if (/^(placa|pista)/.test(alvoAtual)) fixar(true); else status(historia.abertura[2]); }},
+    {event: 'reality.imagelost', process: ({detail}) => { if (detail.name !== alvoAtual) return; rastreando = false; perdidoEm = performance.now(); ancora.lost(); est.eventos.push('lost-' + detail.name);
+      if (perdidoEm - achadoEm < 700 && !fixado) { descartar(); return; } // leitura relâmpago = alvo falso: não deixa painel solto no ar
+      if (rastro.ligado) status('Siga as patinhas no chão 🐾'); else if (/^(placa|pista)/.test(alvoAtual)) fixar(true); else status(historia.abertura[2]); }},
   ],
   onCameraStatusChange({status: s}) { if (s === 'requesting') status('Permita o acesso à câmera…'); if (['failed', 'denied'].includes(s)) erro('Sem acesso à câmera. Libere a câmera nas permissões do navegador e recarregue.'); },
   onException() { erro('A câmera travou. Recarregue a página.'); },
@@ -190,7 +206,7 @@ est.simular = (detail, tipo = 'found') => modulo.listeners.find(l => l.event ===
 function erro(t) { $('#erro p').textContent = t; $('#erro').hidden = false; }
 async function configurar() {
   const nomes = ['placa-1', 'placa-2', 'placa-3', 'placa-4', 'placa-5', 'pista-4', 'verso-teste', 'frente'];
-  const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`, {cache: 'no-cache'}); if (!r.ok) throw Error(nome); const json = await r.json(); json.imagePath = new URL(`./alvos/${nome}_luminance.png?v=${json.updated}`, location.href).href; return json; }));
+  const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`, {cache: 'no-cache'}); if (!r.ok) throw Error(nome); const json = await r.json(); const rc = json.metadata?.recorte; if (rc) recortes[nome] = rc; json.imagePath = new URL(`./alvos/${nome}_${rc ? 'recorte' : 'luminance'}.png?v=${json.updated}`, location.href).href; return json; }));
   XR8.XrController.configure({imageTargetData: alvos, disableWorldTracking: false}); est.alvos = alvos.map(a => a.name);
 }
 async function abrir() {
@@ -208,6 +224,7 @@ async function abrir() {
 }
 $('#abrir').onclick = abrir;
 $('#fixar').onclick = () => fixar(!fixado);
+$('#tela-cheia .tc-sair').onclick = () => fixar(false, 'sair');
 // Número impresso na base da placa abre a estação direto; a câmera liga junto porque a carta (verso/frente) só se lê com ela.
 let pendente = null;
 const escolha = $('#estacoes');
