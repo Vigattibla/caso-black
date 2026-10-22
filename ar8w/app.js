@@ -34,6 +34,8 @@ const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente
 const ampliar = () => /^placa/.test(alvoAtual) ? 2 : alvoAtual === 'pista-4' ? 1.2 : 1;
 // Rastro do Pipoca: patinhas em AR no chão, da placa 4 até a pista; pose4 = última pose vista da placa 4.
 const rastro = criarRastro(THREE); let pose4 = null; est.rastro = rastro;
+// ?pegadas: teste de montagem — mirou a placa 4, as patinhas já saem (sem lupa); a folha vai onde elas terminam.
+const PEGADAS = Q.has('pegadas') && !DEMO; let pegadasVistas = false;
 const ligarRastro = liga => { if (!liga) { rastro.esconder(); return true; } if (!pose4) return false; est.caminho = rastro.mostrar(pose4); return true; };
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
 function selecionar(nome) {
@@ -115,6 +117,7 @@ const modulo = {
     const agora = performance.now(), dt = Math.min(.1, (agora - (ultimo || agora)) / 1000); ultimo = agora;
     const p = ancora.passo(dt); rastro.passo();
     if (p && alvoAtual === 'placa-4' && rastreando) pose4 = {p: [...p.p], q: [...p.q], s: p.s * alvoLargura};
+    if (PEGADAS && pose4 && !pegadasVistas) { pegadasVistas = true; ligarRastro(true); }
     if (!p || !quadroObj || fixado) return;
     raiz.position.set(...p.p); raiz.quaternion.set(...p.q); raiz.scale.setScalar(p.s); raiz.visible = true; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600);
     const {camera} = XR8.Threejs.xrScene(); tmp.set(...p.p).applyMatrix4(camera.matrixWorldInverse);
