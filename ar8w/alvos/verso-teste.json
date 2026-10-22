@@ -1,7 +1,7 @@
 {
   "imagePath": "./alvos/verso-teste_luminance.png",
   "metadata": null,
-  "name": "verso-teste",
+  "name": "verso",
   "type": "PLANAR",
   "properties": {
     "left": 0,
@@ -13,11 +13,11 @@
     "originalHeight": 1600
   },
   "resources": {
-    "originalImage": "verso-teste_original.png",
-    "croppedImage": "verso-teste_cropped.png",
-    "thumbnailImage": "verso-teste_thumbnail.png",
+    "originalImage": "verso-teste.png",
+    "croppedImage": "verso-teste.png",
+    "thumbnailImage": "verso-teste.png",
     "luminanceImage": "verso-teste_luminance.png"
   },
   "created": 1792617247948,
-  "updated": 1792617247948
+  "updated": 1792637635276
 }

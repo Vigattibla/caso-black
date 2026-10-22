@@ -1,6 +1,6 @@
-/* node tests/chave.cjs — chave do arquivo: lê o desenho no verso, abre o cadeado (certo), emperra (errado), guarda na mochila. */
+/* node tests/chave.cjs — verso coleta a ferramenta; somente a placa usa a chave guardada. */
 const fs=require('fs'),path=require('path'),http=require('http'),os=require('os'),{spawn}=require('child_process');
-const ROOT=path.resolve(__dirname,'..'),OUT=path.join(os.tmpdir(),'cb-chave-shots');
+const ROOT=path.resolve(__dirname,'..'),OUT=path.join(os.tmpdir(),'cb-chave-shots','verso-v2');
 const CHROME=process.env.AR_CHROME||'C:/Users/Vigatti/AppData/Local/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-win64/chrome-headless-shell.exe';
 let browser,server,ws,id=0;const pending=new Map(),errors=[],faltando=[],checks=[];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -8,7 +8,7 @@ function cdp(method,params={}){return new Promise((resolve,reject)=>{const n=++i
 async function ev(expression){const r=await cdp('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result.value}
 async function ok(expr,label){if(!await ev(expr))throw Error(label);checks.push(label)}
 async function until(expr,label,timeout=20000){const t=Date.now();while(Date.now()-t<timeout){if(await ev(expr).catch(()=>false))return checks.push(label);await sleep(150)}throw Error(label+' '+JSON.stringify(await ev('window.__chave&&{e:__chave.estado,l:__chave.leituras,u:__chave.ultima}')))}
-async function shot(name){const r=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(OUT,name+'.png'),Buffer.from(r.data,'base64'))}
+async function shot(name){await sleep(320);const r=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(OUT,name+'.png'),Buffer.from(r.data,'base64'))}
 async function main(){
   fs.mkdirSync(OUT,{recursive:true});
   const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.json':'application/json','.wasm':'application/wasm'};
@@ -26,26 +26,41 @@ async function main(){
   await cdp('Page.navigate',{url:base+'/ar8w/chave.html?nova'});
   await until(`window.__chave?.xr===true`,'motor 8th Wall carregou');
   await until(`window.__chave.configurado===true||!!window.__chave.configErro`,'configure respondeu');
-  await ok(`!__chave.configErro&&document.querySelector('#abrir').textContent==='Abrir lupa'`,'alvo verso-teste aceito, botão liberado');
+  await ok(`!__chave.configErro&&__chave.alvos.join(',')==='verso,placa-1'&&document.querySelector('#abrir').textContent==='Abrir lupa'`,'dois alvos aceitos: verso e placa-1');
   await shot('chave-inicio');
 
-  // Demo certo: lê CBBC, anima, guarda na mochila.
+  // O verso só lê e guarda: nenhuma fechadura ou pista nesta cena.
   await cdp('Page.navigate',{url:base+'/ar8w/chave.html?demo&nova'});
-  await until(`__chave.leituras?.[0]==='CBBC'`,'leu CBBC no desenho');
-  await until(`__chave.estado==='aberto'`,'cadeado abriu',12000);
-  await ok(`JSON.parse(localStorage.getItem('cb-chave')).codigo==='CBBC'&&!document.querySelector('#mochila').hidden`,'chave guardada na mochila');
-  await ok(`document.querySelector('#balao').classList.contains('on')&&/BOA/.test(document.querySelector('#beTx').textContent)`,'Lucas comemora');
-  await shot('chave-certo-fim');
-  for(const t of [0.5,1.5,2.6,3.5,4.2,4.9,5.5]){await ev(`document.querySelector('#balao').classList.remove('on');__chave.seek(${t})`);await sleep(60);await shot('chave-certo-'+String(t).replace('.','_'))}
+  await until(`__chave.estado==='guardado'&&__chave.leituras[0]==='CBBC'`,'verso leu CBBC e concluiu a coleta');
+  await ok(`__chave.alvo==='verso'&&!__chave.tentativas&&JSON.parse(localStorage.getItem('cb-chave')).codigo==='CBBC'&&!document.querySelector('#mochila').hidden&&/CHAVE GUARDADA/.test(document.querySelector('#beTx').textContent)`,'inventário recebe a chave sem abrir cadeado no verso');
+  await shot('verso-chave-guardada');
+  for(const t of [0,.5,1,1.5,2]){await ev(`document.querySelector('#balao').classList.remove('on');__chave.seek(${t})`);await sleep(60);await shot('verso-coleta-'+String(t).replace('.','_'))}
+  // Navegar simula fechar/reabrir a lupa: a ferramenta persiste no aparelho.
+  await cdp('Page.navigate',{url:base+'/ar8w/chave.html?demo&alvo=placa-1'});
+  await until(`__chave.estado==='aberto'`,'placa abriu com a chave persistida',12000);
+  await ok(`__chave.alvo==='placa-1'&&__chave.leituras.length===0&&__chave.tentativas===1&&JSON.parse(localStorage.getItem('cb-chave')).codigo==='CBBC'&&/BOA/.test(document.querySelector('#beTx').textContent)`,'estação usa o inventário, revela pista e Lucas comemora');
+  await shot('placa-certo-fim');
+  for(const t of [0,.5,1.5,2.6,3.5,4.2,4.9,5.5]){await ev(`document.querySelector('#balao').classList.remove('on');__chave.seek(${t})`);await sleep(60);await shot('placa-certo-'+String(t).replace('.','_'))}
 
-  // Demo errado: CCBC emperra, volta a ler, não dispara de novo nem guarda.
-  await cdp('Page.navigate',{url:base+'/ar8w/chave.html?demo&nova&codigo=CCBC'});
-  await until(`__chave.leituras?.[0]==='CCBC'`,'leu CCBC no desenho');
-  await ev(`setTimeout(()=>__chave.seek(3.7),1);1`);await sleep(150);await shot('chave-errado-emperra');await ev(`__chave.pausado=false`);
-  await until(`__chave.estado==='lendo'&&/3 de 4/.test(document.querySelector('#beTx').textContent)`,'emperrou: 3 de 4 dentes certos',12000);
+  await cdp('Page.navigate',{url:base+'/ar8w/chave.html?demo&nova&alvo=placa-1'});
+  await until(`__chave.estado==='aguardando-chave'&&!__chave.tentativas&&!localStorage.getItem('cb-chave')`,'placa sem ferramenta aguarda a leitura do verso');
+  await shot('placa-sem-chave');
+  await cdp('Page.navigate',{url:base+'/ar8w/chave.html?demo&nova&sem-desenho'});
   await sleep(2500);
-  await ok(`__chave.leituras.length===1&&!localStorage.getItem('cb-chave')&&document.querySelector('#mochila').hidden`,'chave errada não repete nem vai pra mochila');
-  await shot('chave-errado-fim');
+  if(!await ev(`__chave.estado==='lendo'&&__chave.leituras.length===0&&__chave.ultima.codigo==='????'&&!localStorage.getItem('cb-chave')`))throw Error('Guias/pontilhado confundidos com ferramenta');
+  await shot('verso-sem-desenho');
+  // Uma ferramenta errada também é coletada; só a placa avalia os dentes.
+  await cdp('Page.navigate',{url:base+'/ar8w/chave.html?demo&nova&codigo=CCBC'});
+  await until(`__chave.estado==='guardado'&&__chave.leituras[0]==='CCBC'&&JSON.parse(localStorage.getItem('cb-chave')).codigo==='CCBC'&&!__chave.tentativas`,'verso guarda CCBC sem avaliar a solução');
+  await shot('verso-chave-errada-guardada');
+  await ev(`__chave.alvoDemo('placa-1')`);
+  // Aguarda iniciar sem acrescentar um checkpoint à contagem de 10 grupos.
+  for(let n=0;n<60&&!await ev(`__chave.estado==='animando'`);n++)await sleep(50);
+  await ev(`__chave.seek(3.7)`);await sleep(100);await shot('placa-errado-emperra');await ev(`__chave.pausado=false`);
+  await until(`__chave.estado==='emperrado'&&/3 de 4/.test(document.querySelector('#beTx').textContent)&&JSON.parse(localStorage.getItem('cb-chave')).codigo==='CCBC'`,'placa rejeita CCBC: 3 de 4, ferramenta permanece no inventário',12000);
+  await sleep(2500);
+  if(!await ev(`__chave.tentativas===1&&__chave.leituras.length===1`))throw Error('tentativa errada repetiu');
+  await shot('placa-errado-fim');
 
   if(faltando.length)throw Error('404: '+[...new Set(faltando)].join(', '));
   if(errors.length)throw Error('Console: '+errors.slice(0,5).join(' | '));

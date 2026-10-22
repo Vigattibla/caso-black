@@ -1,7 +1,8 @@
-/* Chave desenhada ganha vida no verso: descola, fica de pé, gira, vai à fechadura; certo abre e vai pro bolso, errado emperra.
+/* Na placa da estação, a chave do inventário ganha vida e vai à fechadura; certo abre, errado emperra.
    Tudo no espaço local da folha (largura 1, y pra cima, z saindo do papel = a mesa). Linha do tempo pura: em(t). */
 import * as THREE from 'three';
-import {IMG, MOLDURA, CADEADO, FECHADURA, BOLSO, local, tam, centro} from './layout.js';
+import {IMG, local, tam, centro} from './layout.js';
+import {CADEADO, FECHADURA, ORIGEM as MOLDURA, RETORNO as BOLSO} from './placa.js';
 import {adesivo} from './leitor.js';
 
 const BORDA = 7;
@@ -19,7 +20,7 @@ const naFolha = r => ({c: centro(r), t: tam(r)});
 
 function corPapel(papel) { return `rgb(${papel.join(',')})`; }
 
-// Cadeado impresso dividido em corpo + arco, para o arco subir. (Arte final: o cliente entrega as duas camadas.)
+// Cadeado AR dividido em corpo + arco. (Arte final: o cliente entrega as duas camadas.)
 function cadeadoPartes(img) {
   const A = {x0: 175, y0: 175, x1: 570, y1: 415}; // arco no png 812x797
   const corpo = tela(img.width, img.height), arco = tela(A.x1 - A.x0, A.y1 - A.y0);
@@ -72,10 +73,10 @@ export function criarCena(folha, cadeadoImg, pista = {titulo: 'PISTA 1 LIBERADA'
   const adesivoMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat(null, {side: THREE.DoubleSide}));
   adesivoMesh.renderOrder = 6; chave.add(adesivoMesh);
 
-  // Cadeado sobreposto ao impresso (fundo da cor do papel esconde o arco impresso quando ele sobe).
+  // Cadeado inteiramente virtual, ancorado à placa da estação.
   const cad = cadeadoPartes(cadeadoImg), C = naFolha(CADEADO), AR = naFolha(cad.arcoRet);
   const cadGrupo = new THREE.Group(); cadGrupo.position.set(...C.c, 0.0015); cadGrupo.visible = false; grupo.add(cadGrupo);
-  const fundo = new THREE.Mesh(new THREE.PlaneGeometry(...C.t), new THREE.MeshBasicMaterial({color: '#fffdf6', depthWrite: false}));
+  const fundo = new THREE.Mesh(new THREE.PlaneGeometry(...C.t), mat(null, {opacity: 0}));
   fundo.renderOrder = 3; cadGrupo.add(fundo);
   const corpo = new THREE.Mesh(new THREE.PlaneGeometry(...C.t), mat(tex(cad.corpo))); corpo.renderOrder = 4; cadGrupo.add(corpo);
   const pivo = new THREE.Group(); // gira pela perna esquerda do arco
@@ -116,7 +117,7 @@ export function criarCena(folha, cadeadoImg, pista = {titulo: 'PISTA 1 LIBERADA'
     z = lerp(z, hs / 2 + 0.015 + 0.012 * Math.sin(t * 7), pe * (1 - deita));
     rx = Math.PI / 2 * pe * (1 - deita);
     x = lerp(x, ponta - 0.03 + 0.03 * empurra, deita); y = lerp(y, kh[1], deita); z = lerp(z, 0.02, deita);
-    borracha.material.opacity = 0.95 * lev;
+    borracha.material.opacity = 0; // Na placa a ferramenta vem do inventário, sem apagar papel.
     let arcoSobe = 0, cartaoK = 0, brilhoK = 0, treme = 0;
     if (certo) {
       const vira = suave(fase(t, 3.3, 3.8)), abre = mola(fase(t, 3.8, 4.4)), desvira = suave(fase(t, 4.4, 4.7)), voa = fase(t, 4.7, 5.6);
@@ -141,7 +142,7 @@ export function criarCena(folha, cadeadoImg, pista = {titulo: 'PISTA 1 LIBERADA'
     somb.position.set(x, y - (rx > 0.2 ? 0 : 0.01), 0.0012); somb.rotation.z = rz;
     somb.scale.set(w * s * (rx > 0.6 ? 0.95 : 1.05), (rx > 0.6 ? 0.06 : h * s * 0.9), 1);
     somb.material.opacity = Math.min(0.5, z * 6) * op;
-    cadGrupo.visible = t >= 2.2;
+    cadGrupo.visible = true;
     cadGrupo.position.x = C.c[0] + 0.006 * treme;
     pivo.position.z = 0.0005; arco.position.y = AR.t[1] / 2 + 0.035 * arcoSobe; pivo.rotation.z = 0.5 * arcoSobe;
     cartao.scale.setScalar(Math.max(0.001, cartaoK)); cartao.visible = cartaoK > 0;
@@ -160,6 +161,8 @@ export function criarCena(folha, cadeadoImg, pista = {titulo: 'PISTA 1 LIBERADA'
     },
     get t() { return t; }, get rodando() { return rodando; },
     esconder() { grupo.visible = false; rodando = false; },
+    mostrarFechado() { em(0); grupo.visible = true; cadGrupo.visible = true; chave.visible = false; somb.visible = false; cartao.visible = false; brilho.visible = false; },
+    usarChave(leitura, ok, onFim) { chave.visible = true; somb.visible = true; brilho.visible = true; const st = preparar(leitura, ok); rodando = true; fim = onFim; return st; },
     mostrarAberto() { cadGrupo.visible = true; arco.position.y = AR.t[1] / 2 + 0.035; pivo.rotation.z = 0.5; cartao.visible = true; cartao.scale.setScalar(1); },
   };
 }

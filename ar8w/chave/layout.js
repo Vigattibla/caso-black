@@ -1,14 +1,13 @@
 /* Posições no verso de teste (px da imagem 1200x1600). Local do alvo: largura 1, centro no meio, y pra cima. */
 export const IMG = {w: 1200, h: 1600};
-export const MOLDURA = {x0: 100, y0: 300, x1: 930, y1: 640}; // área onde a pessoa desenha a chave
-export const DENTES = [450, 570, 690, 810].map(cx => ({
-  cima: {x0: cx - 30, y0: 355, x1: cx + 30, y1: 430},
-  baixo: {x0: cx - 30, y0: 510, x1: cx + 30, y1: 585},
+export const MOLDURA = {x0: 120, y0: 310, x1: 1080, y1: 875};
+export const DENTES = [530, 670, 810, 950].map(cx => ({
+  cima: {x0: cx - 38, y0: 420, x1: cx + 38, y1: 550},
+  baixo: {x0: cx - 38, y0: 634, x1: cx + 38, y1: 764},
 }));
-export const HASTE = {x0: 360, y0: 452, x1: 880, y1: 488};
-export const CADEADO = {x0: 940, y0: 340, x1: 1120, y1: 517}; // cadeado impresso
-export const FECHADURA = {u: 1043, v: 470}; // buraco do cadeado
-export const BOLSO = {u: 880, v: 1095};
+export const HASTE = {x0: 440, y0: 560, x1: 1010, y1: 624};
+export const ARGOLA = {x: 290, y: 592, r: 140, furo: 72};
+export const BOLSO = {u: 330, v: 1220};
 export const CERTO = 'CBBC'; // 1 cima · 2 baixo · 3 baixo · 4 cima
 export const local = (u, v) => [u / IMG.w - 0.5, (0.5 - v / IMG.h) * IMG.h / IMG.w];
 export const tam = r => [(r.x1 - r.x0) / IMG.w, (r.y1 - r.y0) / IMG.w];
