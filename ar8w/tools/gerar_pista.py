@@ -39,7 +39,10 @@ def main():
         pata(d, x + (26 if i % 2 else -26), y, 46, -math.pi / 4 + .3 * math.sin(t * 7), '#d9cfb8')
     for _ in range(26):
         pata(d, rnd.randint(40, W - 40), rnd.randint(560, H - 40), rnd.randint(18, 34), rnd.uniform(0, 6.3), '#ece4d0')
-    im.paste(BASE, (0, 0), LOGO)
+    # Logo oficial direto do PNG (recortar da placa-1 deixava sobras do fundo).
+    logo = Image.open(ROOT / 'assets/cb-logo.png').convert('RGBA')
+    logo = logo.resize((820, round(820 * logo.height / logo.width)), Image.Resampling.LANCZOS)
+    im.paste(logo, ((W - logo.width) // 2, 70), logo)
     d = ImageDraw.Draw(im)
     d.rectangle((60, 430, W - 60, 560), fill='#111111')
     d.text((W // 2, 495), 'PISTA ESCONDIDA', font=fonte(96), fill=AMARELO, anchor='mm')
