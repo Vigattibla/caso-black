@@ -1,8 +1,8 @@
 /* Rastro do Pipoca: patinhas no chão (y=0 do SLAM) da placa 4 até a folha escondida.
    Caminho salvo no referencial da placa, em larguras de placa: x à direita, z saindo da parede. */
 const CHAVE = 'cb_rastro4';
-// Padrão de fábrica até medir no local (?calibrar): 1,5 larguras à frente e 6 à direita.
-const PADRAO = {pts: [[0, 1.5], [3, 3], [6, 3]]};
+// Caminho gravado no local (?gravar, 22/10): da placa 4 até a folha escondida, sem o vaivém do fim.
+const PADRAO = {pts: [[0, .8], [-1.66, 2.25], [-2.88, 1.73], [-3.27, 2.91], [-4.34, 3.61], [-5.55, 3.08], [-6.8, 3.12], [-8.19, 3.25], [-8.17, 2.02], [-9.29, 1.33], [-10.35, .34], [-11.28, -.53], [-12.22, -1.63], [-13.43, -2.57], [-14.79, -3.16], [-16.11, -3.72], [-17.11, -4.39], [-16.7, -5.57], [-17.95, -6.03], [-19.41, -6.41], [-20.53, -7.09], [-22.03, -7.24], [-23.37, -6.7], [-24.66, -6.41], [-26.2, -5.57], [-27.5, -5.3]]};
 export const caminhoSalvo = () => { try { return JSON.parse(localStorage.getItem(CHAVE)) || PADRAO; } catch (e) { return PADRAO; } };
 export const salvarCaminho = c => { try { localStorage.setItem(CHAVE, JSON.stringify(c)); } catch (e) {} };
 

@@ -6,7 +6,7 @@ import {criarEstacao1, CSS} from './estacao1.js';
 import {criarEstacao2} from './estacao2.js';
 import {criarEstacao3} from './estacao3.js?v=19';
 import {criarEstacao4} from './estacao4.js?v=20';
-import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v=20';
+import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v=21';
 import {criarEstacao5} from './estacao5.js';
 import {criarVerso} from './verso.js';
 import {criarRetrato, lerRetrato} from './retrato.js?v=18';
@@ -52,7 +52,9 @@ const gravar = Q.has('gravar') && !DEMO ? (() => {
     },
     pista(detail) {
       if (fim || !pose4) return false;
-      fim = true; const c = {pts: [[0, .8], ...pts, paraPlaca(THREE, pose4, [detail.position.x, detail.position.y, detail.position.z])]};
+      fim = true; const folha = paraPlaca(THREE, pose4, [detail.position.x, detail.position.y, detail.position.z]), u = pts.at(-1);
+      // A distância estimada da folha às vezes salta longe; nesse caso o fim é onde a pessoa parou.
+      const c = {pts: [[0, .8], ...pts, ...(!u || Math.hypot(folha[0] - u[0], folha[1] - u[1]) < 4 ? [folha] : [])]};
       salvarCaminho(c); est.caminho = rastro.mostrar(pose4, c);
       st('Caminho gravado ✓ — as patinhas já estão no chão. Mande os números:');
       const out = caixa.querySelector('.g-out'), copia = caixa.querySelector('.g-copia');
