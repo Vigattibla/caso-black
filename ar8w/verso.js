@@ -1,28 +1,30 @@
 import {historia} from './historia.js';
 import {falar, sequencia} from './fala.js';
 import {lerChave, adesivo} from './chave/leitor.js';
-import {IMG, DENTES, HASTE, ARGOLA} from './chave/layout.js';
+import {IMG, MOLDURA, DENTES, HASTE, ARGOLA} from './chave/layout.js';
 export function criarVerso({estado, demo, premiar}) {
   const el = document.createElement('section'); el.className = 'e1 verso'; el.dataset.estacao = 'verso';
-  el.innerHTML = '<div class="leitura-moldura"><p class="leitura-status" role="status"></p></div><div class="verso-rodape"><div class="fala-slot"></div></div>';
+  el.innerHTML = '<div class="leitura-moldura">' + guia(estado.valor.dentes) + '<p class="leitura-status" role="status"></p></div><div class="verso-rodape"><div class="fala-slot"></div></div>';
   const q = s => el.querySelector(s); let anterior = '', iguais = 0, guardando = false;
+  const faltam = () => 4 - [1, 2, 3, 4].filter(n => estado.valor.dentes[n]).length;
   function avaliar(r) {
     if (guardando || estado.valor.itens.chave || estado.valor.concluidas.includes(5) || !estado.podeLer()) return false;
     if (r.erro || !/^[CB]{4}$/.test(r.codigo) || r.haste < .08) { iguais = 0; anterior = ''; return false; }
     iguais = r.codigo === anterior ? iguais + 1 : 1; anterior = r.codigo;
-    q('.leitura-status').textContent = r.dentes.map(d => d === 'C' ? '↑' : '↓').join(' ');
+    q('.leitura-status').textContent = 'LENDO O DESENHO…';
     if (iguais < 3) return false;
     iguais = 0;
     if (r.codigo !== 'CBBC') { falar(historia.chave.errada); return false; }
     if (!estado.guardarChave(r.codigo, r.traco ? adesivo(r.traco).toDataURL('image/png') : '')) return false;
-    guardando = true; premiar('chave', el); falar(historia.chave.certa); q('.leitura-status').textContent = 'CHAVE GUARDADA'; return true;
+    guardando = true; premiar('chave', el); falar(historia.chave.certa); q('.leitura-status').textContent = 'CHAVE GUARDADA'; q('.chave-guia').classList.add('guardada'); return true;
   }
   el.avaliar = avaliar;
   el.podeLer = () => estado.podeLer() && !estado.valor.itens.chave && !estado.valor.concluidas.includes(5);
-  if (estado.valor.concluidas.includes(5)) { q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e mira a câmera no retrato falado!'); }
+  if (estado.valor.concluidas.includes(5)) { q('.chave-guia').classList.add('guardada'); q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e mira a câmera no retrato falado!'); }
   else {
     falar(historia.chave[estado.valor.itens.chave ? 'certa' : 'pedido']);
-    q('.leitura-status').textContent = estado.podeLer() ? estado.valor.itens.chave ? 'CHAVE GUARDADA' : 'MOSTRE O DESENHO' : 'FALTAM OS QUATRO DENTES';
+    q('.leitura-status').textContent = estado.valor.itens.chave ? 'CHAVE GUARDADA' : estado.podeLer() ? 'PASSE A CANETA POR CIMA DO AMARELO' : `COPIE O AMARELO · FALTA${faltam() > 1 ? 'M' : ''} ${faltam()} DENTE${faltam() > 1 ? 'S' : ''} NAS PLACAS`;
+    if (estado.valor.itens.chave) q('.chave-guia').classList.add('guardada');
     if (demo) montarDemo();
   }
   function montarDemo() {
@@ -48,4 +50,17 @@ export function criarVerso({estado, demo, premiar}) {
     desenhar();
   }
   return el;
+}
+// Guia em AR 1:1 sobre a moldura impressa: argola e haste sempre; cada dente aparece quando a placa dele é resolvida.
+function guia(dentes) {
+  const linha = (pts, cls = '') => `<polyline class="${cls}" points="${pts.map(p => p.join(',')).join(' ')}"/>`;
+  const partes = [`<circle cx="${ARGOLA.x}" cy="${ARGOLA.y}" r="${ARGOLA.r}"/>`, `<circle cx="${ARGOLA.x}" cy="${ARGOLA.y}" r="${ARGOLA.furo}"/>`,
+    linha([[ARGOLA.x + ARGOLA.r - 6, HASTE.y0 + 8], [HASTE.x1 - 10, HASTE.y0 + 8], [HASTE.x1 - 10, HASTE.y1 - 8], [ARGOLA.x + ARGOLA.r - 6, HASTE.y1 - 8]])];
+  DENTES.forEach((d, i) => {
+    const lado = dentes[i + 1];
+    if (!lado) { const [cx, cy] = [(d.cima.x0 + d.cima.x1) / 2, (HASTE.y0 + HASTE.y1) / 2]; partes.push(`<text class="falta" x="${cx}" y="${cy + 22}">?</text>`); return; }
+    const r = lado === 'C' ? d.cima : d.baixo, base = lado === 'C' ? HASTE.y0 + 8 : HASTE.y1 - 8, ponta = lado === 'C' ? r.y0 + 12 : r.y1 - 12;
+    partes.push(linha([[r.x0 + 6, base], [r.x0 + 6, ponta], [r.x1 - 6, ponta], [r.x1 - 6, base]]));
+  });
+  return `<svg class="chave-guia" viewBox="${MOLDURA.x0} ${MOLDURA.y0} ${MOLDURA.x1 - MOLDURA.x0} ${MOLDURA.y1 - MOLDURA.y0}" aria-hidden="true"><g class="sombra">${partes.join('')}</g><g class="traco">${partes.join('')}</g></svg>`;
 }

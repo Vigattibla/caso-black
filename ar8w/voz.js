@@ -5,11 +5,15 @@ const normalizar = t => String(t).replace(/<[^>]+>/g, '').toLowerCase().normaliz
 let audio;
 export const Voz = {
   para() { if (audio) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio = null; } },
-  diz(texto, quem = 'Lucas') {
-    this.para();
+  tem(texto, quem = 'Lucas') {
     const prefixo = /gabi/i.test(quem) ? 'gabi|' : /bê/i.test(quem) ? 'be|' : /pipoca/i.test(quem) ? 'pipoca|' : '';
     const caminho = mapa[prefixo + normalizar(texto)] || mapa[normalizar(texto)];
-    if (!caminho || !disponiveis.has(caminho)) return;
+    return caminho && disponiveis.has(caminho) ? caminho : '';
+  },
+  diz(texto, quem = 'Lucas') {
+    this.para();
+    const caminho = this.tem(texto, quem);
+    if (!caminho) return;
     audio = new Audio(caminho); audio.onerror = () => {}; audio.play().catch(() => {});
   },
 };

@@ -4,7 +4,7 @@ import {falar, sequencia} from './fala.js';
 const itens = [['Chapéu preto', 'chapeu'], ['Casquinha', 'casquinha'], ['Picolé', 'picole'], ['Café', 'cafe'], ['Taça', 'taca'], ['Cookie', 'cookie']];
 export function criarEstacao4(ctx) {
   const p = criarPainel(4, ctx); let iniciou = false, primeiro, ocupado = false, pares = 0, timer;
-  p.jogo.innerHTML = '<div class="lente-alvo" data-ferramenta="lente"><span class="pegadas-pipoca" hidden>🐾 🐾 🐾</span><button class="e1-rec usar-lente">USAR LENTE DA MOCHILA</button></div>';
+  p.jogo.innerHTML = '<div class="lente-alvo" data-ferramenta="lente"><span class="pegadas-pipoca" hidden>🐾 🐾 🐾</span><button class="e1-rec usar-lente">USAR LUPA DA MOCHILA</button></div>';
   function usar(item) {
     if (item !== 'lente' || iniciou || p.venceu) return false;
     if (!ctx.estado.valor.itens.lente) { falar(p.texto['sem lente']); return false; }

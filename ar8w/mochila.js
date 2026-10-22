@@ -3,9 +3,9 @@ export function criarMochila(estado, painel, avisar) {
   const icones = {lente: '<img class="obj" src="../assets/objetos/lente.webp" alt="">', chave: '<img class="obj" src="../assets/objetos/chave-item.webp" alt="">'};
   function atualizar() {
     for (const item of ['lente', 'chave']) {
-      const b = el.querySelector(`[data-item="${item}"]`); b.innerHTML = icones[item] + `<span>${item === 'lente' ? 'Lente' : 'Chave'}</span>`;
+      const b = el.querySelector(`[data-item="${item}"]`); b.innerHTML = icones[item] + `<span>${item === 'lente' ? 'Lupa' : 'Chave'}</span>`;
       if (item === 'chave' && estado.valor.itens.chave?.img) { const img = new Image(); img.src = estado.valor.itens.chave.img; img.alt = 'Sua chave desenhada'; b.querySelector('img').replaceWith(img); }
-      b.classList.toggle('vazio', !estado.valor.itens[item]); b.setAttribute('aria-label', `${item === 'lente' ? 'Lente' : 'Chave'}${estado.valor.itens[item] ? ' na mochila' : ' ainda não encontrada'}`);
+      b.classList.toggle('vazio', !estado.valor.itens[item]); b.setAttribute('aria-label', `${item === 'lente' ? 'Lupa' : 'Chave'}${estado.valor.itens[item] ? ' na mochila' : ' ainda não encontrada'}`);
     }
     document.querySelector('#dentes').textContent = [1, 2, 3, 4].map(n => estado.valor.dentes[n] ? estado.valor.dentes[n] === 'C' ? '↑' : '↓' : '·').join(' ');
   }

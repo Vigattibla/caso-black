@@ -10,8 +10,8 @@ export const historia = {
       "fala": "Olha só: pegadas molhadas na beira da piscina! Toca só nas que têm uma estrela na sola.",
       "erro": "Essa não tem estrela. Olha de novo!",
       "dica": "A estrela fica no calcanhar.",
-      "resultado": "Achei! Sola de estrela, pé de adulto. E olha o que ficou na água: uma lente!",
-      "lente": "Lente guardada na mochila. Ela vai servir mais pra frente.",
+      "resultado": "Achei! Sola de estrela, pé de adulto. E olha o que ficou na água: uma lupa!",
+      "lente": "Lupa guardada na mochila. Ela vai servir mais pra frente.",
       "dente": "Primeiro dente da chave: pra cima. Desenha no verso!",
       "prova": "Sola de estrela, pé de adulto."
     },
@@ -32,9 +32,9 @@ export const historia = {
       "prova": "Sombra de chapéu no Kids, 00h30."
     },
     "4": {
-      "fala": "O Pipoca farejou alguma coisa aqui. Pega a lente na mochila e passa na placa!",
-      "sem lente": "Falta a lente. Ela ficou na piscina!",
-      "lente usada": "Pegadas do Pipoca! A lente revelou a tinta escondida.",
+      "fala": "O Pipoca farejou alguma coisa aqui. Pega a lupa na mochila e passa na placa!",
+      "sem lente": "Falta a lupa. Ela ficou na piscina!",
+      "lente usada": "Pegadas do Pipoca! A lupa revelou a tinta escondida.",
       "jogo": "Agora ajuda o faro dele: acha os pares.",
       "erro": "Au!",
       "dica": "Au! Era algo de usar na cabeça.",
@@ -52,7 +52,7 @@ export const historia = {
     }
   },
   "chave": {
-    "pedido": "Desenha a chave no verso e mostra pra câmera.",
+    "pedido": "Olha o verso pela câmera: a chave aparece em amarelo. Passa a caneta por cima e mostra pra câmera!",
     "certa": "Chave na mochila! Agora corre pra recepção.",
     "errada": "Essa chave não encaixa. Confere os dentes nas placas."
   },
