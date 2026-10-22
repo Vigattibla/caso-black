@@ -1,0 +1,23 @@
+{
+  "imagePath": "./alvos/frente_luminance.png",
+  "metadata": null,
+  "name": "frente",
+  "type": "PLANAR",
+  "properties": {
+    "left": 0,
+    "top": 0,
+    "width": 1200,
+    "height": 1600,
+    "isRotated": false,
+    "originalWidth": 1200,
+    "originalHeight": 1600
+  },
+  "resources": {
+    "originalImage": "frente.png",
+    "croppedImage": "frente.png",
+    "thumbnailImage": "frente.png",
+    "luminanceImage": "frente_luminance.png"
+  },
+  "created": 1792685532285,
+  "updated": 1792685532285
+}

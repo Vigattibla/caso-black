@@ -8,6 +8,7 @@ import {criarEstacao3} from './estacao3.js';
 import {criarEstacao4} from './estacao4.js';
 import {criarEstacao5} from './estacao5.js';
 import {criarVerso} from './verso.js';
+import {criarRetrato, lerRetrato} from './retrato.js';
 import {criarEstado} from './estado.js';
 import {criarMochila} from './mochila.js';
 import {falar, sequencia, calar} from './fala.js';
@@ -29,13 +30,13 @@ const bruto = new THREE.Object3D(), M = new THREE.Matrix4(), escala = new THREE.
 const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
 function selecionar(nome) {
-  if (!/^(placa-[1-5]|verso)$/.test(nome)) return false;
+  if (!/^(placa-[1-5]|verso|frente)$/.test(nome)) return false;
   if (alvoAtual === nome) return true;
   calar(); $('#fala-espera').append(balao); painel?.limpar?.();
   if (quadroObj) raiz.remove(quadroObj);
   painel?.remove(); alvoAtual = nome; est.alvo = nome;
   const ctx = {estado, demo: !!DEMO, premiar: (item, origem) => mochila.premiar(item, origem), onGanhar: n => { est.eventos.push('concluiu-' + n); }};
-  painel = nome === 'verso' ? criarVerso(ctx) : criar[Number(nome.slice(-1)) - 1](ctx);
+  painel = nome === 'verso' ? criarVerso(ctx) : nome === 'frente' ? criarRetrato(ctx) : criar[Number(nome.slice(-1)) - 1](ctx);
   painel.querySelector('.fala-slot').append(balao); est.quadro = painel;
   if (DEMO) { $('#demo-palco').append(painel); redimensionarDemo(); }
   else {
@@ -55,7 +56,7 @@ function redimensionarDemo() {
   painel.style.transform = `scale(${k})`; painel.style.transformOrigin = '0 0';
 }
 function receber(detail, found) {
-  if (!/^(placa-[1-5]|verso)$/.test(detail.name)) return;
+  if (!/^(placa-[1-5]|verso|frente)$/.test(detail.name)) return;
   if (!found && detail.name !== alvoAtual) return;
   alvoLargura = detail.scaledWidth || 1; selecionar(detail.name);
   bruto.position.set(detail.position.x, detail.position.y, detail.position.z); bruto.quaternion.set(detail.rotation.x, detail.rotation.y, detail.rotation.z, detail.rotation.w); bruto.scale.setScalar(detail.scale);
@@ -65,12 +66,12 @@ function receber(detail, found) {
 const leitorMod = {
   name: 'cb8w-leitor', onAttach({GLctx}) { gl = GLctx; },
   onRender() {
-    if (alvoAtual !== 'verso' || !painel?.podeLer?.() || !ancora.visto || !gl) return;
+    if (!['verso', 'frente'].includes(alvoAtual) || !painel?.podeLer?.() || !ancora.visto || !gl) return;
     const agora = performance.now(); if (agora - ultimaLeitura < 240) return; ultimaLeitura = agora;
     const {camera} = XR8.Threejs.xrScene(), c = $('#camera'); bruto.updateMatrixWorld();
     M.copy(camera.projectionMatrix).multiply(camera.matrixWorldInverse).multiply(bruto.matrixWorld).multiply(escala.makeScale(alvoLargura, alvoLargura, alvoLargura));
     const fb = gl.getParameter(gl.FRAMEBUFFER_BINDING); gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    try { painel.avaliar(lerChave(gl, M.elements, c.width, c.height)); } finally { gl.bindFramebuffer(gl.FRAMEBUFFER, fb); }
+    try { painel.avaliar((alvoAtual === 'verso' ? lerChave : lerRetrato)(gl, M.elements, c.width, c.height)); } finally { gl.bindFramebuffer(gl.FRAMEBUFFER, fb); }
   },
 };
 const modulo = {
@@ -101,7 +102,7 @@ const modulo = {
 est.simular = (detail, tipo = 'found') => modulo.listeners.find(l => l.event === 'reality.image' + tipo).process({detail});
 function erro(t) { $('#erro p').textContent = t; $('#erro').hidden = false; }
 async function configurar() {
-  const nomes = ['placa-1', 'placa-2', 'placa-3', 'placa-4', 'placa-5', 'verso-teste'];
+  const nomes = ['placa-1', 'placa-2', 'placa-3', 'placa-4', 'placa-5', 'verso-teste', 'frente'];
   const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`); if (!r.ok) throw Error(nome); const json = await r.json(); json.imagePath = new URL(`./alvos/${nome}_luminance.png`, location.href).href; return json; }));
   XR8.XrController.configure({imageTargetData: alvos, disableWorldTracking: false}); est.alvos = alvos.map(a => a.name);
 }
@@ -123,8 +124,8 @@ addEventListener('resize', redimensionarDemo);
 if (DEMO) {
   $('#inicio').hidden = true; $('#camera').hidden = true; $('#css3d').hidden = true; $('#credito').hidden = true; $('#demo-palco').hidden = false;
   document.body.classList.add('demo');
-  if (DEMO === 'verso' || /^[1-5]$/.test(DEMO)) selecionar(DEMO === 'verso' ? 'verso' : 'placa-' + DEMO);
-  else erro('Estação demo inválida. Use ?demo=1 até 5 ou ?demo=verso.');
+  if (['verso', 'frente'].includes(DEMO) || /^[1-5]$/.test(DEMO)) selecionar(/^[1-5]$/.test(DEMO) ? 'placa-' + DEMO : DEMO);
+  else erro('Estação demo inválida. Use ?demo=1 até 5, verso ou frente.');
   est.pronto = true;
 } else {
   montarCss();

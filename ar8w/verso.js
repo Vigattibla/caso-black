@@ -4,29 +4,8 @@ import {lerChave, adesivo} from './chave/leitor.js';
 import {IMG, DENTES, HASTE, ARGOLA} from './chave/layout.js';
 export function criarVerso({estado, demo, premiar}) {
   const el = document.createElement('section'); el.className = 'e1 verso'; el.dataset.estacao = 'verso';
-  el.innerHTML = '<div class="leitura-moldura"><p class="leitura-status" role="status"></p></div><div class="final-revelado" hidden><svg class="digital" viewBox="0 0 240 300" role="img" aria-label="Digital dourada do Bê"></svg><img class="be-final" src="../assets/be-cabeca.png" alt="Bê"></div><div class="verso-rodape"><div class="fala-slot"></div><div class="foto-convite" hidden><button class="escolher-foto">Escolha uma foto...</button><input type="file" accept="image/*" capture="user" hidden><div class="album"></div></div></div>';
+  el.innerHTML = '<div class="leitura-moldura"><p class="leitura-status" role="status"></p></div><div class="verso-rodape"><div class="fala-slot"></div></div>';
   const q = s => el.querySelector(s); let anterior = '', iguais = 0, guardando = false;
-  function finalizar() {
-    q('.leitura-moldura').hidden = true; q('.final-revelado').hidden = false;
-    const digital = q('.digital');
-    digital.innerHTML = Array.from({length: 11}, (_, i) => `<path d="M${15 + i * 9} 245C${-20 + i * 11} ${30 + i * 5},${250 - i * 11} ${-35 + i * 12},${220 - i * 6} ${185 - i * 3}S${200 - i * 7} 280,${170 - i * 5} 290"/>`).join('');
-    digital.animate([{opacity: 0, filter: 'blur(18px)', transform: 'scale(.6)'}, {opacity: 1, filter: 'blur(0)', transform: 'scale(1)'}], {duration: 1600, fill: 'both'});
-    estado.fechar(); sequencia(historia.final, () => { q('.foto-convite').hidden = false; mostrarAlbum(); });
-  }
-  function mostrarAlbum() {
-    q('.album').innerHTML = estado.valor.fotos.map((img, i) => `<a download="caso-black-${i + 1}.jpg" href="${img}"><img src="${img}" alt="Foto ${i + 1} da turma"></a>`).join('');
-  }
-  q('.escolher-foto').onclick = () => q('input').click();
-  q('input').onchange = e => {
-    const arquivo = e.target.files?.[0]; if (!arquivo || !arquivo.type.startsWith('image/')) return;
-    const url = URL.createObjectURL(arquivo), img = new Image();
-    img.onload = () => {
-      if (!el.isConnected) { URL.revokeObjectURL(url); return; }
-      const c = document.createElement('canvas'), k = Math.min(1, 900 / Math.max(img.width, img.height)); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); estado.foto(c.toDataURL('image/jpeg', .8)); mostrarAlbum(); falar(historia.foto[1], 'Gabi');
-    };
-    img.onerror = () => URL.revokeObjectURL(url); img.src = url;
-  };
   function avaliar(r) {
     if (guardando || estado.valor.itens.chave || estado.valor.concluidas.includes(5) || !estado.podeLer()) return false;
     if (r.erro || !/^[CB]{4}$/.test(r.codigo) || r.haste < .08) { iguais = 0; anterior = ''; return false; }
@@ -40,7 +19,7 @@ export function criarVerso({estado, demo, premiar}) {
   }
   el.avaliar = avaliar;
   el.podeLer = () => estado.podeLer() && !estado.valor.itens.chave && !estado.valor.concluidas.includes(5);
-  if (estado.valor.concluidas.includes(5)) finalizar();
+  if (estado.valor.concluidas.includes(5)) { q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e mira a lupa no retrato falado!'); }
   else {
     falar(historia.chave[estado.valor.itens.chave ? 'certa' : 'pedido']);
     q('.leitura-status').textContent = estado.podeLer() ? estado.valor.itens.chave ? 'CHAVE GUARDADA' : 'MOSTRE O DESENHO' : 'FALTAM OS QUATRO DENTES';
