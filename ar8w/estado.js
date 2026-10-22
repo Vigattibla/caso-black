@@ -1,4 +1,4 @@
-import {historia} from './historia.js?v=22';
+import {historia} from './historia.js?v=23';
 export const STORAGE = 'cb8w_v1';
 // Rodada: trocar o valor zera o progresso de todos os aparelhos no próximo acesso.
 const RODADA = '2026-10-22d';
@@ -22,7 +22,7 @@ export function criarEstado(storage) {
       valor.itens.chave = Object.keys(valor.dentes).length === 4 && salvo.itens?.chave?.codigo === 'CBBC' ? {codigo: 'CBBC', img: fotoValida(salvo.itens.chave.img) ? salvo.itens.chave.img : ''} : null;
       valor.final = valor.concluidas.includes(5) && !!salvo.final;
       valor.rastro4 = valor.itens.lente && !valor.concluidas.includes(4) && salvo.rastro4 === true;
-      valor.fotos = (Array.isArray(salvo.fotos) ? salvo.fotos : []).filter(fotoValida).slice(-5);
+      valor.fotos = (Array.isArray(salvo.fotos) ? salvo.fotos : []).filter(fotoValida).slice(-8);
     }
   } catch { /* armazenamento indisponível: a sessão continua */ }
   const eventos = new EventTarget();
@@ -40,7 +40,7 @@ export function criarEstado(storage) {
     podeLer() { return [1, 2, 3, 4].every(n => valor.dentes[n] === 'CBBC'[n - 1]); },
     guardarChave(codigo, img = '') { if (!this.podeLer() || codigo !== 'CBBC') return false; valor.itens.chave = {codigo, img}; salvar(); return true; },
     fechar() { if (!valor.concluidas.includes(5)) return false; valor.final = true; salvar(); return true; },
-    foto(img) { if (!fotoValida(img)) return false; valor.fotos = [...valor.fotos, img].slice(-5); return salvar(); },
+    foto(img) { if (!fotoValida(img)) return false; valor.fotos = [...valor.fotos, img].slice(-8); return salvar(); },
     // Lupa mora na carta; tocada no verso, vai para a mão (bandeja da tela) até ser usada.
     pegar(item) { if (item !== 'lente' || !valor.itens.lente || valor.concluidas.includes(4)) return false; valor.mao = item; salvar(); return true; },
     soltar() { valor.mao = null; salvar(); },

@@ -28,21 +28,21 @@ export function paraPlaca(THREE, pose, ponto) {
 }
 
 export function criarRastro(THREE) {
-  const grupo = new THREE.Group(), tex = textura(THREE), geo = new THREE.PlaneGeometry(.18, .18).rotateX(-Math.PI / 2);
-  let patas = [], t0 = 0, ligado = false; grupo.visible = false;
+  const grupo = new THREE.Group(), tex = textura(THREE), geo = new THREE.PlaneGeometry(.3, .3).rotateX(-Math.PI / 2);
+  let patas = [], mundoPts = [], t0 = 0, ligado = false; grupo.visible = false; grupo.renderOrder = 10;
   function limpar() { patas.forEach(m => { grupo.remove(m); m.material.dispose(); }); patas = []; }
   return {
     grupo, get ligado() { return ligado; },
     mostrar(pose, caminho = caminhoSalvo()) {
       limpar(); const b = base(THREE, pose);
       const mundo = caminho.pts.map(([x, z]) => b.o.clone().addScaledVector(b.dir, x * b.s).addScaledVector(b.fre, z * b.s));
-      const passo = .25; let lado = 1;
+      const passo = .35; let lado = 1; mundoPts = mundo;
       for (let i = 0; i < mundo.length - 1; i++) {
         const a = mundo[i], c = mundo[i + 1], seg = c.clone().sub(a), L = seg.length(); if (L < .01) continue;
         const u = seg.clone().normalize(), lateral = new THREE.Vector3(-u.z, 0, u.x), ang = Math.atan2(u.x, u.z);
         for (let d = i ? passo : 0; d < L; d += passo, lado = -lado) {
-          const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map: tex, transparent: true, opacity: 0, depthWrite: false}));
-          m.position.copy(a).addScaledVector(u, d).addScaledVector(lateral, .05 * lado); m.position.y = .005; m.rotation.y = ang + Math.PI;
+          const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map: tex, transparent: true, opacity: 0, depthWrite: false, depthTest: false}));
+          m.position.copy(a).addScaledVector(u, d).addScaledVector(lateral, .07 * lado); m.position.y = .005; m.rotation.y = ang + Math.PI; m.renderOrder = 10; m.frustumCulled = false;
           grupo.add(m); patas.push(m);
         }
       }
@@ -56,5 +56,17 @@ export function criarRastro(THREE) {
       patas.forEach((m, i) => { const onda = (k - i) % (n + 8); m.material.opacity = k < i ? 0 : onda >= 0 && onda < 3 ? 1 : .75; });
     },
     get total() { return patas.length; },
+    // Guia na tela: próxima patinha à frente de quem anda (ou o fim) em relação à câmera, no chão.
+    guia(camera) {
+      if (!ligado || !patas.length) return null;
+      const c = camera.position, d = m => Math.hypot(m.position.x - c.x, m.position.z - c.z);
+      let perto = 0; patas.forEach((m, i) => { if (d(m) < d(patas[perto])) perto = i; });
+      const alvo = patas[Math.min(patas.length - 1, perto + 3)].position, fim = mundoPts.at(-1);
+      const fre = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion); fre.y = 0;
+      if (fre.lengthSq() < 1e-4) fre.set(0, 1, 0).applyQuaternion(camera.quaternion).setY(0); // celular apontado pro chão: topo da tela = frente
+      const v = new THREE.Vector3(alvo.x - c.x, 0, alvo.z - c.z);
+      const ang = Math.atan2(fre.x * v.z - fre.z * v.x, fre.x * v.x + fre.z * v.z);
+      return {ang, falta: Math.hypot(fim.x - c.x, fim.z - c.z), n: patas.length};
+    },
   };
 }

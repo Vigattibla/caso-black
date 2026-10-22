@@ -1,6 +1,6 @@
-import {criarPainel} from './painel.js';
+import {criarPainel} from './painel.js?v=23';
 import {falar, sequencia} from './fala.js';
-import {historia} from './historia.js?v=22';
+import {historia} from './historia.js?v=23';
 // Fotos/itens da vitrine original; pares embaralhados, sem solução indicada no DOM.
 const itens = [['Chapéu preto', 'chapeu'], ['Casquinha', 'casquinha'], ['Picolé', 'picole'], ['Café', 'cafe'], ['Taça', 'taca'], ['Cookie', 'cookie']];
 export function criarEstacao4(ctx) {
@@ -8,7 +8,7 @@ export function criarEstacao4(ctx) {
   p.jogo.innerHTML = '<div class="lente-alvo" data-ferramenta="lente"><span class="pegadas-pipoca" hidden>🐾 🐾 🐾</span><button class="e1-rec usar-lente">ARRASTE A LUPA PRA CÁ</button></div>';
   function usar(item) {
     if (item !== 'lente' || iniciou || p.venceu) return false;
-    if (ctx.estado.valor.mao !== 'lente') { falar(ctx.estado.valor.itens.lente ? historia.lupa.naCarta : p.texto['sem lente']); return false; }
+    if (!ctx.estado.valor.itens.lente) { falar(p.texto['sem lente']); return false; }
     iniciou = true; p.q('.pegadas-pipoca').hidden = false; p.q('.usar-lente').hidden = true;
     // Na folha do faro: o Pipoca leva até a placa 4 (rastro AR no chão). Sem rastro (demo) o jogo abre aqui.
     if (!ctx.pista || ctx.demo || !ctx.estado.rastro()) sequencia([p.texto['lente usada'], p.texto.jogo], memoria);
@@ -41,7 +41,7 @@ export function criarEstacao4(ctx) {
     };
   }
   p.el.usarFerramenta = usar; p.el.limpar = () => { clearTimeout(timer); clearTimeout(socorro); };
-  p.q('.usar-lente').onclick = () => { if (usar('lente')) ctx.estado.soltar(); };
+  p.q('.usar-lente').onclick = () => usar('lente');
   const v = ctx.estado.valor;
   if (v.concluidas.includes(4)) p.iniciar();
   else if (!ctx.pista && v.rastro4) { iniciou = true; falar(p.texto.achou, 'Pipoca'); memoria(true); } // chegou à placa 4 pelo rastro: sem repetir o vídeo

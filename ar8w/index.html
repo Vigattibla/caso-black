@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Courier+Prime:wght@400;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
-<link rel="stylesheet" href="./jogo.css?v=23">
+<link rel="stylesheet" href="./jogo.css?v=24">
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-family:Montserrat,sans-serif;overscroll-behavior:none}
 #camera{position:fixed;inset:0;width:100vw;height:100vh;display:block}
@@ -45,11 +45,13 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-f
 <div id="fala-espera"><div id="balao" hidden role="status" aria-live="polite"><img id="beRetrato" src="../assets/be-cabeca.png" alt="Bê" hidden><div><b id="beNome"></b><p id="beTx"></p><button id="fala-repetir" hidden aria-label="Ouvir a fala de novo">🔊 Ouvir de novo</button><button id="fala-proxima" hidden>Continuar</button></div></div></div>
 <aside id="mochila" aria-label="Mochila"><b>MOCHILA <span id="dentes" aria-label="Dentes coletados"></span></b><button data-item="lente" aria-pressed="false"></button><button data-item="chave" aria-pressed="false"></button></aside>
 <button id="reset" hidden>Reset</button>
+<button id="sair-camera" hidden>✕ Sair da câmera</button>
+<div id="rastro-guia" hidden><i>⬆</i><b></b><small></small></div>
 <button id="fixar" hidden>📌 Trazer pra tela</button>
 <header id="tela-cheia" hidden><div><span class="tc-onde"></span><small>📌 Tela cheia · mire a placa pra voltar à câmera</small></div><button class="tc-sair">✕ Sair</button></header>
 <div id="aviso" role="status" aria-live="polite" hidden></div>
 <button class="sem-mira" id="mirar" hidden>Não consigo mirar</button>
 <section id="estacoes" hidden><div class="caixa"><h1>Qual estação?</h1><p>O número fica embaixo da placa.</p><div class="numeros"><button data-estacao="1">1</button><button data-estacao="2">2</button><button data-estacao="3">3</button><button data-estacao="4">4</button><button data-estacao="5">5</button></div><button class="fechar link">Voltar</button></div></section>
-<script type="module" src="./app.js?v=28"></script>
+<script type="module" src="./app.js?v=29"></script>
 </body>
 </html>

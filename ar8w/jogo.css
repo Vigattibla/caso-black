@@ -22,7 +22,7 @@ body.demo{background:#191511}#demo-palco{position:absolute;top:8px;left:50%;tran
 .chave-guia{position:absolute;z-index:2;inset:-3px;width:calc(100% + 6px);height:calc(100% + 6px);pointer-events:none;fill:none;stroke-linejoin:round;stroke-linecap:round}.chave-guia .sombra{stroke:#111;stroke-width:24;opacity:.35}.chave-guia .traco{stroke:#fdc72f;stroke-width:13;stroke-dasharray:34 16;animation:guia-anda 1.2s linear infinite}.chave-guia .falta{fill:#fdc72f;stroke:#111;stroke-width:4;font:800 64px Montserrat,sans-serif;text-anchor:middle;paint-order:stroke}.chave-guia .sombra .falta{display:none}.chave-guia.guardada{display:none}@keyframes guia-anda{to{stroke-dashoffset:-50}}
 #fala-repetir{min-height:38px;border:2px solid #fdc72f;padding:5px 12px;background:transparent;color:#fdc72f;font:700 14px Montserrat,sans-serif;cursor:pointer;margin-right:8px}
 
-.verso-lupa{position:absolute;left:45px;top:690px;width:240px;height:57px;pointer-events:auto;cursor:pointer;background:#fdc72f33;border:4px solid #fdc72f;border-radius:10px;animation:lupa-chama 1.2s ease-in-out infinite alternate}.verso-lupa img{position:absolute;right:8px;top:6px;height:42px}.verso-lupa[hidden]{display:none}@keyframes lupa-chama{to{box-shadow:0 0 22px 6px #fdc72f;background:#fdc72f66}}.verso .verso-rodape{left:300px}
+.verso .verso-rodape{left:300px}
 /* Resgate sem AR: painel preso na tela e escolha da estação pelo número da placa */
 /* Tela cheia = polaroid presa com fita sobre a câmera desfocada. */
 body.fixado::before{content:'';position:fixed;inset:0;z-index:7;background:radial-gradient(circle at 50% 40%,#2b241ccc,#0f0c09f2);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
@@ -56,3 +56,14 @@ body.fixado #mirar{display:none}
 .e1.alto{height:1140px}.alto .camera-fotos{height:auto}.alto .cena{flex:none;aspect-ratio:1024/682}
 .rastro-aviso{display:grid;justify-items:center;gap:12px;padding:20px 16px;text-align:center;background:#fffdf6;box-shadow:0 6px 16px #0006;transform:rotate(-1deg)}.rastro-aviso b{font:400 34px Anton,sans-serif;color:#583a23;letter-spacing:.03em}.rastro-aviso small{font:700 18px 'Courier Prime',monospace;color:#583a23}.e1 .nao-sigo{min-height:44px;border:2px solid #583a23;background:transparent;padding:8px 16px;font:700 15px Montserrat,sans-serif;color:#583a23}
 #calibrar{position:fixed;left:12px;right:12px;top:calc(64px + env(safe-area-inset-top));z-index:14;background:#111e;color:#fdc72f;border:2px solid #fdc72f;padding:10px;font:700 13px 'Courier Prime',monospace;display:grid;gap:8px}#calibrar div{display:flex;flex-wrap:wrap;gap:6px}#calibrar button{min-height:40px;padding:0 10px;border:0;background:#fdc72f;color:#111;font:800 13px Montserrat,sans-serif}#calibrar pre{margin:0;white-space:pre-wrap;word-break:break-all;color:#fff;font-size:12px;max-height:30vh;overflow:auto}
+/* 22/10e: sair da câmera, guia do rastro, espaços fixos da mochila, foto por estação */
+#sair-camera{position:fixed;z-index:13;left:12px;bottom:calc(26px + env(safe-area-inset-bottom));min-height:40px;padding:0 14px;border:2px solid #fdc72f;background:#111e;color:#fdc72f;font:800 12px Montserrat,sans-serif;cursor:pointer}
+#sair-camera[hidden],#rastro-guia[hidden]{display:none}
+#rastro-guia{position:fixed;z-index:11;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%);display:grid;justify-items:center;gap:4px;background:#111d;border:2px solid #fdc72f;padding:10px 16px;color:#fdc72f;pointer-events:none;text-align:center}
+#rastro-guia i{font:normal 46px/1 sans-serif;display:block;transition:transform .2s linear}#rastro-guia b{font:800 13px Montserrat,sans-serif;color:#fff}#rastro-guia small{font:600 10px 'Courier Prime',monospace}
+#rastro-guia.chegou{border-color:#c8102e;background:#c8102ee6}#rastro-guia.chegou i{animation:guia-pulsa .6s ease-in-out infinite alternate}@keyframes guia-pulsa{to{scale:1.25}}
+#mochila button.vazio{opacity:.45;cursor:default}#mochila button.vazio>img{filter:grayscale(1) brightness(.5)}
+.e1-carimbo .vire{color:#c8102e;font:400 22px/1.15 Anton,sans-serif}.e1-carimbo .vire[hidden]{display:none}
+.e1 .e1-fotos{display:flex;gap:10px;justify-content:center;align-items:center;margin-top:14px;flex-wrap:wrap}.e1 .e1-fotos .e1-foto{min-height:46px;border:2px solid #111;background:#fff;color:#111;font:800 14px Montserrat,sans-serif;padding:0 16px;cursor:pointer}
+.e1 .e1-baixar{display:flex;align-items:center;gap:8px;color:#111;font:700 13px Montserrat,sans-serif}.e1-baixar[hidden]{display:none}.e1-baixar img{height:54px;border:2px solid #fff}
+body.fixado #sair-camera{display:none}

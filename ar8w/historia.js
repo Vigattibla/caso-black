@@ -11,7 +11,7 @@ export const historia = {
       "erro": "Essa não tem estrela. Olha de novo!",
       "dica": "A estrela fica no calcanhar.",
       "resultado": "Achei! Sola de estrela, pé de adulto. E olha o que ficou na água: uma lupa!",
-      "lente": "Lupa guardada na mochila da carta. Quando precisar, mira o verso e toca nela.",
+      "lente": "Lupa guardada na mochila. Quando precisar, arrasta ela da mochila.",
       "dente": "Primeiro dente da chave: pra cima. Desenha no verso!",
       "prova": "Sola de estrela, pé de adulto."
     },
@@ -32,7 +32,7 @@ export const historia = {
       "prova": "Sombra de chapéu no Kids, 00h30."
     },
     "4": {
-      "fala": "O Pipoca farejou alguma coisa aqui. Pega a lupa na carta e arrasta até a folha!",
+      "fala": "O Pipoca farejou alguma coisa aqui. Arrasta a lupa da mochila até a folha!",
       "sem lente": "Falta a lupa. Ela ficou na piscina!",
       "lente usada": "Pegadas do Pipoca! A lupa revelou a tinta escondida.",
       "jogo": "Agora ajuda o faro dele: acha os pares.",
@@ -52,13 +52,13 @@ export const historia = {
       "abriu": "Abriu! Agora coloca as pistas na ordem do relógio.",
       "erro": "A ordem não bate. Olha os horários.",
       "dica": "Começa pela pegada da piscina.",
-      "resultado": "Uma da manhã: alguém de chapéu passou pela recepção sem fazer check-out. Vira a carta e aponta a câmera pro verso!"
+      "resultado": "Uma da manhã: alguém de chapéu passou pela recepção sem fazer check-out. Vira a carta e mira a câmera no RETRATO FALADO!"
     }
   },
   "lupa": {
-    "carta": "Tua lupa tá guardada aqui na mochila. Toca nela pra pegar!",
-    "pegou": "Lupa na mão! Agora arrasta ela até a folha do Pipoca.",
-    "naCarta": "A lupa tá guardada na carta. Mira o verso e toca nela!"
+    "carta": "Tua lupa tá na mochila. Arrasta ela até a folha!",
+    "pegou": "Lupa na mochila! Arrasta ela até a folha do Pipoca.",
+    "naCarta": "A lupa tá na mochila. Arrasta ela até a folha!"
   },
   "chave": {
     "pedido": "Olha o verso pela câmera: a chave aparece em amarelo. Passa a caneta por cima e mostra pra câmera!",

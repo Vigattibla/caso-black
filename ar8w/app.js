@@ -2,18 +2,18 @@
 import * as THREE from 'three';
 import {CSS3DRenderer, CSS3DObject} from './vendor/CSS3DRenderer.js';
 import {criarAncora} from './ancora.js';
-import {criarEstacao1, CSS} from './estacao1.js';
-import {criarEstacao2} from './estacao2.js';
-import {criarEstacao3} from './estacao3.js?v=19';
-import {criarEstacao4} from './estacao4.js?v=22';
-import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v=22';
-import {criarEstacao5} from './estacao5.js';
-import {criarVerso} from './verso.js?v=22';
-import {criarRetrato, lerRetrato} from './retrato.js?v=22';
-import {criarEstado} from './estado.js?v=22';
-import {criarMochila} from './mochila.js?v=17';
+import {criarEstacao1, CSS} from './estacao1.js?v=23';
+import {criarEstacao2} from './estacao2.js?v=23';
+import {criarEstacao3} from './estacao3.js?v=23';
+import {criarEstacao4} from './estacao4.js?v=23';
+import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v=23';
+import {criarEstacao5} from './estacao5.js?v=23';
+import {criarVerso} from './verso.js?v=23';
+import {criarRetrato, lerRetrato} from './retrato.js?v=23';
+import {criarEstado} from './estado.js?v=23';
+import {criarMochila} from './mochila.js?v=18';
 import {falar, sequencia, calar} from './fala.js';
-import {historia} from './historia.js?v=22';
+import {historia} from './historia.js?v=23';
 import {lerChave} from './chave/leitor.js?v=22';
 import {CSS_INV} from './investigador.js';
 window.THREE = THREE;
@@ -28,7 +28,7 @@ const est = window.__ar8w = {estado, eventos: [], demo: !!DEMO};
 let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, recortes = {}, achadoEm = 0, querRastro = false, cssScene, cssRenderer, raiz, quadroObj, ultimo = 0, rodando = false, gl, ultimaLeitura = 0;
 est.ancora = ancora;
 const bruto = new THREE.Object3D(), M = new THREE.Matrix4(), escala = new THREE.Matrix4(), tmp = new THREE.Vector3();
-const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? estado.valor.itens.lente ? historia.lupa.naCarta : historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
+const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
 // Placas: quadro 2× maior que o papel; verso/frente ficam 1:1 porque a guia de leitura casa com o impresso.
 // Pista escondida (A4) 1,2×: o jogo da memória cabe sobre a folha.
 const ampliar = () => /^placa/.test(alvoAtual) ? 2 : alvoAtual === 'pista-4' ? 1.2 : 1;
@@ -67,6 +67,14 @@ const gravar = Q.has('gravar') && !DEMO ? (() => {
 })() : null;
 // Ligou: sai da tela cheia (polaroid), senão ela cobre a câmera e as patinhas.
 const ligarRastro = liga => { querRastro = liga; if (!liga) { rastro.esconder(); return true; } fixar(false); status('Siga as patinhas no chão 🐾'); if (!pose4) return false; est.caminho = rastro.mostrar(pose4); return true; };
+// Seta na tela até a placa 4: aponta a próxima patinha e conta os metros que faltam.
+function guiaRastro() {
+  const g = rastro.guia(XR8.Threejs.xrScene().camera), el = $('#rastro-guia'); el.hidden = !g; if (!g) return;
+  const chegou = g.falta < 1.2; el.classList.toggle('chegou', chegou);
+  el.querySelector('i').style.transform = `rotate(${g.ang}rad)`;
+  el.querySelector('b').textContent = chegou ? 'A placa 4 está aqui! Procure e mire nela' : `Siga as patinhas · ${g.falta.toFixed(1).replace('.', ',')} m`;
+  if (Q.has('debug')) el.querySelector('small').textContent = `${g.n} patinhas · ${pose4 ? 'folha ok' : 'sem folha'}`;
+}
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
 function selecionar(nome) {
   if (!/^(placa-[1-5]|pista-4|verso|frente)$/.test(nome)) return false;
@@ -152,7 +160,7 @@ const modulo = {
   name: 'casoblack',
   onStart() {
     const {camera, scene} = XR8.Threejs.xrScene(); camera.position.set(0, 1.6, 0); scene.add(rastro.grupo);
-    XR8.XrController.updateCameraProjectionMatrix({origin: camera.position, facing: camera.quaternion}); status(historia.abertura[2]); $('#mirar').hidden = false;
+    XR8.XrController.updateCameraProjectionMatrix({origin: camera.position, facing: camera.quaternion}); status(historia.abertura[2]); $('#mirar').hidden = false; $('#sair-camera').hidden = false;
     if (pendente) { selecionar('placa-' + pendente); fixar(true); pendente = null; }
   },
   onCanvasSizeChange() { cssRenderer.setSize(innerWidth, innerHeight); },
@@ -164,7 +172,7 @@ const modulo = {
     if (p && alvoAtual === INICIO && rastreando) pose4 = {p: [...p.p], q: [...p.q], s: p.s * alvoLargura};
     if (PEGADAS && pose4 && !pegadasVistas) { pegadasVistas = true; ligarRastro(true); }
     if (querRastro && pose4 && !rastro.ligado) est.caminho = rastro.mostrar(pose4); // lupa usada com a placa fora da mira
-    gravar?.andar(XR8.Threejs.xrScene().camera);
+    gravar?.andar(XR8.Threejs.xrScene().camera); guiaRastro();
     if (!p || !quadroObj || fixado) return;
     raiz.position.set(...p.p); raiz.quaternion.set(...p.q); raiz.scale.setScalar(p.s); raiz.visible = true; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600); centralizar();
     const {camera} = XR8.Threejs.xrScene(); tmp.set(...p.p).applyMatrix4(camera.matrixWorldInverse);
@@ -212,8 +220,17 @@ async function configurar() {
   const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`, {cache: 'no-cache'}); if (!r.ok) throw Error(nome); const json = await r.json(); const rc = json.metadata?.recorte; if (rc) recortes[nome] = rc; json.imagePath = new URL(`./alvos/${nome}_${rc ? 'recorte' : 'luminance'}.png?v=${json.updated}`, location.href).href; return json; }));
   XR8.XrController.configure({imageTargetData: alvos, disableWorldTracking: false}); est.alvos = alvos.map(a => a.name);
 }
+let montado = false;
+function sairCamera() {
+  if (!rodando) return;
+  fixar(false); rastro.esconder(); querRastro = false; descartar(); calar();
+  try { XR8.stop(); } catch (e) { /* já parada */ }
+  rodando = false; rastreando = false; status('');
+  ['#sair-camera', '#mirar', '#rastro-guia', '#limitado'].forEach(s => { $(s).hidden = true; }); $('#inicio').hidden = false; $('#abrir').textContent = 'Voltar pra câmera mágica';
+}
 async function abrir() {
   if (rodando) return;
+  if (montado) { rodando = true; $('#inicio').hidden = true; $('#sair-camera').hidden = false; XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS}); return; }
   if (!XR8.XrDevice.isDeviceBrowserCompatible()) return erro('Este navegador não abre a câmera mágica. Use o Chrome (Android) ou o Safari (iPhone).');
   rodando = true; $('#inicio').hidden = true;
   sequencia(historia.abertura.slice(0, 2), async () => {
@@ -221,11 +238,12 @@ async function abrir() {
     try {
       await configurar();
       XR8.addCameraPipelineModules([XR8.FullWindowCanvas.pipelineModule(), XR8.GlTextureRenderer.pipelineModule(), leitorMod, XR8.Threejs.pipelineModule(), XR8.XrController.pipelineModule(), modulo]);
-      XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS});
+      XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS}); montado = true;
     } catch { erro('Não foi possível abrir a câmera. Recarregue a página.'); }
   });
 }
 $('#abrir').onclick = abrir;
+$('#sair-camera').onclick = sairCamera;
 $('#fixar').onclick = () => fixar(!fixado);
 $('#tela-cheia .tc-sair').onclick = () => fixar(false, 'sair');
 // Número impresso na base da placa abre a estação direto; a câmera liga junto porque a carta (verso/frente) só se lê com ela.

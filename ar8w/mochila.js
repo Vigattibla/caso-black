@@ -1,21 +1,21 @@
 export function criarMochila(estado, painel, avisar) {
   const el = document.querySelector('#mochila'); let selecionado, arrasto;
   const icones = {lente: '<img class="obj" src="../assets/objetos/lente.webp" alt="">', chave: '<img class="obj" src="../assets/objetos/chave-item.webp" alt="">'};
-  const tem = item => item === 'lente' ? estado.valor.mao === 'lente' : !!estado.valor.itens[item];
-  const rotulo = item => item === 'lente' ? (tem(item) ? 'Lupa na mão' : estado.valor.itens.lente ? 'Lupa guardada na carta' : 'Lupa ainda não encontrada') : `Chave${tem(item) ? ' na mochila' : ' ainda não encontrada'}`;
+  const tem = item => !!estado.valor.itens[item];
+  const rotulo = item => `${item === 'lente' ? 'Lupa' : 'Chave'} ${tem(item) ? 'na mochila' : 'ainda não encontrada'}`;
   function atualizar() {
     for (const item of ['lente', 'chave']) {
       const b = el.querySelector(`[data-item="${item}"]`); b.innerHTML = icones[item] + `<span>${item === 'lente' ? 'Lupa' : 'Chave'}</span>`;
       if (item === 'chave' && estado.valor.itens.chave?.img) { const img = new Image(); img.src = estado.valor.itens.chave.img; img.alt = 'Sua chave desenhada'; b.querySelector('img').replaceWith(img); }
-      b.hidden = !tem(item); b.setAttribute('aria-label', rotulo(item));
+      b.classList.toggle('vazio', !tem(item)); b.setAttribute('aria-label', rotulo(item));
     }
-    // Só aparece o que já foi achado: dentes como uma chave em miniatura; itens só depois de pegos.
+    // Espaços fixos: item achado fica (ou volta) no seu espaço depois de usado; vazio aparece apagado.
     const d = estado.valor.dentes, achados = [1, 2, 3, 4].filter(n => d[n]);
     const dentes = document.querySelector('#dentes'); dentes.hidden = !achados.length;
     dentes.innerHTML = miniChave(d); dentes.setAttribute('aria-label', `Chave: ${achados.length} de 4 dentes`);
     el.hidden = !achados.length && !['lente', 'chave'].some(tem);
   }
-  function usar(item, alvo) { if (alvo && painel()?.contains(alvo)) if (painel().usarFerramenta?.(item) && item === 'lente') estado.soltar(); }
+  function usar(item, alvo) { if (alvo && painel()?.contains(alvo)) painel().usarFerramenta?.(item); }
   el.addEventListener('pointerdown', e => {
     const b = e.target.closest('[data-item]'); if (!b || e.button !== 0) return;
     const item = b.dataset.item;
@@ -42,8 +42,7 @@ export function criarMochila(estado, painel, avisar) {
   return {
     premiar(item, origem) {
       atualizar(); if (item !== 'lente' && item !== 'chave') return;
-      // Lupa recém-achada vai para a carta (some para baixo); tocada no verso, vem para a mão.
-      const r = origem.getBoundingClientRect(), slot = el.querySelector(`[data-item="${item}"]`).getBoundingClientRect(), fim = tem(item) ? slot : {left: innerWidth / 2, top: innerHeight + 40, width: 0, height: 0};
+      const r = origem.getBoundingClientRect(), slot = el.querySelector(`[data-item="${item}"]`).getBoundingClientRect(), fim = slot;
       const v = document.createElement('div'); v.className = 'item-voando'; v.append(el.querySelector(`[data-item="${item}"]`).querySelector('img').cloneNode(true)); v.style.left = r.left + r.width / 2 - 35 + 'px'; v.style.top = r.top + r.height / 2 - 35 + 'px'; document.body.append(v);
       const a = v.animate([{transform: 'scale(1.5)', opacity: 1}, {transform: `translate(${fim.left + fim.width / 2 - r.left - r.width / 2}px,${fim.top + fim.height / 2 - r.top - r.height / 2}px) scale(.65)`, opacity: .4}], {duration: 1000, easing: 'ease-in-out'});
       a.onfinish = () => v.remove();
