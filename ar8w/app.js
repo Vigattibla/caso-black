@@ -10,7 +10,7 @@ import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v
 import {criarEstacao5} from './estacao5.js';
 import {criarVerso} from './verso.js';
 import {criarRetrato, lerRetrato} from './retrato.js?v=18';
-import {criarEstado} from './estado.js?v=20';
+import {criarEstado} from './estado.js?v=21';
 import {criarMochila} from './mochila.js?v=17';
 import {falar, sequencia, calar} from './fala.js';
 import {historia} from './historia.js';
