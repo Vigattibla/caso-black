@@ -34,7 +34,7 @@ function retratoSVG({faixas = [0,1,2,3,4], letras = false, so = -1, cor = '#111'
 }
 
 /* ---------- carimbo (SVG com tinta gasta) ---------- */
-const NOMES = ['ÁGUA', 'SABOR', 'KIDS', 'LOJINHA', 'LOBBY'];
+const NOMES = ['ÁGUA', 'SABOR', 'KIDS', 'CAFETERIA', 'LOBBY'];
 function carimboSVG(n, id = 'c' + n) {   // n = 1..5 ou 6 (resolvido)
   const fim = n === 6, cor = fim ? '#c8102e' : '#1d3f8f';
   const topo = fim ? 'VILLAGE RESORT · CASO 2026-BF' : `ESTAÇÃO 0${n} · CASO 2026-BF`, base = fim ? 'DEPTO. DE INVESTIGAÇÃO' : 'VILLAGE RESORT · DEPTO. INVESTIGAÇÃO';

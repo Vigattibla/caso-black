@@ -571,7 +571,7 @@ body.aberto .fita span{animation-play-state:paused}
     <div class="enig" id="sEnig"></div>
     <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span id="sLoc"></span></div>
     <button class="demo" id="sDica" style="margin:-8px auto 14px">travou? mostrar o local</button>
-    <div id="sLoja" hidden><div class="k">VITRINE DA LOJINHA</div><p>Tudo aqui tem preço. Na loja de verdade, ache o que o Pipoca farejou e que não está à venda.</p><ul id="sLojaL"></ul></div>
+    <div id="sLoja" hidden><div class="k">BALCÃO DA CAFETERIA</div><p>Café quente, sorvete gelado. No balcão de verdade, repare em tudo: o Pipoca farejou algo que não é da cafeteria.</p><ul id="sLojaL"></ul></div>
     <button class="btn" id="sLun" style="width:100%;margin-bottom:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>Ler a placa com a lupa</button>
     <label for="sIn">SEM CÂMERA? DIGITE O CÓDIGO DA PLACA</label>
     <div class="campo"><input id="sIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="······"><button class="btn" id="sOk">Registrar</button></div>
@@ -617,7 +617,7 @@ const PISTAS=[ // loc: lugar da placa (só aparece depois da prova ou da dica)
  {cod:'AGUA',  dig:2,loc:'Piscina',    enig:'Onde a água esconde o amarelo, alguém deixou cair um segredo.'},
  {cod:'SABOR', dig:7,loc:'Restaurante',enig:'Onde a fome encontra o sabor, procure o que ninguém pede no cardápio.'},
  {cod:'BRINCA',dig:1,loc:'Espaço Kids',enig:'Onde as crianças mandam, alguém virou criança também.'},
- {cod:'MIMOS', dig:1,loc:'Lojinha',    enig:'Onde tudo tem preço, o Pipoca farejou o que não está à venda.'},
+ {cod:'DOCE',  dig:1,loc:'Cafeteria',  enig:'Onde o café esquenta e o sorvete gela, o Pipoca farejou uma pista.'},
  {cod:'PASSA', dig:5,loc:'Recepção',   enig:'Por onde todo mundo passa, ninguém repara.'},
 ];
 // foto: recorte da pista (x/y do detalhe em %); sem foto, fica só o enigma
@@ -745,7 +745,7 @@ function atualizar(novo=-1){
 }
 
 /* ---------- progresso das provas ---------- */
-const EVID=['ÁGUA','SABOR','KIDS','LOJINHA','LOBBY'];
+const EVID=['ÁGUA','SABOR','KIDS','CAFETERIA','LOBBY'];
 const feitas=()=>{const c=window.Dados&&Dados.ficha()?Dados.carimbos():[];return new Set([...achadas,...c.filter(x=>x<=5).map(x=>x-1)])};
 const resolvido=()=>{if(window.Dados&&Dados.ficha()&&Dados.ficha().resolvido)return true;try{return localStorage.getItem('cb-resolvido')==='1'}catch(_){return false}};
 const aj=i=>typeof Prova!=='undefined'?Prova.aj(i):{nome:'',cab:[]};
@@ -1202,7 +1202,7 @@ if(location.hash==='#demos')addEventListener('load',()=>{const b=document.create
   document.body.appendChild(b);cv=demoSelo(()=>{cv=null;demoCarta()})});
 </script>
 <link rel="stylesheet" href="quadro-ar.css?v=3">
-<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=20"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=3"></script><script src="quadro.js?v=9"></script><script src="mochila.js?v=2"></script>
-<script src="filtro.js?v=8"></script><script src="vitrine.js?v=2"></script>
+<script src="vendor/cv.js"></script><script src="vendor/aruco.js"></script><script src="vendor/aruco_4x4_1000.js"></script><script src="dados.js?v=6"></script><script src="voz.js?v=1"></script><script src="caso.js?v=20"></script><script src="envelopes.js?v=7"></script><script src="prova.js?v=9"></script><script src="quadro-ar.js?v=3"></script><script src="quadro.js?v=11"></script><script src="mochila.js?v=2"></script>
+<script src="filtro.js?v=8"></script><script src="vitrine.js?v=3"></script>
 </body>
 </html>

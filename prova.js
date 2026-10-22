@@ -1,12 +1,12 @@
 /* Caso Black · rodada de cada placa: pista física achada → foto da equipe com o molde da prova → álbum.
-   Índices 0-based (0 Água · 1 Sabor · 2 Kids · 3 Lojinha · 4 Lobby). Artes resolvidas pelo helper Detetive. */
+   Índices 0-based (0 Água · 1 Sabor · 2 Kids · 3 Cafeteria · 4 Lobby). Artes resolvidas pelo helper Detetive. */
 const Prova = (() => {
   const W = 1080, H = 1350, F = {x: 24, y: 24, w: 1032, h: 1212};   // molde 4:5 · janela da foto
   const AJ = {
     0: {nome: 'Lucas', cab: ['lucas'], lugar: 'ÁGUA'},
     1: {nome: 'Lucas', cab: ['lucas'], lugar: 'SABOR'},
     2: {nome: 'Gabi', cab: ['gabi'], lugar: 'KIDS'},
-    3: {nome: 'Pipoca', cab: ['pipoca'], lugar: 'LOJINHA'},
+    3: {nome: 'Pipoca', cab: ['pipoca'], lugar: 'CAFETERIA'},
     4: {nome: 'Turma', cab: ['lucas', 'gabi', 'pipoca'], lugar: 'LOBBY'}};
   const sprites = {}, prontas = Promise.all(['lucas', 'gabi', 'pipoca'].map(async n => { sprites[n] = await Detetive.carregar(n) }));
 

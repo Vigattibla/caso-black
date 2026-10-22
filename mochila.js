@@ -82,7 +82,7 @@ const Mochila=(()=>{
       <canvas id="mochilaFlutuante" hidden></canvas><div id="mochilaCursor" hidden></div>
       <div id="mochilaBarra" aria-label="Inventário"><svg viewBox="0 0 28 32" role="img" aria-label="Mochila" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9V6a6 6 0 0 1 12 0v3M7 7h14a4 4 0 0 1 4 4v16a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V11a4 4 0 0 1 4-4ZM8 19h12v8H8ZM8 13h12"/></svg><div id="mochilaGuardados"></div><button id="mochilaGuardar" aria-label="Guardar lente na carta" hidden>✋<canvas></canvas></button></div>
       <button id="mochilaDev" class="demo" style="display:none">dar a lente</button>
-      <nav id="mochilaEtapas" aria-label="Etapas da demonstração" hidden><button data-etapa="300">1 · Quadro</button><button data-etapa="311">2 · Carta</button><button data-etapa="303">3 · Lojinha</button></nav>
+      <nav id="mochilaEtapas" aria-label="Etapas da demonstração" hidden><button data-etapa="300">1 · Quadro</button><button data-etapa="311">2 · Carta</button><button data-etapa="303">3 · Cafeteria</button></nav>
       <div id="mochilaInstrucao" role="status" hidden></div>`;
     document.body.append(ui);item($('#mochilaItem canvas'),'lente',120);item($('#mochilaFlutuante'),'lente',120);item($('#mochilaGuardar canvas'),'lente',72);
     const tinta=$('#mochilaTinta').getContext('2d');TINTA_OCULTA(tinta);tintaPixels=tinta.getImageData(0,0,600,800).data;
@@ -222,7 +222,7 @@ const Mochila=(()=>{
       revela.style.clipPath=`circle(33px at ${p.x}px ${p.y}px)`;
       if(!revelada&&QuadroAR.id===303&&tintaNoCirculo(q,cs)){revelada=true;vibra(30);fala('Pegadas do Pipoca! A lente revelou a tinta escondida.','TINTA INVISÍVEL')}
     }
-    if(demo)$('#mochilaInstrucao').textContent=demoId===300?'Toque na lente que caiu no quadro. Depois, abra “2 · Carta”.':demoId===311?'Toque na lente dentro da mochila da carta. Depois, abra “3 · Lojinha”.':'Com a lente selecionada, toque e arraste sobre o quadro para procurar as pegadas.';
+    if(demo)$('#mochilaInstrucao').textContent=demoId===300?'Toque na lente que caiu no quadro. Depois, abra “2 · Carta”.':demoId===311?'Toque na lente dentro da mochila da carta. Depois, abra “3 · Cafeteria”.':'Com a lente selecionada, toque e arraste sobre o quadro para procurar as pegadas.';
   }
   function alturaSolta(t){if(solta.adquirida)return solta.y;const p=Math.min(1,Math.max(0,(t-solta.t)/PREMIO.duracao));return solta.y-350*(1-p)*(1-p)+Math.sin(p*Math.PI*3)*(1-p)*35}
   function tintaNoCirculo(q,cs){const px=q.x*600,py=q.y*800,r=33*600/Math.max(1,Math.hypot(cs[1].x-cs[0].x,cs[1].y-cs[0].y));

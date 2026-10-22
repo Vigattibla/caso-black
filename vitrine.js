@@ -1,4 +1,4 @@
-/* Caso Black · vitrine da Lojinha (estação 04). Sem foto nem preço fixo (estoque varia):
+/* Caso Black · balcão da Cafeteria e Sorveteria (estação 04). Sem foto nem sabor fixo (cardápio varia):
    cada item é uma etiqueta de categoria com ícone. Edite LOJA à vontade. */
 const IC = {
   brinquedo: '<circle cx="12" cy="13" r="7"/><path d="M5 13h14M12 6v14"/>',
@@ -8,14 +8,12 @@ const IC = {
   praia: '<path d="M12 3v18M4 10c0-4 4-7 8-7s8 3 8 7z"/>',
 };
 const LOJA = [
-  {nome: 'Brinquedos', ic: 'brinquedo'},
-  {nome: 'Roupas', ic: 'roupa'},
-  {nome: 'Lembranças', ic: 'lembranca'},
+  {nome: 'Sorvetes', ic: 'doce'},
+  {nome: 'Café', ic: 'lembranca'},
   {nome: 'Doces', ic: 'doce'},
-  {nome: 'Praia e piscina', ic: 'praia'},
 ];
 const Vitrine = (() => {
   const el = document.getElementById('sLoja'), lista = document.getElementById('sLojaL');
-  lista.innerHTML = LOJA.map(p => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">${IC[p.ic] || ''}</svg><b>${p.nome}</b><i>tem preço</i></li>`).join('');
+  lista.innerHTML = LOJA.map(p => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">${IC[p.ic] || ''}</svg><b>${p.nome}</b><i>no balcão</i></li>`).join('');
   return {mostrar: on => { el.hidden = !on }};
 })();
