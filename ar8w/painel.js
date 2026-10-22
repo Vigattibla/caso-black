@@ -1,7 +1,14 @@
 import {historia} from './historia.js';
 import {falar, sequencia} from './fala.js';
+import {tocarCaca} from './investigador.js';
 const locais = ['Piscina', 'Restaurante', 'Espaço Kids', 'Cafeteria', 'Recepção'];
 const titulos = ['Pegadas molhadas', 'Comanda sem nome', 'Câmera do Kids', 'O faro do Pipoca', 'Linha do tempo'];
+// Falas-guia do kit de gravação; viram legenda enquanto o vídeo do Cacá toca.
+const falasCaca = ['Pegada molhada… opa, essa tem uma estrela na sola! Me ajuda a achar as outras?',
+  'Uma comanda sem nome, meia-noite e quinze. Quem pede alguma coisa a essa hora? …Eu. Mas não fui eu! Monta esse pedido aí.',
+  'A câmera do Kids gravou alguma coisa de madrugada. Tem cinco coisas diferentes nessas fotos. Olho vivo!',
+  'O Pipoca tá latindo pra essa placa. Tem alguma coisa escondida aqui que só a lente mostra. Cadê a lente da piscina?',
+  'Trancado! Ainda bem que vocês montaram a chave. Abre esse cadeado e coloca as pistas na ordem do relógio.'];
 export function criarPainel(n, {estado, onGanhar = () => {}, premiar = () => {}}) {
   const texto = historia.estacoes[n], quem = n === 3 ? 'Gabi' : 'Lucas';
   const el = document.createElement('section'); el.className = `e1 estacao estacao-${n}`; el.dataset.estacao = n;
@@ -19,7 +26,7 @@ export function criarPainel(n, {estado, onGanhar = () => {}, premiar = () => {}}
   return {
     el, q, jogo: q('.e1-jogo'), texto, quem,
     get venceu() { return venceu; },
-    iniciar() { if (estado.valor.concluidas.includes(n)) resultado(false); else falar(texto.fala, quem); },
+    iniciar() { if (estado.valor.concluidas.includes(n)) resultado(false); else tocarCaca(el, `estacao${n}.mp4`, falasCaca[n - 1]).then(() => falar(texto.fala, quem)); },
     erro(alvo) { alvo?.classList.remove('e1-treme'); void alvo?.offsetWidth; alvo?.classList.add('e1-treme'); falar(texto.erro, n === 4 ? 'Pipoca' : quem); },
     ganhar() { if (venceu || !estado.concluir(n)) return; resultado(true); navigator.vibrate?.(40); },
   };

@@ -13,13 +13,14 @@ import {criarMochila} from './mochila.js';
 import {falar, sequencia, calar} from './fala.js';
 import {historia} from './historia.js';
 import {lerChave} from './chave/leitor.js';
+import {CSS_INV} from './investigador.js';
 window.THREE = THREE;
 const $ = s => document.querySelector(s), Q = new URLSearchParams(location.search);
 const balao = $('#balao'); // CSS3D pode manter o DOM fora do documento até o próximo render.
 const DEMO = Q.get('demo'), estado = criarEstado();
 if (Q.get('reset') === '1') { estado.reset(); $('#reset').hidden = false; }
 $('#reset').onclick = () => { estado.reset(); location.reload(); };
-const style = document.createElement('style'); style.textContent = CSS; document.head.append(style);
+const style = document.createElement('style'); style.textContent = CSS + CSS_INV; document.head.append(style);
 const status = t => { $('#status').textContent = t; $('#status').hidden = !t; };
 const est = window.__ar8w = {estado, eventos: [], demo: !!DEMO};
 let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, cssScene, cssRenderer, raiz, quadroObj, ultimo = 0, rodando = false, gl, ultimaLeitura = 0;
