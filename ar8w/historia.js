@@ -3,7 +3,7 @@ export const historia = {
   "abertura": [
     "Detetives, aqui é o Lucas! Essa madrugada a Black Friday do Village sumiu. E o Bê sumiu junto!",
     "Mas deixou um truque: a câmera do seu celular agora é mágica. São cinco placas pelo resort. Bora resolver antes do check-out?",
-    "Aponta a câmera pra uma placa do Caso Black."
+    "Aponta a câmera pra uma placa do Caso Black. Não alcança? Toca em Não consigo mirar."
   ],
   "estacoes": {
     "1": {
@@ -32,7 +32,7 @@ export const historia = {
       "prova": "Sombra de chapéu no Kids, 00h30."
     },
     "4": {
-      "fala": "O Pipoca farejou alguma coisa aqui. Pega a lupa na carta e arrasta até a placa!",
+      "fala": "O Pipoca farejou alguma coisa aqui. Pega a lupa na carta e arrasta até o quadro!",
       "sem lente": "Falta a lupa. Ela ficou na piscina!",
       "lente usada": "Pegadas do Pipoca! A lupa revelou a tinta escondida.",
       "jogo": "Agora ajuda o faro dele: acha os pares.",
@@ -53,7 +53,7 @@ export const historia = {
   },
   "lupa": {
     "carta": "Tua lupa tá guardada aqui na mochila. Toca nela pra pegar!",
-    "pegou": "Lupa na mão! Agora arrasta ela até a placa do Pipoca.",
+    "pegou": "Lupa na mão! Agora arrasta ela até o quadro do Pipoca.",
     "naCarta": "A lupa tá guardada na carta. Mira o verso e toca nela!"
   },
   "chave": {

@@ -98,6 +98,7 @@ const modulo = {
   onStart() {
     const {camera} = XR8.Threejs.xrScene(); camera.position.set(0, 1.6, 0);
     XR8.XrController.updateCameraProjectionMatrix({origin: camera.position, facing: camera.quaternion}); status(historia.abertura[2]); $('#mirar').hidden = false;
+    if (pendente) { selecionar('placa-' + pendente); fixar(true); pendente = null; }
   },
   onCanvasSizeChange() { cssRenderer.setSize(innerWidth, innerHeight); },
   onVideoSizeChange({videoWidth, videoHeight}) { est.video = `${videoWidth}x${videoHeight}`; },
@@ -140,13 +141,15 @@ async function abrir() {
 }
 $('#abrir').onclick = abrir;
 $('#fixar').onclick = () => fixar(!fixado);
-// Número impresso na base da placa abre a estação direto, com ou sem câmera.
+// Número impresso na base da placa abre a estação direto; a câmera liga junto porque a carta (verso/frente) só se lê com ela.
+let pendente = null;
 const escolha = $('#estacoes');
 document.querySelectorAll('.sem-mira').forEach(b => b.onclick = () => { escolha.hidden = false; });
 escolha.onclick = e => {
   const n = e.target.closest('[data-estacao]')?.dataset.estacao;
   if (e.target.closest('.fechar') || n) escolha.hidden = true;
   if (!n) return;
+  if (!DEMO && !rodando && est.configurado && XR8.XrDevice.isDeviceBrowserCompatible()) { pendente = n; abrir(); return; }
   $('#inicio').hidden = true; rastreando = false; perdidoEm = performance.now();
   selecionar('placa-' + n); fixar(true); est.eventos.push('codigo-' + n);
 };
