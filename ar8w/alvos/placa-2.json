@@ -1,0 +1,32 @@
+{
+  "imagePath": "./alvos/placa-2_luminance.png",
+  "metadata": {
+    "placeholder": true,
+    "local": "RESTAURANTE",
+    "personagem": [
+      80,
+      1000,
+      390,
+      1370
+    ]
+  },
+  "name": "placa-2",
+  "type": "PLANAR",
+  "properties": {
+    "left": 0,
+    "top": 0,
+    "width": 1200,
+    "height": 1600,
+    "isRotated": false,
+    "originalWidth": 1200,
+    "originalHeight": 1600
+  },
+  "resources": {
+    "originalImage": "placa-2.png",
+    "croppedImage": "placa-2.png",
+    "thumbnailImage": "placa-2.png",
+    "luminanceImage": "placa-2_luminance.png"
+  },
+  "created": 1792617247948,
+  "updated": 1792617247948
+}

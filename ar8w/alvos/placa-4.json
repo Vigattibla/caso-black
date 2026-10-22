@@ -1,0 +1,32 @@
+{
+  "imagePath": "./alvos/placa-4_luminance.png",
+  "metadata": {
+    "placeholder": true,
+    "local": "CAFETERIA",
+    "personagem": [
+      80,
+      1000,
+      390,
+      1370
+    ]
+  },
+  "name": "placa-4",
+  "type": "PLANAR",
+  "properties": {
+    "left": 0,
+    "top": 0,
+    "width": 1200,
+    "height": 1600,
+    "isRotated": false,
+    "originalWidth": 1200,
+    "originalHeight": 1600
+  },
+  "resources": {
+    "originalImage": "placa-4.png",
+    "croppedImage": "placa-4.png",
+    "thumbnailImage": "placa-4.png",
+    "luminanceImage": "placa-4_luminance.png"
+  },
+  "created": 1792617247948,
+  "updated": 1792617247948
+}

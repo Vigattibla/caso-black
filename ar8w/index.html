@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>Caso Black · Lupa AR (teste)</title>
+<title>Caso Black · Lupa AR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Courier+Prime:wght@400;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
-<script src="./xr/xr.js" async data-preload-chunks="slam"></script>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+<link rel="stylesheet" href="./jogo.css">
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-family:Montserrat,sans-serif;overscroll-behavior:none}
 #camera{position:fixed;inset:0;width:100vw;height:100vh;display:block}
@@ -33,13 +33,17 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-f
 <div id="limitado" hidden>Mexa o celular devagar</div>
 <section id="inicio"><div class="caixa">
   <img src="../assets/cb-logo.png" alt="Caso Black">
-  <h1>Lupa de teste</h1>
-  <p>Aponte o celular para a placa da Estação 1. O quadro fica preso na parede: você pode andar e voltar.</p>
+  <h1>Arquivo secreto</h1>
+  <p>Cinco placas pelo resort. Use a lupa mágica e encontre as provas do Caso Black.</p>
   <button id="abrir" disabled>Carregando…</button>
 </div></section>
 <section id="erro" hidden><div class="caixa"><h1>Ops</h1><p></p><button onclick="location.reload()">Recarregar</button></div></section>
 <div id="credito">AR por 8th Wall · Niantic Spatial · <a href="./xr/LICENSE" target="_blank">licença</a></div>
 <div id="debug"></div>
-<script type="module" src="./app.js?v=7"></script>
+<div id="demo-palco" hidden></div>
+<div id="fala-espera"><div id="balao" hidden role="status" aria-live="polite"><img id="beRetrato" src="../assets/be-cabeca.png" alt="Bê" hidden><div><b id="beNome"></b><p id="beTx"></p><button id="fala-proxima" hidden>Continuar</button></div></div></div>
+<aside id="mochila" aria-label="Mochila"><b>MOCHILA <span id="dentes" aria-label="Dentes coletados"></span></b><button data-item="lente" aria-pressed="false"></button><button data-item="chave" aria-pressed="false"></button></aside>
+<button id="reset" hidden>Reset</button>
+<script type="module" src="./app.js?v=8"></script>
 </body>
 </html>

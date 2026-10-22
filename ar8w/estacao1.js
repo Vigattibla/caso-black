@@ -1,3 +1,4 @@
+import {criarPainel} from './painel.js';
 /* Estação 1 (Piscina · Pegadas molhadas) como DOM 600x800 (3:4, igual à placa). Arte e regras copiadas de quadro.js. */
 const svg=(b,v='0 0 92 70')=>`<svg viewBox="${v}" aria-hidden="true">${b}</svg>`;
 const sola='<path d="M46 4 C64 4 66 30 62 48 C58 66 34 66 30 48 C26 30 28 4 46 4Z"/>';
@@ -26,23 +27,11 @@ export const CSS=`
 .e1-carimbo{text-align:center;padding:30px}.e1-st{border:6px solid #c8102e;color:#c8102e;font:400 40px/1.1 Anton,sans-serif;padding:10px;transform:rotate(-4deg)}
 .e1-carimbo p{font:600 18px/1.4 Montserrat,sans-serif;margin:16px 0 0}`;
 
-export function criarEstacao1({onGanhar}={}){
-  const el=document.createElement('div');el.className='e1';
-  const ps=['estrela','chinelo','crocs'],cs=['chinelo','estrela','crocs'],nomes={chinelo:'chinelo · salva-vidas',estrela:'sapato · dono ???',crocs:'babuche · chef'};
-  el.innerHTML=`<div class="e1-rec e1-ficha">${tacha}<img src="../assets/cena-crime.webp" alt=""><small>ESTAÇÃO 1 · PISCINA</small><h2>Pegadas molhadas</h2><p>Três pegadas na borda da piscina. Ligue cada uma ao calçado do dono.</p></div>
-  <div class="e1-jogo"><svg class="e1-fios"></svg><div class="e1-grade">${ps.map((p,i)=>`<button class="e1-rec e1-peca e1-peg" data-p="${p}" aria-label="Pegada ${'ABC'[i]}">${tacha}<small>${'ABC'[i]}</small>${arte(p,true)}</button><button class="e1-rec e1-peca" data-c="${cs[i]}" aria-label="${nomes[cs[i]]}">${tacha}${arte(cs[i],false)}<span>${nomes[cs[i]]}</span></button>`).join('')}</div></div>
-  <div class="e1-msg"><b>Lucas:</b> <span>Toque numa pegada e depois no calçado do dono.</span></div>
-  <div class="e1-fim" hidden><div class="e1-rec e1-carimbo">${tacha}<div class="e1-st">SALVA-VIDAS FORA</div><p>Prova: sola com estrela, dono desconhecido.</p></div></div>`;
-  const msg=t=>el.querySelector('.e1-msg span').textContent=t;
-  const jogo=el.querySelector('.e1-jogo'),fios=el.querySelector('.e1-fios');let sel=null,venceu=false;const pares=[];
-  // Offsets locais (não getBoundingClientRect: o CSS3D aplica perspectiva).
-  const local=n0=>{let x=n0.offsetWidth/2,y=4;for(let n=n0;n&&n!==jogo;n=n.offsetParent){x+=n.offsetLeft;y+=n.offsetTop}return[x,y]};
-  const desenha=()=>{fios.setAttribute('viewBox',`0 0 ${jogo.clientWidth} ${jogo.clientHeight}`);fios.innerHTML=pares.map(([a,b])=>{const A=local(a),B=local(b);return`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}"/>`}).join('')};
-  const erro=c=>{c.classList.remove('e1-treme');void c.offsetWidth;c.classList.add('e1-treme');msg('A sola não bate. Compara o desenho de novo.');navigator.vibrate?.([20,30,20])};
-  el.addEventListener('click',e=>{if(venceu)return;const p=e.target.closest('[data-p]'),c=e.target.closest('[data-c]');
-    if(p&&!p.classList.contains('e1-ok')){sel?.classList.remove('e1-sel');sel=p;p.classList.add('e1-sel');msg('Agora toque no calçado do dono.')}
-    if(c&&sel&&!c.classList.contains('e1-ok')){if(c.dataset.c!==sel.dataset.p)return erro(c);
-      pares.push([sel,c]);sel.classList.replace('e1-sel','e1-ok');c.classList.add('e1-ok');sel=null;desenha();msg('Isso! A sola bate.');
-      if(pares.length===3){venceu=true;navigator.vibrate?.(40);setTimeout(()=>{el.querySelector('.e1-fim').hidden=false;onGanhar?.()},700)}}});
-  return el;
+export function criarEstacao1(ctx){
+  const p=criarPainel(1,ctx);
+  const pegadas=['estrela','chinelo','crocs','estrela','crocs','estrela'];
+  p.jogo.innerHTML='<div class="e1-grade pegadas">'+pegadas.map((t,i)=>'<button class="e1-rec e1-peca e1-peg" data-pegada="'+i+'" aria-label="Pegada '+String.fromCharCode(65+i)+'"><small>'+String.fromCharCode(65+i)+'</small>'+arte(t,true)+'</button>').join('')+'</div>';
+  const certas=new Set();
+  p.jogo.onclick=e=>{const b=e.target.closest('[data-pegada]');if(!b||p.venceu||certas.has(b))return;if(pegadas[+b.dataset.pegada]!=='estrela')return p.erro(b);certas.add(b);b.classList.add('e1-ok');b.disabled=true;if(certas.size===3)p.ganhar()};
+  p.iniciar();return p.el;
 }

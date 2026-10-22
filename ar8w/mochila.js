@@ -1,0 +1,45 @@
+export function criarMochila(estado, painel, avisar) {
+  const el = document.querySelector('#mochila'); let selecionado, arrasto;
+  const icones = {lente: '<svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="32" cy="30" r="22" fill="#b4e5fb88" stroke="#fdc72f" stroke-width="7"/><path d="M48 47L70 70" stroke="#fdc72f" stroke-width="12"/></svg>', chave: '<svg viewBox="0 0 100 60" aria-hidden="true"><circle cx="20" cy="30" r="15" fill="none" stroke="#fdc72f" stroke-width="7"/><path d="M35 30h55M55 30V14M68 30v16M80 30v16M90 30V14" fill="none" stroke="#fdc72f" stroke-width="7"/></svg>'};
+  function atualizar() {
+    for (const item of ['lente', 'chave']) {
+      const b = el.querySelector(`[data-item="${item}"]`); b.innerHTML = icones[item] + `<span>${item === 'lente' ? 'Lente' : 'Chave'}</span>`;
+      if (item === 'chave' && estado.valor.itens.chave?.img) { const img = new Image(); img.src = estado.valor.itens.chave.img; img.alt = 'Sua chave desenhada'; b.querySelector('svg').replaceWith(img); }
+      b.classList.toggle('vazio', !estado.valor.itens[item]); b.setAttribute('aria-label', `${item === 'lente' ? 'Lente' : 'Chave'}${estado.valor.itens[item] ? ' na mochila' : ' ainda não encontrada'}`);
+    }
+    document.querySelector('#dentes').textContent = [1, 2, 3, 4].map(n => estado.valor.dentes[n] ? estado.valor.dentes[n] === 'C' ? '↑' : '↓' : '·').join(' ');
+  }
+  function usar(item, alvo) { if (alvo && painel()?.contains(alvo)) painel().usarFerramenta?.(item); }
+  el.addEventListener('pointerdown', e => {
+    const b = e.target.closest('[data-item]'); if (!b || e.button !== 0) return;
+    const item = b.dataset.item;
+    if (!estado.valor.itens[item]) { avisar(item); return; }
+    e.preventDefault(); b.setPointerCapture(e.pointerId); selecionado = item;
+    const fantasma = document.createElement('div'); fantasma.className = 'item-voando'; fantasma.append(b.querySelector('svg,img').cloneNode(true)); document.body.append(fantasma);
+    arrasto = {b, item, fantasma, x: e.clientX, y: e.clientY}; mover(e);
+  });
+  function mover(e) { if (arrasto) { arrasto.fantasma.style.left = e.clientX - 35 + 'px'; arrasto.fantasma.style.top = e.clientY - 35 + 'px'; } }
+  el.addEventListener('pointermove', mover);
+  el.addEventListener('pointerup', e => {
+    if (!arrasto) return;
+    const {b, item, fantasma, x, y} = arrasto; arrasto = null; fantasma.remove();
+    if (b.hasPointerCapture(e.pointerId)) b.releasePointerCapture(e.pointerId);
+    if (Math.hypot(e.clientX - x, e.clientY - y) > 8) { usar(item, document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-ferramenta]')); selecionado = null; }
+    atualizarSelecao();
+  });
+  el.addEventListener('pointercancel', () => { arrasto?.fantasma.remove(); arrasto = null; selecionado = null; atualizarSelecao(); });
+  function atualizarSelecao() { el.querySelectorAll('[data-item]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.item === selecionado))); }
+  // Alternativa por teclado/toques para o mesmo uso da ferramenta.
+  el.addEventListener('click', e => { const b = e.target.closest('[data-item]'); if (b && e.detail === 0) { if (!estado.valor.itens[b.dataset.item]) return avisar(b.dataset.item); selecionado = b.dataset.item; atualizarSelecao(); } });
+  document.addEventListener('click', e => { const alvo = e.target.closest('[data-ferramenta]'); if (alvo && selecionado) { usar(selecionado, alvo); selecionado = null; atualizarSelecao(); } });
+  estado.eventos.addEventListener('change', atualizar); atualizar();
+  return {
+    premiar(item, origem) {
+      atualizar(); if (item !== 'lente' && item !== 'chave') return;
+      const r = origem.getBoundingClientRect(), fim = el.querySelector(`[data-item="${item}"]`).getBoundingClientRect();
+      const v = document.createElement('div'); v.className = 'item-voando'; v.append(el.querySelector(`[data-item="${item}"]`).querySelector('svg,img').cloneNode(true)); v.style.left = r.left + r.width / 2 - 35 + 'px'; v.style.top = r.top + r.height / 2 - 35 + 'px'; document.body.append(v);
+      const a = v.animate([{transform: 'scale(1.5)', opacity: 1}, {transform: `translate(${fim.left + fim.width / 2 - r.left - r.width / 2}px,${fim.top + fim.height / 2 - r.top - r.height / 2}px) scale(.65)`, opacity: .4}], {duration: 1000, easing: 'ease-in-out'});
+      a.onfinish = () => v.remove();
+    },
+  };
+}

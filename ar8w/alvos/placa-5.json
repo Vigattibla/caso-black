@@ -1,0 +1,32 @@
+{
+  "imagePath": "./alvos/placa-5_luminance.png",
+  "metadata": {
+    "placeholder": true,
+    "local": "RECEPÇÃO",
+    "personagem": [
+      80,
+      1000,
+      390,
+      1370
+    ]
+  },
+  "name": "placa-5",
+  "type": "PLANAR",
+  "properties": {
+    "left": 0,
+    "top": 0,
+    "width": 1200,
+    "height": 1600,
+    "isRotated": false,
+    "originalWidth": 1200,
+    "originalHeight": 1600
+  },
+  "resources": {
+    "originalImage": "placa-5.png",
+    "croppedImage": "placa-5.png",
+    "thumbnailImage": "placa-5.png",
+    "luminanceImage": "placa-5_luminance.png"
+  },
+  "created": 1792617247948,
+  "updated": 1792617247948
+}

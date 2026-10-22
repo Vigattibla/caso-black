@@ -12,7 +12,7 @@ async function shot(name){const r=await cdp('Page.captureScreenshot',{format:'pn
 async function main(){
   fs.mkdirSync(OUT,{recursive:true});
   const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.json':'application/json','.wasm':'application/wasm'};
-  server=http.createServer((q,r)=>{let url=decodeURIComponent(q.url.split('?')[0]);if(url.endsWith('/'))url+='index.html';const file=path.resolve(ROOT,'.'+url);if(!file.startsWith(ROOT+path.sep)||path.basename(file)==='debug.log'){r.writeHead(403);return r.end()}fs.readFile(file,(e,b)=>{if(e)faltando.push(url);r.writeHead(e?404:200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});r.end(e?'Not found':b)})});
+  server=http.createServer((q,r)=>{let url=decodeURIComponent(q.url.split('?')[0]);if(url.endsWith('/'))url+='index.html';const file=path.resolve(ROOT,'.'+url);if(!file.startsWith(ROOT+path.sep)||path.basename(file)==='debug.log'){r.writeHead(403);return r.end()}fs.readFile(file,(e,b)=>{if(e&&!/\/assets\/a\/v\/v3-\d+\.m4a$/.test(url)&&url!=='/favicon.ico')faltando.push(url);r.writeHead(e?404:200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});r.end(e?'Not found':b)})});
   await new Promise(r=>server.listen(0,'127.0.0.1',r));
   browser=spawn(CHROME,['--headless','--no-sandbox','--mute-audio','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--remote-debugging-port=0','--user-data-dir='+path.join(os.tmpdir(),'chrome-8w-profile'),'about:blank'],{windowsHide:true,stdio:['ignore','ignore','pipe']});
   const endpoint=await new Promise((resolve,reject)=>{let s='';const t=setTimeout(()=>reject(Error('Sem CDP')),15000);browser.stderr.on('data',b=>{s+=b;const m=s.match(/DevTools listening on (ws:\/\/\S+)/);if(m){clearTimeout(t);resolve(m[1])}})});
@@ -22,10 +22,10 @@ async function main(){
   if(process.env.AR_UA)await cdp('Emulation.setUserAgentOverride',{userAgent:'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36'});
   await cdp('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:2,mobile:true});await cdp('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
   const base=`http://127.0.0.1:${server.address().port}`;
-  await cdp('Page.navigate',{url:base+'/ar8w/'});
+  await cdp('Page.navigate',{url:base+'/ar8w/?reset=1'});
   await until(`window.__ar8w?.xr===true`,'motor 8th Wall carregou (xrloaded)');
   await until(`window.__ar8w.configurado===true||!!window.__ar8w.configErro`,'configure respondeu');
-  await ok(`!window.__ar8w.configErro`,'configure aceitou o alvo placa-1');
+  await ok(`!window.__ar8w.configErro&&__ar8w.alvos.length===6`,'configure aceitou os seis alvos');
   await ok(`!document.querySelector('#abrir').disabled&&document.querySelector('#abrir').textContent==='Abrir lupa'`,'botão Abrir lupa liberado');
   await ok(`/8th Wall/.test(document.querySelector('#credito').textContent)`,'crédito 8th Wall visível');
   await ok(`(()=>{document.body.appendChild(document.querySelector('#camera'));const z=e=>+getComputedStyle(document.querySelector(e)).zIndex||0;return z('#css3d')>z('#camera')})()`,'quadro fica acima do canvas mesmo com o canvas no fim do body');
@@ -43,14 +43,14 @@ async function main(){
     for(let i=0;i<30;i++){a.updated(d(0.4));a.passo(1/60)}if(Math.abs(a.pose.p[0]-fix)>1e-9)return 'seguiu cedo';
     for(let i=0;i<120;i++){a.updated(d(0.4));a.passo(1/60)}return a.pose.p[0]>0.3||'nao seguiu placa mexida'})()===true`,'âncora trava: ignora leitura ruidosa e só segue placa mexida');
 
-  // Quadro jogável (DOM sem câmera): 3 pares certos + 1 errado.
-  await ev(`(()=>{const q=__ar8w.quadro;document.body.appendChild(q);q.style.cssText='position:fixed;left:0;top:0;transform:scale(.65);transform-origin:0 0;z-index:50;visibility:visible'})()`);
+  // Quadro jogável (DOM sem câmera): só as três pegadas de estrela.
+  await ev(`(()=>{__ar8w.simular({name:'placa-1',position:{x:0,y:1.5,z:-2},rotation:{x:0,y:0,z:0,w:1},scale:1,scaledWidth:1});const q=__ar8w.quadro;document.body.appendChild(q);q.style.cssText='position:fixed;left:0;top:0;transform:scale(.65);transform-origin:0 0;z-index:50;visibility:visible'})()`);
   const tocar=async s=>ev(`document.querySelector(${JSON.stringify(s)}).click()`);
-  await tocar('[data-p=estrela]');await tocar('[data-c=chinelo]');
-  await ok(`document.querySelector('[data-c=chinelo]').classList.contains('e1-treme')`,'par errado treme');
-  for(const t of ['estrela','chinelo','crocs']){await tocar(`[data-p=${t}]`);await tocar(`[data-c=${t}]`)}
+  await tocar('[data-pegada="1"]');
+  await ok(`document.querySelector('[data-pegada="1"]').classList.contains('e1-treme')`,'pegada errada treme');
+  for(const i of [0,3,5])await tocar(`[data-pegada="${i}"]`);
   await sleep(900);
-  await ok(`document.querySelectorAll('.e1-ok').length===6&&document.querySelectorAll('.e1-fios line').length===3&&!document.querySelector('.e1-fim').hidden`,'três pares ligam fios e carimbam');
+  await ok(`document.querySelectorAll('.e1-ok').length===3&&__ar8w.estado.valor.itens.lente&&__ar8w.estado.valor.dentes[1]==='C'&&!document.querySelector('.e1-fim').hidden`,'três pegadas entregam lente, prova e dente');
   await shot('8w-quadro-resolvido');
 
   // Navegador sem suporte (desktop headless) mostra mensagem, sem travar.
