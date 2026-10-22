@@ -1,4 +1,4 @@
-import {criarPainel} from './painel.js?v=23';
+import {criarPainel} from './painel.js?v=24';
 import {falar} from './fala.js';
 import {CADEADO, FECHADURA} from './chave/placa.js';
 export const cartas = [['23h50', 'pegada de estrela'], ['00h15', 'refri pra viagem'], ['00h30', 'sombra no Kids'], ['00h45', 'chapéu sumiu'], ['01h00', 'passou pela recepção']];

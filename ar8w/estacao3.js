@@ -1,4 +1,4 @@
-import {criarPainel} from './painel.js?v=23';
+import {criarPainel} from './painel.js?v=24';
 export function criarEstacao3(ctx) {
   const p = criarPainel(3, ctx), achou = new Set();
   const alvos = [['escorregador', 'Escorregador', 37, 18, 14, 27], ['castelo', 'Castelo', 81, 17, 17, 40], ['camiseta', 'Camiseta do monitor', 57, 39, 10, 21], ['cadeira', 'Cadeira azul', 5, 65, 11, 21], ['chapeu', 'Chapéu do menino', 21, 23, 10, 21]];

@@ -2,14 +2,14 @@
 import * as THREE from 'three';
 import {CSS3DRenderer, CSS3DObject} from './vendor/CSS3DRenderer.js';
 import {criarAncora} from './ancora.js';
-import {criarEstacao1, CSS} from './estacao1.js?v=23';
-import {criarEstacao2} from './estacao2.js?v=23';
-import {criarEstacao3} from './estacao3.js?v=23';
-import {criarEstacao4} from './estacao4.js?v=23';
+import {criarEstacao1, CSS} from './estacao1.js?v=23b';
+import {criarEstacao2} from './estacao2.js?v=23b';
+import {criarEstacao3} from './estacao3.js?v=23b';
+import {criarEstacao4} from './estacao4.js?v=23b';
 import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v=23';
-import {criarEstacao5} from './estacao5.js?v=23';
+import {criarEstacao5} from './estacao5.js?v=23b';
 import {criarVerso} from './verso.js?v=23';
-import {criarRetrato, lerRetrato} from './retrato.js?v=23';
+import {criarRetrato, lerRetrato} from './retrato.js?v=24';
 import {criarEstado} from './estado.js?v=23';
 import {criarMochila} from './mochila.js?v=18';
 import {falar, sequencia, calar} from './fala.js';
@@ -160,7 +160,7 @@ const modulo = {
   name: 'casoblack',
   onStart() {
     const {camera, scene} = XR8.Threejs.xrScene(); camera.position.set(0, 1.6, 0); scene.add(rastro.grupo);
-    XR8.XrController.updateCameraProjectionMatrix({origin: camera.position, facing: camera.quaternion}); status(historia.abertura[2]); $('#mirar').hidden = false; $('#sair-camera').hidden = false;
+    XR8.XrController.updateCameraProjectionMatrix({origin: camera.position, facing: camera.quaternion}); status(historia.abertura[2]); $('#mirar').hidden = false; $('#sair-camera').hidden = false; document.body.dataset.camera = 'ar';
     if (pendente) { selecionar('placa-' + pendente); fixar(true); pendente = null; }
   },
   onCanvasSizeChange() { cssRenderer.setSize(innerWidth, innerHeight); },
@@ -220,25 +220,26 @@ async function configurar() {
   const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`, {cache: 'no-cache'}); if (!r.ok) throw Error(nome); const json = await r.json(); const rc = json.metadata?.recorte; if (rc) recortes[nome] = rc; json.imagePath = new URL(`./alvos/${nome}_${rc ? 'recorte' : 'luminance'}.png?v=${json.updated}`, location.href).href; return json; }));
   XR8.XrController.configure({imageTargetData: alvos, disableWorldTracking: false}); est.alvos = alvos.map(a => a.name);
 }
-let montado = false;
+// Voltar ao início: recarrega a página (a câmera do 8th Wall não religa limpa depois de XR8.stop no celular). O progresso fica no localStorage.
 function sairCamera() {
-  if (!rodando) return;
-  fixar(false); rastro.esconder(); querRastro = false; descartar(); calar();
   try { XR8.stop(); } catch (e) { /* já parada */ }
-  rodando = false; rastreando = false; status('');
-  ['#sair-camera', '#mirar', '#rastro-guia', '#limitado'].forEach(s => { $(s).hidden = true; }); $('#inicio').hidden = false; $('#abrir').textContent = 'Voltar pra câmera mágica';
+  try { sessionStorage.setItem('cb_volta', '1'); } catch (e) {}
+  location.replace(location.pathname + location.search);
 }
+let voltou = false; try { voltou = sessionStorage.getItem('cb_volta') === '1'; sessionStorage.removeItem('cb_volta'); } catch (e) {}
+if (voltou) $('#abrir').textContent = 'Voltar pra câmera mágica';
 async function abrir() {
   if (rodando) return;
-  if (montado) { rodando = true; $('#inicio').hidden = true; $('#sair-camera').hidden = false; XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS}); return; }
   if (!XR8.XrDevice.isDeviceBrowserCompatible()) return erro('Este navegador não abre a câmera mágica. Use o Chrome (Android) ou o Safari (iPhone).');
   rodando = true; $('#inicio').hidden = true;
-  sequencia(historia.abertura.slice(0, 2), async () => {
+  // Quem volta do início (ou já tem progresso) não ouve a abertura de novo.
+  const intro = voltou || estado.valor.concluidas.length ? [] : historia.abertura.slice(0, 2);
+  sequencia(intro, async () => {
     calar();
     try {
       await configurar();
-      XR8.addCameraPipelineModules([XR8.FullWindowCanvas.pipelineModule(), XR8.GlTextureRenderer.pipelineModule(), leitorMod, XR8.Threejs.pipelineModule(), XR8.XrController.pipelineModule(), modulo]);
-      XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS}); montado = true;
+      XR8.addCameraPipelineModules([XR8.FullWindowCanvas.pipelineModule(), XR8.GlTextureRenderer.pipelineModule(), XR8.CanvasScreenshot.pipelineModule(), leitorMod, XR8.Threejs.pipelineModule(), XR8.XrController.pipelineModule(), modulo]);
+      XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS});
     } catch { erro('Não foi possível abrir a câmera. Recarregue a página.'); }
   });
 }
@@ -268,7 +269,7 @@ if (DEMO) {
   est.pronto = true;
 } else {
   montarCss();
-  const pronto = async () => { est.xr = true; try { await configurar(); est.configurado = true; $('#abrir').disabled = false; $('#abrir').textContent = 'Abrir câmera mágica'; } catch (e) { est.configErro = String(e); erro('Não foi possível carregar as placas. Recarregue.'); } };
+  const pronto = async () => { est.xr = true; try { await configurar(); est.configurado = true; $('#abrir').disabled = false; $('#abrir').textContent = voltou ? 'Voltar pra câmera mágica' : 'Abrir câmera mágica'; } catch (e) { est.configErro = String(e); erro('Não foi possível carregar as placas. Recarregue.'); } };
   window.XR8 ? pronto() : addEventListener('xrloaded', pronto, {once: true});
   const script = document.createElement('script'); script.src = './xr/xr.js'; script.async = true; script.dataset.preloadChunks = 'slam'; script.onerror = () => erro('Não foi possível carregar a câmera mágica. Recarregue.'); document.head.append(script);
 }

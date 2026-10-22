@@ -2,6 +2,7 @@
 import {historia} from './historia.js?v=23';
 import {falar, sequencia} from './fala.js';
 import {projetor} from './chave/leitor.js?v=22';
+import {tirarFoto} from './foto.js?v=1';
 import {IMG} from './chave/layout.js';
 
 // Região do rosto no alvo "frente" (px de 1200×1600) e a guia impressa (cabeça + ombros), relativa à região.
@@ -76,7 +77,7 @@ function boneco(traco) {
 export function criarRetrato({estado, demo}) {
   if (!document.querySelector('#css-retrato')) { const s = document.createElement('style'); s.id = 'css-retrato'; s.textContent = CSS; document.head.append(s); }
   const el = document.createElement('section'); el.className = 'e1 retrato'; el.dataset.estacao = 'frente';
-  el.innerHTML = `<div class="ret-area"></div><p class="leitura-status" role="status"></p><div class="ret-rodape"><div class="fala-slot"></div><div class="foto-convite" hidden><button class="escolher-foto">Escolha uma foto...</button><input type="file" accept="image/*" capture="user" hidden><div class="album"></div></div></div>`;
+  el.innerHTML = `<div class="ret-area"></div><p class="leitura-status" role="status"></p><div class="ret-rodape"><div class="fala-slot"></div><div class="foto-convite" hidden><button class="escolher-foto">📸 Tirar outra foto</button><div class="album"></div></div></div>`;
   const q = s => el.querySelector(s), teste = demo || new URLSearchParams(location.search).get('retrato') === '1';
   const liberado = () => teste || estado.valor.concluidas.includes(5);
   let seguidas = 0, lido = false;
@@ -129,24 +130,19 @@ export function criarRetrato({estado, demo}) {
     be.animate([{opacity: 0, transform: 'scale(.4)'}, {opacity: 1, transform: 'scale(1.08)'}, {opacity: 1, transform: 'scale(1)'}], {duration: 900, delay: 900, fill: 'forwards'});
     setTimeout(() => {
       be.animate([{transform: 'translateY(0)'}, {transform: 'translateY(-6%)'}], {duration: 700, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out', composite: 'add'});
-      estado.fechar(); sequencia(historia.final.slice(1), () => { q('.foto-convite').hidden = false; mostrarAlbum(); });
+      estado.fechar(); sequencia(historia.final.slice(1), () => { q('.foto-convite').hidden = false; mostrarAlbum(); fotoTurma(); });
     }, 1900);
   }
 
   function mostrarAlbum() {
     q('.album').innerHTML = estado.valor.fotos.map((img, i) => `<a download="caso-black-${i + 1}.jpg" href="${img}"><img src="${img}" alt="Foto ${i + 1} da turma"></a>`).join('');
   }
-  q('.escolher-foto').onclick = () => q('input').click();
-  q('input').onchange = e => {
-    const arquivo = e.target.files?.[0]; if (!arquivo || !arquivo.type.startsWith('image/')) return;
-    const url = URL.createObjectURL(arquivo), img = new Image();
-    img.onload = () => {
-      if (!el.isConnected) { URL.revokeObjectURL(url); return; }
-      const c = document.createElement('canvas'), k = Math.min(1, 900 / Math.max(img.width, img.height)); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); estado.foto(c.toDataURL('image/jpeg', .8)); mostrarAlbum(); falar(historia.foto[1], 'Gabi');
-    };
-    img.onerror = () => URL.revokeObjectURL(url); img.src = url;
-  };
+  // Caso fechado: a câmera abre direto pra foto da turma (sem perguntar); o botão tira outras.
+  async function fotoTurma() {
+    const dado = await tirarFoto({titulo: 'FOTO DA TURMA · CASO FECHADO', legenda: 'CASO BLACK · CASO FECHADO!'});
+    if (!dado || !el.isConnected) return; estado.foto(dado); mostrarAlbum(); falar('Foto guardada no álbum do caso! Toca nela pra salvar no celular.', 'Gabi');
+  }
+  q('.escolher-foto').onclick = fotoTurma;
 
   el.avaliar = avaliar;
   el.podeLer = () => !lido && liberado();

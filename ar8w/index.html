@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Courier+Prime:wght@400;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
-<link rel="stylesheet" href="./jogo.css?v=24">
+<link rel="stylesheet" href="./jogo.css?v=25">
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-family:Montserrat,sans-serif;overscroll-behavior:none}
 #camera{position:fixed;inset:0;width:100vw;height:100vh;display:block}
@@ -19,7 +19,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-f
 .caixa p{font:500 15px/1.45 Montserrat,sans-serif;margin:0 0 20px;color:#ddd}
 #abrir,#erro button{min-height:52px;padding:0 28px;border:0;background:#fdc72f;color:#111;font:800 16px Montserrat,sans-serif;cursor:pointer}
 #abrir:disabled{opacity:.6}
-#status{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:10;background:#111d;color:#fdc72f;font:700 14px 'Courier Prime',monospace;padding:10px 14px;max-width:calc(100% - 32px);text-align:center}
+#status{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:10;background:#111d;color:#fdc72f;font:700 14px 'Courier Prime',monospace;padding:10px 14px;max-width:calc(100% - 200px);text-align:center}
 #limitado{position:fixed;right:12px;top:calc(62px + env(safe-area-inset-top));z-index:10;background:#c8102e;color:#fff;font:700 11px Montserrat;padding:5px 8px}
 #credito{position:fixed;left:0;right:0;bottom:calc(6px + env(safe-area-inset-bottom));z-index:10;text-align:center;font:600 10px Montserrat,sans-serif;color:#fffb;text-shadow:0 1px 2px #000}
 #credito a{color:inherit}
@@ -45,13 +45,13 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;color:#fff;font-f
 <div id="fala-espera"><div id="balao" hidden role="status" aria-live="polite"><img id="beRetrato" src="../assets/be-cabeca.png" alt="Bê" hidden><div><b id="beNome"></b><p id="beTx"></p><button id="fala-repetir" hidden aria-label="Ouvir a fala de novo">🔊 Ouvir de novo</button><button id="fala-proxima" hidden>Continuar</button></div></div></div>
 <aside id="mochila" aria-label="Mochila"><b>MOCHILA <span id="dentes" aria-label="Dentes coletados"></span></b><button data-item="lente" aria-pressed="false"></button><button data-item="chave" aria-pressed="false"></button></aside>
 <button id="reset" hidden>Reset</button>
-<button id="sair-camera" hidden>✕ Sair da câmera</button>
+<button id="sair-camera" hidden aria-label="Voltar ao início"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Início</span></button>
 <div id="rastro-guia" hidden><i>⬆</i><b></b><small></small></div>
 <button id="fixar" hidden>📌 Trazer pra tela</button>
-<header id="tela-cheia" hidden><div><span class="tc-onde"></span><small>📌 Tela cheia · mire a placa pra voltar à câmera</small></div><button class="tc-sair">✕ Sair</button></header>
+<header id="tela-cheia" hidden><div><span class="tc-onde"></span><small>📌 Tela cheia · mire a placa pra voltar à câmera</small></div><button class="tc-sair">📷 Câmera</button></header>
 <div id="aviso" role="status" aria-live="polite" hidden></div>
 <button class="sem-mira" id="mirar" hidden>Não consigo mirar</button>
 <section id="estacoes" hidden><div class="caixa"><h1>Qual estação?</h1><p>O número fica embaixo da placa.</p><div class="numeros"><button data-estacao="1">1</button><button data-estacao="2">2</button><button data-estacao="3">3</button><button data-estacao="4">4</button><button data-estacao="5">5</button></div><button class="fechar link">Voltar</button></div></section>
-<script type="module" src="./app.js?v=29"></script>
+<script type="module" src="./app.js?v=31"></script>
 </body>
 </html>
