@@ -40,3 +40,5 @@ body.fixado #mirar{display:none}
 #mochila[hidden],#mochila button[hidden],#dentes[hidden]{display:none}
 #mochila>b{max-width:none}#dentes svg{width:78px;height:33px;margin-top:4px;fill:none;stroke:#fdc72f;stroke-width:3;stroke-linejoin:round}
 #dentes .falta{fill:#fdc72f80;stroke:none;font:700 13px 'Courier Prime',monospace;text-anchor:middle}
+/* "Não consigo mirar" sai do topo (batia no texto de status) e fica empilhado acima do "Trazer pra tela" */
+#mirar{top:auto;bottom:calc(176px + env(safe-area-inset-bottom))}
