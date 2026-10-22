@@ -14,7 +14,7 @@ const testemunhas = [{traco: 'ÓCULOS ESCUROS', texto: 'O salva-vidas viu o susp
   {traco: 'BIGODÃO', texto: 'O garçom lembrou: um bigodão enorme! Desenha o bigode no retrato.'},
   {traco: 'CHAPÉU', texto: 'Na câmera tem a sombra de um chapéu! Desenha o chapéu no retrato.'},
   {traco: 'GRAVATA-BORBOLETA', texto: 'A moça da cafeteria viu uma gravata-borboleta. Desenha no retrato!'},
-  {traco: 'SORRISÃO', texto: 'A recepcionista jura: ele saiu com um sorrisão. Desenha o sorriso e mira a lupa no retrato falado!'}];
+  {traco: 'SORRISÃO', texto: 'A recepcionista jura: ele saiu com um sorrisão. Desenha o sorriso e mira a câmera no retrato falado!'}];
 const resultado5 = 'Uma da manhã: alguém de chapéu passou pela recepção sem fazer check-out.';
 export function criarPainel(n, {estado, onGanhar = () => {}, premiar = () => {}}) {
   const texto = historia.estacoes[n], quem = n === 3 ? 'Gabi' : 'Lucas';

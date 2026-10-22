@@ -489,7 +489,7 @@ body.aberto .fita span{animation-play-state:paused}
               <div class="fimW">
                 <div class="k5">FOLHA 04 · ÚLTIMA PROVA</div>
                 <h2>A prova tá<br>na sua carta</h2>
-                <p>Alguém pegou na <b>sua carta</b> e deixou uma digital. Com as provas completas, aponte a lupa para o <b>selo do arquivo</b>, no verso dela.</p>
+                <p>Alguém pegou na <b>sua carta</b> e deixou uma digital. Com as provas completas, aponte a câmera mágica para o <b>selo do arquivo</b>, no verso dela.</p>
                 <div class="chave5" id="chave5">
                   <div class="ck">AS PROVAS<span id="chSt">0/5 CARIMBOS</span></div>
                   <div class="cs" id="chCar"></div>
@@ -536,7 +536,7 @@ body.aberto .fita span{animation-play-state:paused}
   <p>chame a família e investigue junto</p>
   <div class="rola"><span class="seta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></span>OU ARRASTE PRO LADO</div>
 </div>
-<button class="fab" id="lupaBtn" aria-label="Abrir a lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>LUPA</button>
+<button class="fab" id="lupaBtn" aria-label="Abrir a câmera mágica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.6"/></svg>CÂMERA</button>
 <div class="balao" id="balao" role="status"><div class="beQ cab"><img src="assets/cab/lucas-01.webp?v=2" alt=""></div><span class="beNome">LUCAS</span><div id="beTx"></div><span class="beSeta" aria-hidden="true">▼</span></div>
 
 <div id="fimAnim" aria-hidden="true">
@@ -547,7 +547,7 @@ body.aberto .fita span{animation-play-state:paused}
     <div class="carta">
       <div class="k"><span>CASO 2026-BF</span><i>ENCERRADO</i></div>
       <p class="ola">Detetive,</p>
-      <p>a digital era minha. Eu sumi pra preparar a Black e deixei a lupa pra ver quem era bom de investigação.</p>
+      <p>a digital era minha. Eu sumi pra preparar a Black e deixei a câmera mágica pra ver quem era bom de investigação.</p>
       <p class="forte">Você é.</p>
       <p>Como prometido: entra no <b>grupo VIP</b> e vê as ofertas antes de todo mundo.</p>
       <div class="ass"><span>— Bê</span><canvas id="digA" width="150" height="200"></canvas></div>
@@ -572,7 +572,7 @@ body.aberto .fita span{animation-play-state:paused}
     <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span id="sLoc"></span></div>
     <button class="demo" id="sDica" style="margin:-8px auto 14px">travou? mostrar o local</button>
     <div id="sLoja" hidden><div class="k">BALCÃO DA CAFETERIA</div><p>Café quente, sorvete gelado. No balcão de verdade, repare em tudo: o Pipoca farejou algo que não é da cafeteria.</p><ul id="sLojaL"></ul></div>
-    <button class="btn" id="sLun" style="width:100%;margin-bottom:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>Ler a placa com a lupa</button>
+    <button class="btn" id="sLun" style="width:100%;margin-bottom:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>Ler a placa com a câmera</button>
     <label for="sIn">SEM CÂMERA? DIGITE O CÓDIGO DA PLACA</label>
     <div class="campo"><input id="sIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="······"><button class="btn" id="sOk">Registrar</button></div>
     <div class="erro" id="sErro"></div>
@@ -600,7 +600,7 @@ body.aberto .fita span{animation-play-state:paused}
   <div id="lupaLeitura" role="status" aria-live="polite" hidden></div><button id="lupaReler" hidden>📷 ler de novo</button>
   <div class="falso">QUEM ACHAR<br>AS 5 PISTAS<br>LEVA TUDO</div>
   <div class="aro"></div>
-  <button class="x" id="lupaX" aria-label="Fechar lupa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="x" id="lupaX" aria-label="Fechar câmera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   <div class="info"><b id="lupaTit">LUPA MÁGICA</b><p id="lupaTxt"></p></div>
 </div>
 <div id="toast" role="status"></div>
@@ -623,7 +623,7 @@ const PISTAS=[ // loc: lugar da placa (só aparece depois da prova ou da dica)
 // foto: recorte da pista (x/y do detalhe em %); sem foto, fica só o enigma
 const FOTO={0:{x:76,y:82},1:{x:47,y:66},2:{x:16,y:62},3:{x:86,y:34},4:{x:41,y:27}};
 const ZOOM=[4.2,2.2];
-const RELATO='Na madrugada de ontem, as ofertas da Black Friday sumiram. E o Bê sumiu junto.\n\nSó ficou a lupa mágica dele. Ela lê as 5 placas espalhadas pelo resort e revela cada pista.\n\nSua missão: achar as 5 placas, guardar a foto de cada prova e salvar a Black antes do check-out.';
+const RELATO='Na madrugada de ontem, as ofertas da Black Friday sumiram. E o Bê sumiu junto.\n\nMas ele deixou um truque: a câmera do seu celular agora é mágica. Ela lê as 5 placas espalhadas pelo resort e revela cada pista.\n\nSua missão: achar as 5 placas, guardar a foto de cada prova e salvar a Black antes do check-out.';
 let achadas=[];try{achadas=JSON.parse(localStorage.getItem('cb-achadas')||'[]').filter(n=>n>=0&&n<5)}catch(e){}
 const salvar=()=>{try{localStorage.setItem('cb-achadas',JSON.stringify(achadas))}catch(e){}};
 const vibra=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
@@ -716,7 +716,7 @@ $('#relato').parentElement.addEventListener('click',()=>pularTexto=true);
 let atual=0;
 function abrirPista(i){atual=i;const p=PISTAS[i],ok=achadas.includes(i),sabe=conhece(i);
   $('#sTit').textContent='PLACA '+dois(i+1);$('#sEnig').textContent=p.enig;
-  $('#sLoc').textContent=ok?`${p.loc} · prova registrada. Carimbo na ficha.`:sabe?`${p.loc} · com ${ajNome(i)}. Ache a placa e leia com a lupa.`:`Local secreto · ${FOTO[i]?'descubra a foto':'decifre o enigma'} e ache a placa com ${ajNome(i)}.`;
+  $('#sLoc').textContent=ok?`${p.loc} · prova registrada. Carimbo na ficha.`:sabe?`${p.loc} · com ${ajNome(i)}. Ache a placa e leia com a câmera mágica.`:`Local secreto · ${FOTO[i]?'descubra a foto':'decifre o enigma'} e ache a placa com ${ajNome(i)}.`;
   const F=FOTO[i],nv=zoom[i]||0,R=$('#sFoto');R.hidden=!F||ok;if(F){const im=R.querySelector('img'),z=sabe?1:ZOOM[nv];im.src=`assets/locais/${i+1}.webp?v=2`;
     im.style.transformOrigin=`${F.x}% ${F.y}%`;im.style.transform=`scale(${z})`;im.style.filter=sabe||nv?'none':'blur(1.5px) saturate(1.3)';R.querySelector('span').textContent=sabe?p.loc:nv?'mais perto...':'onde é isso?'}
   $('#sDica').textContent=F&&!sabe&&nv<ZOOM.length-1?'travou? afastar a foto':'travou? mostrar o local';
@@ -876,7 +876,7 @@ function conferePalavra(v,erro){v=v.trim().toUpperCase().normalize('NFD').replac
   if(v!==PALAVRA){erro&&erro(v?'Não é essa. Junte os 5 pedaços do retrato e leia a palavra que aparece.':'');vibra([20,30,20]);return false}
   try{localStorage.setItem('cb-palavra','1')}catch(_){}vibra(40);pintarChave();pintarFicha();return true}
 $('#chPalOk').onclick=()=>{if(conferePalavra($('#chPal').value,t=>t&&beFala(t))){$('#chPal').blur();
-  beFala(chave().ok?'Provas completas! Vira sua carta, abre a lupa e aponta pro selo do arquivo.':`Palavra certa! Faltam ${5-chave().n} carimbos.`,'PALAVRA CERTA')}};
+  beFala(chave().ok?'Provas completas! Vira sua carta, abre a câmera mágica e aponta pro selo do arquivo.':`Palavra certa! Faltam ${5-chave().n} carimbos.`,'PALAVRA CERTA')}};
 $('#chPal').addEventListener('keydown',e=>{if(e.key==='Enter')$('#chPalOk').click()});
 $('#fimLupa').onclick=()=>{const ch=chave();if(ch.feito)return abrirFim('rever');
   if(!ch.ok)return beFala(ch.n<5?`Faltam ${5-ch.n} carimbos: olha a folha das estações!`:'Falta a palavra: junte os 5 pedaços do retrato e leia a palavra que aparece.','AINDA FALTA PROVA');
@@ -946,7 +946,7 @@ $('#voltar').onclick=voltarVip;
 $('#garantir').onclick=()=>{if(!Envelopes.resolvido())return voltarVip();if(/^#demo/.test(location.hash))return toast('Demonstração: nenhum cadastro é salvo.');const f=Dados.ficha();if(!f)return pedirCadastro(()=>toast('Pronto: você está na lista VIP.'));toast(`${f.nome.split(' ')[0]}, você já está na lista VIP. Avisamos em ${f.tipo==='email'?'seu e-mail':'seu WhatsApp'}.`)};
 
 /* ---------- Bê, o assistente (e suspeito) ---------- */
-const DICAS={relatorio:'Oi, eu sou o Lucas! O Bê sumiu e deixou essa pasta com a lupa mágica dele. Arraste a folha pro lado pra virar.',
+const DICAS={relatorio:'Oi, eu sou o Lucas! O Bê sumiu e deixou essa pasta e um truque: a câmera do seu celular agora é mágica. Arraste a folha pro lado pra virar.',
  estacoes:'São 5 placas pelo resort, e em cada uma tem alguém da turma esperando. Toque numa estação pra ver a pista.',
  album:'A cada placa, uma foto da equipe. No fim, vocês postam o álbum inteiro no story.'};
 const NARR={nome:'Lucas',cab:['lucas']};
@@ -976,9 +976,9 @@ function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createE
   $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;!q.soTexto&&typeof Voz==='object'&&Voz.diz(t,q.nome);B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
 function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
-  const ch=chave();beFala(ch.feito?'Caso fechado! E o Bê apareceu, finalmente.':ch.ok?'Provas completas! Pega sua carta, abre a lupa e aponta pro selo no verso. De quem será essa digital?':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra que aparece.')}
+  const ch=chave();beFala(ch.feito?'Caso fechado! E o Bê apareceu, finalmente.':ch.ok?'Provas completas! Pega sua carta, abre a câmera mágica e aponta pro selo no verso. De quem será essa digital?':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra que aparece.')}
 $('#balao').onclick=()=>{$('#balao').classList.remove('on');typeof Voz==='object'&&Voz.para()};
-function dicaLupa(){let v=0;try{v=localStorage.getItem('cbLupa')}catch(_){}if(v)return;beFala('Essa lupa é mágica! Toque nela e aponte pras manchas da carta. Nas placas, ela mostra a pista.','A LUPA DO BÊ')}
+function dicaLupa(){let v=0;try{v=localStorage.getItem('cbLupa')}catch(_){}if(v)return;beFala('Sua câmera agora é mágica! Toque nela e aponte pras placas e pra carta.','CÂMERA MÁGICA')}
 
 /* marcas de manuseio: a digital do Bê (a mesma do final) + café + vinco */
 const digURL=`url("${pintaDig(document.createElement('canvas'),[58,42,24],.9).toDataURL()}")`,digital=()=>digURL;
@@ -998,8 +998,8 @@ $('#sNota').addEventListener('input',e=>{notas[atual]=e.target.value;try{localSt
 
 /* lupa: câmera limpa · códigos da carta (ArUco 306..310) · leitura das placas */
 let fluxo=null,laco=0,leituraLupa=0,modo='carta',avisou=-Infinity,ouroC=null,pedidoLupa=0,seloLido=null;
-const TXT={carta:['LUPA MÁGICA','Aponte para os <b style="display:inline;font:inherit;color:#fdc72f">códigos secretos</b> da carta (o quadradinho preto ao lado dos símbolos). Achou uma <b style="display:inline;font:inherit;color:#fdc72f">placa do caso</b>? Aponte pro quadriculado e veja a pista aparecer.'],
-  final:['O SELO DA CARTA','Vire a carta e aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
+const TXT={carta:['CÂMERA MÁGICA','Aponte para os <b style="display:inline;font:inherit;color:#fdc72f">códigos secretos</b> da carta (o quadradinho preto ao lado dos símbolos). Achou uma <b style="display:inline;font:inherit;color:#fdc72f">placa do caso</b>? Aponte pro quadriculado e veja a pista aparecer.'],
+  final:['O SELO DA CARTA','Vire a carta e aponte a câmera para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
 async function videoDe(e){const nome=`estacao${e+1}.mp4`;
   const {estacoes}=await Midias();return estacoes?.includes(nome)?`assets/v/${nome}`:null}
 async function abrirLupa(m='carta',usarFoto=true,fotoId=undefined){if(!window.DEMO&&!DEV){location.href='ar8w/';return} // lupa oficial = jogo 8th Wall
@@ -1057,7 +1057,7 @@ fecharLupa();const pedido=pedidoLupa;modo=m;const L=$('#lupa');L.className='on';
         if(tinta||efeitos)x.clearRect(0,0,w,h);tinta=efeitos;
         if(efeitos&&!ouroC){desenhaCodigos(x);for(const k of confirmar.values())if(agora-k.vis<250)desenhaLeitura(x,k.alvo)}if(ouroC)desenhaOuro(x,w,h)}
       QuadroAR.desenhar(agora);Mochila.desenhar(agora);laco=requestAnimationFrame(quadro)})();
-  }catch(e){if(pedido!==pedidoLupa)return;if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a lupa revela na carta impressa.'}
+  }catch(e){if(pedido!==pedidoLupa)return;if(fluxo){fluxo.getTracks().forEach(t=>t.stop());fluxo=null}L.classList.add('semcam');$('#lupaTxt').textContent=m==='final'?'Sem câmera aqui. Digite o código impresso embaixo do selo, no verso da carta.':'Sem câmera aqui. Prévia da mensagem que a câmera revela na carta impressa.'}
 }
 // O 305 nunca é estação. Exige leituras consecutivas e posição contínua por 600 ms.
 function lerSelo(mk,s,agora=performance.now()){
@@ -1189,7 +1189,7 @@ function demoSelo(fim){const c=document.createElement('canvas'),x=c.getContext('
     requestAnimationFrame(q)})();return c}
 
 function demoCarta(){fechaFim();abrindo=false;requestAnimationFrame(()=>abrirFim('demo',true))}
-function demoBaloes(){const L=[['lucas','Lucas'],['gabi','Gabi'],['pipoca','Pipoca'],['be','Bê']],H={feliz:'Boa! Prova certa.',surpresa:'Olha isso!',duvida:'Hmm… cadê a pista?',serio:'Ainda falta carimbo.',piscada:'Confia na lupa.'};
+function demoBaloes(){const L=[['lucas','Lucas'],['gabi','Gabi'],['pipoca','Pipoca'],['be','Bê']],H={feliz:'Boa! Prova certa.',surpresa:'Olha isso!',duvida:'Hmm… cadê a pista?',serio:'Ainda falta carimbo.',piscada:'Confia na câmera.'};
   const fila=[];L.forEach(([n,nome])=>Object.keys(H).forEach(h=>fila.push({nome,imgs:[],cab:[n],humor:h,fixo:true,t:H[h],tit:h.toUpperCase()})));
   fila.push({nome:'Turma',imgs:[],cab:['lucas','gabi','pipoca'],humor:'feliz',fixo:true,t:'Todo mundo na foto!',tit:'TURMA'});
   let i=0;clearInterval(demoBaloes.iv);const vai=()=>{const q=fila[i++%fila.length];$('#balao').classList.remove('on');void $('#balao').offsetWidth;beFala(q.t,q.tit,q)};vai();demoBaloes.iv=setInterval(vai,1500)}

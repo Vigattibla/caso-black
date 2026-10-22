@@ -106,7 +106,7 @@ const modulo = {
     {event: 'reality.imagelost', process: ({detail}) => { if (detail.name !== alvoAtual) return; rastreando = false; perdidoEm = performance.now(); ancora.lost(); est.eventos.push('lost-' + detail.name); status(historia.abertura[2]); }},
   ],
   onCameraStatusChange({status: s}) { if (s === 'requesting') status('Permita o acesso à câmera…'); if (['failed', 'denied'].includes(s)) erro('Sem acesso à câmera. Libere a câmera nas permissões do navegador e recarregue.'); },
-  onException() { erro('A lupa travou. Recarregue a página.'); },
+  onException() { erro('A câmera travou. Recarregue a página.'); },
 };
 est.simular = (detail, tipo = 'found') => modulo.listeners.find(l => l.event === 'reality.image' + tipo).process({detail});
 function erro(t) { $('#erro p').textContent = t; $('#erro').hidden = false; }
@@ -117,7 +117,7 @@ async function configurar() {
 }
 async function abrir() {
   if (rodando) return;
-  if (!XR8.XrDevice.isDeviceBrowserCompatible()) return erro('Este navegador não abre a lupa. Use o Chrome (Android) ou o Safari (iPhone).');
+  if (!XR8.XrDevice.isDeviceBrowserCompatible()) return erro('Este navegador não abre a câmera mágica. Use o Chrome (Android) ou o Safari (iPhone).');
   rodando = true; $('#inicio').hidden = true;
   sequencia(historia.abertura.slice(0, 2), async () => {
     calar();
@@ -125,7 +125,7 @@ async function abrir() {
       await configurar();
       XR8.addCameraPipelineModules([XR8.FullWindowCanvas.pipelineModule(), XR8.GlTextureRenderer.pipelineModule(), leitorMod, XR8.Threejs.pipelineModule(), XR8.XrController.pipelineModule(), modulo]);
       XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS});
-    } catch { erro('Não foi possível abrir a lupa. Recarregue a página.'); }
+    } catch { erro('Não foi possível abrir a câmera. Recarregue a página.'); }
   });
 }
 $('#abrir').onclick = abrir;
@@ -138,7 +138,7 @@ if (DEMO) {
   est.pronto = true;
 } else {
   montarCss();
-  const pronto = async () => { est.xr = true; try { await configurar(); est.configurado = true; $('#abrir').disabled = false; $('#abrir').textContent = 'Abrir lupa'; } catch (e) { est.configErro = String(e); erro('Não foi possível carregar as placas. Recarregue.'); } };
+  const pronto = async () => { est.xr = true; try { await configurar(); est.configurado = true; $('#abrir').disabled = false; $('#abrir').textContent = 'Abrir câmera mágica'; } catch (e) { est.configErro = String(e); erro('Não foi possível carregar as placas. Recarregue.'); } };
   window.XR8 ? pronto() : addEventListener('xrloaded', pronto, {once: true});
-  const script = document.createElement('script'); script.src = './xr/xr.js'; script.async = true; script.dataset.preloadChunks = 'slam'; script.onerror = () => erro('Não foi possível carregar a lupa. Recarregue.'); document.head.append(script);
+  const script = document.createElement('script'); script.src = './xr/xr.js'; script.async = true; script.dataset.preloadChunks = 'slam'; script.onerror = () => erro('Não foi possível carregar a câmera mágica. Recarregue.'); document.head.append(script);
 }

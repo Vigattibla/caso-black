@@ -2,8 +2,8 @@
 export const historia = {
   "abertura": [
     "Detetives, aqui é o Lucas! Essa madrugada a Black Friday do Village sumiu. E o Bê sumiu junto!",
-    "Só ficou a lupa mágica dele. São cinco placas pelo resort. Bora resolver antes do check-out?",
-    "Aponta a lupa pra uma placa do Caso Black."
+    "Mas deixou um truque: a câmera do seu celular agora é mágica. São cinco placas pelo resort. Bora resolver antes do check-out?",
+    "Aponta a câmera pra uma placa do Caso Black."
   ],
   "estacoes": {
     "1": {
@@ -48,11 +48,11 @@ export const historia = {
       "abriu": "Abriu! Agora coloca as pistas na ordem do relógio.",
       "erro": "A ordem não bate. Olha os horários.",
       "dica": "Começa pela pegada da piscina.",
-      "resultado": "Uma da manhã: alguém de chapéu passou pela recepção sem fazer check-out. Vira a carta e passa a lupa no verso!"
+      "resultado": "Uma da manhã: alguém de chapéu passou pela recepção sem fazer check-out. Vira a carta e aponta a câmera pro verso!"
     }
   },
   "chave": {
-    "pedido": "Desenha a chave no verso e mostra pra lupa.",
+    "pedido": "Desenha a chave no verso e mostra pra câmera.",
     "certa": "Chave na mochila! Agora corre pra recepção.",
     "errada": "Essa chave não encaixa. Confere os dentes nas placas."
   },

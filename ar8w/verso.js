@@ -19,7 +19,7 @@ export function criarVerso({estado, demo, premiar}) {
   }
   el.avaliar = avaliar;
   el.podeLer = () => estado.podeLer() && !estado.valor.itens.chave && !estado.valor.concluidas.includes(5);
-  if (estado.valor.concluidas.includes(5)) { q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e mira a lupa no retrato falado!'); }
+  if (estado.valor.concluidas.includes(5)) { q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e mira a câmera no retrato falado!'); }
   else {
     falar(historia.chave[estado.valor.itens.chave ? 'certa' : 'pedido']);
     q('.leitura-status').textContent = estado.podeLer() ? estado.valor.itens.chave ? 'CHAVE GUARDADA' : 'MOSTRE O DESENHO' : 'FALTAM OS QUATRO DENTES';
