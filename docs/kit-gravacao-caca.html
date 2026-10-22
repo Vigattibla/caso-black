@@ -1,0 +1,233 @@
+<title>Kit de gravação do Cacá</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600&family=IBM+Plex+Mono:wght@400;600&family=Montserrat:wght@400;600;800&display=swap">
+<style>
+/* Layout: dossiê do caso — coluna de leitura, uma ficha por vídeo, tabela de takes rolável dentro da ficha */
+:root{
+  --papel:#f3eee2;--folha:#fffdf6;--tinta:#16140f;--suave:#5d584c;--linha:#d8d0bd;
+  --amarelo:#fdc72f;--vermelho:#c8102e;--azul:#2f4fa8;--verde:#1f8a4c;
+  --f-disp:"Anton",Impact,"Arial Narrow",sans-serif;--f-mao:"Caveat","Comic Sans MS",cursive;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;--f-corpo:"Montserrat",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--papel:#14130f;--folha:#1d1b16;--tinta:#efe9da;--suave:#a9a291;--linha:#3a362c;--vermelho:#ff5a6e;--azul:#8fa8ff;--verde:#5fd38f;color-scheme:dark}}
+:root[data-theme="dark"]{--papel:#14130f;--folha:#1d1b16;--tinta:#efe9da;--suave:#a9a291;--linha:#3a362c;--vermelho:#ff5a6e;--azul:#8fa8ff;--verde:#5fd38f;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--papel);color:var(--tinta);font:400 15px/1.6 var(--f-corpo);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:48px}
+h1,h2,h3{font-family:var(--f-disp);font-weight:400;letter-spacing:.02em;line-height:1.05;text-wrap:balance;margin:0}
+h2{font-size:clamp(28px,5vw,40px)}h3{font-size:24px}
+p{margin:0;max-width:68ch}
+.eti{font:600 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--suave)}
+code{font-family:var(--f-mono);font-size:.88em}
+.sec{display:flex;flex-direction:column;gap:16px}
+.sec>header{display:flex;flex-direction:column;gap:8px;border-bottom:2px solid var(--tinta);padding-bottom:12px}
+.capa{background:#16140f;color:#f3eee2;margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:40px max(16px,env(safe-area-inset-left,0px)) 36px}
+.capa .in{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.capa h1{font-size:clamp(44px,9vw,88px);color:#fdc72f}
+.capa p{color:#d9d2c0}
+.capa .eti{color:#b9b19c}
+.fatos{display:flex;flex-wrap:wrap;gap:6px 18px;font:400 12.5px var(--f-mono);color:#d9d2c0}
+.fatos b{color:#fdc72f;font-weight:600}
+ul.lista{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:72ch}
+.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.box{background:var(--folha);border:1.5px solid var(--tinta);padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.box h3{font-size:20px}
+.nao{color:var(--vermelho);font-weight:600}
+.video{background:var(--folha);border:1.5px solid var(--tinta);display:flex;flex-direction:column;min-width:0}
+.video>.topo{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;padding:14px 18px;border-bottom:1.5px solid var(--tinta)}
+.video .cod{font:400 34px/1 var(--f-disp);color:var(--amarelo);-webkit-text-stroke:1px var(--tinta)}
+.video .nome{font:400 24px/1.1 var(--f-disp)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.tag{font:600 10.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--tinta);padding:3px 7px;white-space:nowrap}
+.tag.verde{background:var(--verde);border-color:var(--verde);color:#fff}
+.tag.loc{background:var(--amarelo);color:#16140f;border-color:#16140f}
+.video .corpo{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+dl{display:grid;grid-template-columns:120px 1fr;gap:6px 16px;margin:0}
+dt{font:600 11px/1.6 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--suave)}
+dd{margin:0;min-width:0}
+.fala{font-family:var(--f-mao);font-size:23px;line-height:1.2;color:var(--azul)}
+.tab{overflow-x:auto;border:1px solid var(--linha)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:13.5px}
+th{font:600 10.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;background:var(--tinta);color:var(--papel);padding:8px 10px}
+td{padding:9px 10px;border-top:1px solid var(--linha);vertical-align:top}
+td:first-child{font:600 12px var(--f-mono);white-space:nowrap}
+td.t{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:var(--f-mono);font-size:12px}
+.ordem{display:grid;grid-template-columns:110px 1fr;border:1.5px solid var(--tinta);background:var(--folha)}
+.ordem>div{padding:10px 14px;border-top:1px solid var(--linha);min-width:0}
+.ordem>div:nth-child(-n+2){border-top:0}
+.ordem .h{font:600 12px var(--f-mono);background:var(--amarelo);color:#16140f}
+.check{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.check li{display:flex;gap:10px;align-items:flex-start}
+.check input{margin-top:5px;accent-color:var(--vermelho)}
+@media (max-width:620px){dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:8px}.tags{margin-left:0}.ordem{grid-template-columns:1fr}.ordem .h{border-top:1px solid var(--linha)}}
+:focus-visible{outline:3px solid var(--amarelo);outline-offset:2px}
+</style>
+
+<div class="capa"><div class="in">
+  <span class="eti">Caso Black 2026 · Village Resort · kit de gravação</span>
+  <h1>CACÁ, O INVESTIGADOR</h1>
+  <p>O que gravar, onde, com qual fala e em qual enquadramento. Uma diária: manhã em fundo verde, tarde nas locações do resort.</p>
+  <div class="fatos"><span>vídeos <b>9</b> + 3 extras</span><span>formato <b>9:16 · 1080×1920</b></span><span>verde <b>7 vídeos</b></span><span>locação <b>teaser + diário</b></span><span>história <b>v3 · 22/10</b></span></div>
+</div></div>
+
+<div class="wrap">
+
+<section class="sec">
+  <header><span class="eti">o papel</span><h2>Quem é o Cacá no jogo</h2></header>
+  <p>O Cacá é o investigador de verdade do Village. No celular, quando a lupa lê uma placa, ele aparece <b>em pé em cima da placa</b>, recortado do fundo verde, abre a estação em poucos segundos e passa a vez para o jogo. Quem narra o desafio são o Lucas e a Gabi (balões e voz). O Cacá não repete as falas deles e nunca entrega a resposta.</p>
+  <div class="grade">
+    <div class="box"><h3>Tom</h3><p>Detetive trapalhão e simpático. Leve, nunca assustador. Fala com as crianças olhando para a lente.</p></div>
+    <div class="box"><h3>Figurino</h3><p>Sobretudo bege, camisa clara, calça escura. Lupa de latão com cabo de madeira e um caderninho. <span class="nao">Sem chapéu:</span> o suspeito é quem usa chapéu.</p></div>
+    <div class="box"><h3>Não pode</h3><p>Nada verde na roupa, nem estampa fina ou listra (tremula no recorte). Nada de reflexo forte na lupa apontada para a câmera.</p></div>
+  </div>
+</section>
+
+<section class="sec">
+  <header><span class="eti">técnica do fundo verde</span><h2>Como gravar para o recorte funcionar</h2></header>
+  <ul class="lista">
+    <li>Celular ou câmera <b>na vertical</b>, 1080×1920 ou 4K vertical, 30 fps, obturador 1/100 (menos borrão na mão e na lupa).</li>
+    <li>Corpo inteiro no quadro com folga de um palmo em cima e embaixo. Os <b>pés ficam sempre na mesma linha</b>: marcar com fita no chão. O site apoia os pés na base da placa.</li>
+    <li>Cacá a 2 m do verde. Verde iluminado por igual, sem dobra nem sombra. Luz principal a 45° e uma luz de recorte atrás para separar o cabelo.</li>
+    <li>Câmera na altura do peito, lente normal (sem grande-angular). Câmera fixa no tripé, sem zoom durante o take.</li>
+    <li>Som com lapela escondida. Gravar 10 s de silêncio do estúdio no fim.</li>
+    <li>Antes de cada take, claquete falada: "E1, take 2". Ao terminar a fala, segurar a pose final 1 s parado.</li>
+  </ul>
+</section>
+
+<section class="sec">
+  <header><span class="eti">os vídeos</span><h2>Roteiro e decupagem</h2><p>As estações seguem a ordem do jogo: piscina, restaurante, Kids, cafeteria, recepção. Duração alvo entre 8 e 14 s para não segurar quem está jogando.</p></header>
+
+  <article class="video">
+    <div class="topo"><span class="cod">V1</span><span class="nome">Abertura do caso</span><div class="tags"><span class="tag verde">fundo verde</span><span class="tag">25–35 s</span><span class="tag">site + Instagram</span></div></div>
+    <div class="corpo">
+      <dl><dt>Uso</dt><dd>Primeira tela do jogo e post de lançamento. Como usar a lupa entra depois em motion de interface, por cima do vídeo. O Cacá não grava a tela do celular.</dd>
+      <dt>Fala</dt><dd class="fala">"Detetives, aqui é o Cacá, investigador oficial do Village. Essa madrugada a Black Friday sumiu. E o Bê sumiu junto! Abre a lupa no celular e procura as cinco placas do Caso Black pelo resort. Cada placa tem uma prova e um dente da chave. Bora resolver antes do check-out?"</dd></dl>
+      <div class="tab"><table><thead><tr><th>Take</th><th>Plano</th><th>Ação</th><th>Tempo</th></tr></thead><tbody>
+        <tr><td>A</td><td>Inteiro, de frente</td><td>Entra pela direita, para na marca, fala tudo. Em "abre a lupa" ergue a lupa para a lente.</td><td class="t">0–30 s</td></tr>
+        <tr><td>B</td><td>Médio (cintura)</td><td>Mesma fala, para corte e respiro do motion de interface.</td><td class="t">0–30 s</td></tr>
+        <tr><td>C</td><td>Close na lupa</td><td>Lupa entra no quadro e cobre a lente. Vira transição.</td><td class="t">2 s</td></tr>
+      </tbody></table></div>
+    </div>
+  </article>
+
+  <article class="video">
+    <div class="topo"><span class="cod">E1</span><span class="nome">Piscina · pegadas</span><div class="tags"><span class="tag verde">fundo verde</span><span class="tag">10–12 s</span><span class="tag">estacao1.mp4</span></div></div>
+    <div class="corpo">
+      <dl><dt>Ação</dt><dd>Agachado, olha o chão com a lupa, segue pegadas imaginárias, para e aponta para baixo (a placa).</dd>
+      <dt>Fala</dt><dd class="fala">"Pegada molhada… pegada molhada… opa, essa tem uma estrela na sola! Me ajuda a achar as outras?"</dd></dl>
+      <div class="tab"><table><thead><tr><th>Take</th><th>Plano</th><th>Ação</th><th>Tempo</th></tr></thead><tbody>
+        <tr><td>A</td><td>Inteiro</td><td>Fala completa, termina apontando para baixo e segura 1 s.</td><td class="t">0–12 s</td></tr>
+        <tr><td>B</td><td>Inteiro</td><td>Versão curta: só "Essa tem uma estrela! Acha as outras!"</td><td class="t">0–5 s</td></tr>
+      </tbody></table></div>
+    </div>
+  </article>
+
+  <article class="video">
+    <div class="topo"><span class="cod">E2</span><span class="nome">Restaurante · comanda</span><div class="tags"><span class="tag verde">fundo verde</span><span class="tag">10–12 s</span><span class="tag">estacao2.mp4</span></div></div>
+    <div class="corpo">
+      <dl><dt>Ação</dt><dd>Lê uma comanda de papel de perto, coça a cabeça, olha para a câmera e se defende.</dd>
+      <dt>Fala</dt><dd class="fala">"Uma comanda sem nome, meia-noite e quinze. Quem pede alguma coisa a essa hora? …Eu. Mas não fui eu! Monta esse pedido aí."</dd>
+      <dt>Prop</dt><dd>Comanda impressa em papel branco, sem texto legível para a câmera.</dd></dl>
+      <div class="tab"><table><thead><tr><th>Take</th><th>Plano</th><th>Ação</th><th>Tempo</th></tr></thead><tbody>
+        <tr><td>A</td><td>Inteiro</td><td>Fala completa. A pausa antes de "Eu" é a piada: segurar meio segundo.</td><td class="t">0–12 s</td></tr>
+        <tr><td>B</td><td>Inteiro</td><td>Versão curta: "Comanda da meia-noite e quinze. Monta o pedido!"</td><td class="t">0–5 s</td></tr>
+      </tbody></table></div>
+    </div>
+  </article>
+
+  <article class="video">
+    <div class="topo"><span class="cod">E3</span><span class="nome">Espaço Kids · câmera</span><div class="tags"><span class="tag verde">fundo verde</span><span class="tag">8–10 s</span><span class="tag">estacao3.mp4</span></div></div>
+    <div class="corpo">
+      <dl><dt>Ação</dt><dd>Olha para um lado e para o outro, desconfiado. Mostra cinco dedos para a câmera.</dd>
+      <dt>Fala</dt><dd class="fala">"A câmera do Kids gravou alguma coisa de madrugada. Tem cinco coisas diferentes nessas fotos. Olho vivo!"</dd></dl>
+      <div class="tab"><table><thead><tr><th>Take</th><th>Plano</th><th>Ação</th><th>Tempo</th></tr></thead><tbody>
+        <tr><td>A</td><td>Inteiro</td><td>Fala completa, termina com a mão aberta (cinco) e segura.</td><td class="t">0–10 s</td></tr>
+        <tr><td>B</td><td>Inteiro</td><td>Versão curta: "Cinco diferenças. Olho vivo!"</td><td class="t">0–4 s</td></tr>
+      </tbody></table></div>
+    </div>
+  </article>
+
+  <article class="video">
+    <div class="topo"><span class="cod">E4</span><span class="nome">Cafeteria · o faro do Pipoca</span><div class="tags"><span class="tag verde">fundo verde</span><span class="tag">10–12 s</span><span class="tag">estacao4.mp4</span></div></div>
+    <div class="corpo">
+      <dl><dt>Ação</dt><dd>Ouve um latido fora do quadro (o Pipoca entra em 2D no site), olha para baixo, fareja junto, lembra da lente.</dd>
+      <dt>Fala</dt><dd class="fala">"O Pipoca tá latindo pra essa placa. Tem alguma coisa escondida aqui que só a lente mostra. Cadê a lente da piscina?"</dd>
+      <dt>Som</dt><dd>Alguém fora do quadro bate palma no lugar do latido, para o Cacá reagir no tempo certo. O latido entra na edição.</dd></dl>
+      <div class="tab"><table><thead><tr><th>Take</th><th>Plano</th><th>Ação</th><th>Tempo</th></tr></thead><tbody>
+        <tr><td>A</td><td>Inteiro</td><td>Reação ao latido, olha para baixo à esquerda (onde o Pipoca aparece), fala completa.</td><td class="t">0–12 s</td></tr>
+        <tr><td>B</td><td>Inteiro</td><td>Versão curta: "Só a lente mostra. Pega na mochila!"</td><td class="t">0–5 s</td></tr>
+      </tbody></table></div>
+    </div>
+  </article>
+
+  <article class="video">
+    <div class="topo"><span class="cod">E5</span><span class="nome">Recepção · cadeado</span><div class="tags"><span class="tag verde">fundo verde</span><span class="tag">10–12 s</span><span class="tag">estacao5.mp4</span></div></div>
+    <div class="corpo">
+      <dl><dt>Ação</dt><dd>Tenta abrir uma porta imaginária, ela não abre. Bate nos bolsos procurando a chave e aponta para quem joga.</dd>
+      <dt>Fala</dt><dd class="fala">"Trancado! Ainda bem que vocês montaram a chave. Montaram, né? Abre esse cadeado e coloca as pistas na ordem do relógio."</dd></dl>
+      <div class="tab"><table><thead><tr><th>Take</th><th>Plano</th><th>Ação</th><th>Tempo</th></tr></thead><tbody>
+        <tr><td>A</td><td>Inteiro</td><td>Fala completa, termina apontando para a câmera.</td><td class="t">0–12 s</td></tr>
+        <tr><td>B</td><td>Inteiro</td><td>Versão curta: "Trancado! Usa a chave de vocês."</td><td class="t">0–4 s</td></tr>
+      </tbody></table></div>
+    </div>
+  </article>
+
+  <article class="video">
+    <div class="topo"><span class="cod">F</span><span class="nome">Final · a digital</span><div class="tags"><span class="tag verde">fundo verde</span><span class="tag">8–10 s</span><span class="tag">final.mp4</span></div></div>
+    <div class="corpo">
+      <dl><dt>Uso</dt><dd>Depois da animação da digital dourada, antes das falas do Bê.</dd>
+      <dt>Ação</dt><dd>Examina algo com a lupa, arregala os olhos, abaixa a lupa devagar e olha para a câmera.</dd>
+      <dt>Fala</dt><dd class="fala">"Uma digital dourada… com um B no meio? Bê?! Era você o tempo todo?!"</dd></dl>
+      <div class="tab"><table><thead><tr><th>Take</th><th>Plano</th><th>Ação</th><th>Tempo</th></tr></thead><tbody>
+        <tr><td>A</td><td>Inteiro</td><td>Fala completa, termina com as mãos na cabeça.</td><td class="t">0–10 s</td></tr>
+        <tr><td>B</td><td>Médio</td><td>Só a reação, sem fala: lupa desce, olhos arregalados. Serve para o Instagram.</td><td class="t">0–4 s</td></tr>
+      </tbody></table></div>
+    </div>
+  </article>
+
+  <article class="video">
+    <div class="topo"><span class="cod">T</span><span class="nome">Teaser · noite na piscina</span><div class="tags"><span class="tag loc">locação</span><span class="tag">15 s</span><span class="tag">Reels / stories</span></div></div>
+    <div class="corpo">
+      <dl><dt>Onde</dt><dd>Beira da piscina no fim da tarde ou à noite, com a iluminação do resort acesa.</dd>
+      <dt>Fala</dt><dd class="fala">"Alguém andou por aqui de madrugada. E usava chapéu."</dd>
+      <dt>Fecha com</dt><dd>Capa kraft e logo oficiais do Caso Black com a data de abertura. Encerramento de marca só neste vídeo e no V1.</dd></dl>
+      <div class="tab"><table><thead><tr><th>Take</th><th>Plano</th><th>Ação</th><th>Tempo</th></tr></thead><tbody>
+        <tr><td>1</td><td>Detalhe no chão</td><td>Pegada molhada com estrela na sola (molde de papelão + água).</td><td class="t">0–3 s</td></tr>
+        <tr><td>2</td><td>Médio</td><td>Cacá entra agachado com a lupa sobre a pegada.</td><td class="t">3–7 s</td></tr>
+        <tr><td>3</td><td>Close no rosto</td><td>Ergue o olhar para a câmera e fala.</td><td class="t">7–12 s</td></tr>
+        <tr><td>4</td><td>Detalhe</td><td>Sombra de chapéu passa pela parede (outra pessoa, de costas).</td><td class="t">12–15 s</td></tr>
+      </tbody></table></div>
+    </div>
+  </article>
+
+  <article class="video">
+    <div class="topo"><span class="cod">D1–3</span><span class="nome">Diário do investigador</span><div class="tags"><span class="tag loc">locação</span><span class="tag">15 s cada</span><span class="tag">stories, 03 a 26/11</span></div></div>
+    <div class="corpo">
+      <dl><dt>D1</dt><dd>"Suspeito número um: o garçom." Cacá interroga um garçom no restaurante. O garçom mostra a cabeça: sem chapéu. Pista falsa.</dd>
+      <dt>D2</dt><dd>"Interrogando a testemunha." Cacá na cafeteria pergunta ao Pipoca (latido em off). Termina anotando "au" no caderninho.</dd>
+      <dt>D3</dt><dd>Bastidores com famílias jogando, só com autorização de imagem assinada. Sem fala, com a música do caso.</dd></dl>
+    </div>
+  </article>
+</section>
+
+<section class="sec">
+  <header><span class="eti">ordem da diária</span><h2>Como encaixar tudo num dia</h2></header>
+  <div class="ordem">
+    <div class="h">08h–09h</div><div>Montar o verde, a luz e a marca dos pés. Teste de recorte com 5 s gravados.</div>
+    <div class="h">09h–11h30</div><div>Verde: V1, E1 a E5 e F, takes A e B de cada.</div>
+    <div class="h">14h–16h</div><div>Locações: D1 no restaurante, D2 na cafeteria, D3 no Kids.</div>
+    <div class="h">17h30–19h</div><div>Teaser na piscina, com a luz do fim de tarde e a iluminação acesa.</div>
+  </div>
+</section>
+
+<section class="sec">
+  <header><span class="eti">entrega</span><h2>Nomes dos arquivos</h2></header>
+  <ul class="check">
+    <li><input type="checkbox" id="c1"><label for="c1"><code>estacao1.mp4</code> a <code>estacao5.mp4</code>, <code>final.mp4</code> e <code>abertura.mp4</code>: brutos do verde, sem recorte, take escolhido.</label></li>
+    <li><input type="checkbox" id="c2"><label for="c2">Áudio da lapela em <code>.wav</code> com o mesmo nome do vídeo.</label></li>
+    <li><input type="checkbox" id="c3"><label for="c3"><code>teaser.mp4</code> e <code>diario1..3.mp4</code>: brutos de locação.</label></li>
+    <li><input type="checkbox" id="c4"><label for="c4">Autorizações de imagem das famílias do D3.</label></li>
+  </ul>
+</section>
+
+</div>

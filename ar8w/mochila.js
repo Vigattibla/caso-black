@@ -1,10 +1,10 @@
 export function criarMochila(estado, painel, avisar) {
   const el = document.querySelector('#mochila'); let selecionado, arrasto;
-  const icones = {lente: '<svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="32" cy="30" r="22" fill="#b4e5fb88" stroke="#fdc72f" stroke-width="7"/><path d="M48 47L70 70" stroke="#fdc72f" stroke-width="12"/></svg>', chave: '<svg viewBox="0 0 100 60" aria-hidden="true"><circle cx="20" cy="30" r="15" fill="none" stroke="#fdc72f" stroke-width="7"/><path d="M35 30h55M55 30V14M68 30v16M80 30v16M90 30V14" fill="none" stroke="#fdc72f" stroke-width="7"/></svg>'};
+  const icones = {lente: '<img class="obj" src="../assets/objetos/lente.webp" alt="">', chave: '<img class="obj" src="../assets/objetos/chave-item.webp" alt="">'};
   function atualizar() {
     for (const item of ['lente', 'chave']) {
       const b = el.querySelector(`[data-item="${item}"]`); b.innerHTML = icones[item] + `<span>${item === 'lente' ? 'Lente' : 'Chave'}</span>`;
-      if (item === 'chave' && estado.valor.itens.chave?.img) { const img = new Image(); img.src = estado.valor.itens.chave.img; img.alt = 'Sua chave desenhada'; b.querySelector('svg').replaceWith(img); }
+      if (item === 'chave' && estado.valor.itens.chave?.img) { const img = new Image(); img.src = estado.valor.itens.chave.img; img.alt = 'Sua chave desenhada'; b.querySelector('img').replaceWith(img); }
       b.classList.toggle('vazio', !estado.valor.itens[item]); b.setAttribute('aria-label', `${item === 'lente' ? 'Lente' : 'Chave'}${estado.valor.itens[item] ? ' na mochila' : ' ainda não encontrada'}`);
     }
     document.querySelector('#dentes').textContent = [1, 2, 3, 4].map(n => estado.valor.dentes[n] ? estado.valor.dentes[n] === 'C' ? '↑' : '↓' : '·').join(' ');
@@ -15,7 +15,7 @@ export function criarMochila(estado, painel, avisar) {
     const item = b.dataset.item;
     if (!estado.valor.itens[item]) { avisar(item); return; }
     e.preventDefault(); b.setPointerCapture(e.pointerId); selecionado = item;
-    const fantasma = document.createElement('div'); fantasma.className = 'item-voando'; fantasma.append(b.querySelector('svg,img').cloneNode(true)); document.body.append(fantasma);
+    const fantasma = document.createElement('div'); fantasma.className = 'item-voando'; fantasma.append(b.querySelector('img').cloneNode(true)); document.body.append(fantasma);
     arrasto = {b, item, fantasma, x: e.clientX, y: e.clientY}; mover(e);
   });
   function mover(e) { if (arrasto) { arrasto.fantasma.style.left = e.clientX - 35 + 'px'; arrasto.fantasma.style.top = e.clientY - 35 + 'px'; } }
@@ -37,7 +37,7 @@ export function criarMochila(estado, painel, avisar) {
     premiar(item, origem) {
       atualizar(); if (item !== 'lente' && item !== 'chave') return;
       const r = origem.getBoundingClientRect(), fim = el.querySelector(`[data-item="${item}"]`).getBoundingClientRect();
-      const v = document.createElement('div'); v.className = 'item-voando'; v.append(el.querySelector(`[data-item="${item}"]`).querySelector('svg,img').cloneNode(true)); v.style.left = r.left + r.width / 2 - 35 + 'px'; v.style.top = r.top + r.height / 2 - 35 + 'px'; document.body.append(v);
+      const v = document.createElement('div'); v.className = 'item-voando'; v.append(el.querySelector(`[data-item="${item}"]`).querySelector('img').cloneNode(true)); v.style.left = r.left + r.width / 2 - 35 + 'px'; v.style.top = r.top + r.height / 2 - 35 + 'px'; document.body.append(v);
       const a = v.animate([{transform: 'scale(1.5)', opacity: 1}, {transform: `translate(${fim.left + fim.width / 2 - r.left - r.width / 2}px,${fim.top + fim.height / 2 - r.top - r.height / 2}px) scale(.65)`, opacity: .4}], {duration: 1000, easing: 'ease-in-out'});
       a.onfinish = () => v.remove();
     },

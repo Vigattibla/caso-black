@@ -1,14 +1,9 @@
 {
   "imagePath": "./alvos/placa-2_luminance.png",
   "metadata": {
-    "placeholder": true,
+    "placeholder": false,
     "local": "RESTAURANTE",
-    "personagem": [
-      80,
-      1000,
-      390,
-      1370
-    ]
+    "personagens": {}
   },
   "name": "placa-2",
   "type": "PLANAR",

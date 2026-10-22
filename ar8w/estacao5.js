@@ -6,7 +6,7 @@ export function criarEstacao5(ctx) {
   const p = criarPainel(5, ctx); let aberto = false, n = 0;
   // Coordenadas da arte 1200×1600 → painel 600×800, sem retângulos de tela.
   p.jogo.classList.add('jogo-cadeado');
-  p.jogo.innerHTML = `<div class="cadeado" data-ferramenta="chave" style="left:${CADEADO.x0 / 2 - 36}px;top:${CADEADO.y0 / 2 - 160}px;width:${(CADEADO.x1 - CADEADO.x0) / 2}px;height:${(CADEADO.y1 - CADEADO.y0) / 2}px"><svg viewBox="0 0 360 353" aria-label="Cadeado"><path class="arco" d="M80 150V80a100 100 0 0 1 200 0v70" fill="none" stroke="#111" stroke-width="30"/><rect x="20" y="130" width="320" height="215" rx="20" fill="#fdc72f" stroke="#111" stroke-width="14"/><circle cx="206" cy="245" r="24" fill="#111"/><path d="M206 245l-18 48h36z" fill="#111"/></svg><span class="fechadura" style="left:${(FECHADURA.u - CADEADO.x0) / 2}px;top:${(FECHADURA.v - CADEADO.y0) / 2}px"></span></div><p class="instrucao-chave">Arraste a chave da mochila até o cadeado.</p>`;
+  p.jogo.innerHTML = `<div class="cadeado" data-ferramenta="chave" style="left:${CADEADO.x0 / 2 - 36}px;top:${CADEADO.y0 / 2 - 160}px;width:${(CADEADO.x1 - CADEADO.x0) / 2}px;height:${(CADEADO.y1 - CADEADO.y0) / 2}px"><div class="cad-foto"><img class="arco" src="../assets/objetos/cadeado-arco.webp" alt=""><img class="corpo" src="../assets/objetos/cadeado-corpo.webp" alt="Cadeado"></div><span class="fechadura" style="left:${(FECHADURA.u - CADEADO.x0) / 2}px;top:${(FECHADURA.v - CADEADO.y0) / 2}px"></span></div><p class="instrucao-chave">Arraste a chave da mochila até o cadeado.</p>`;
   function usar(item) {
     if (item !== 'chave' || aberto || p.venceu) return false;
     if (!ctx.estado.valor.itens.chave) { falar(p.texto['sem chave']); return false; }

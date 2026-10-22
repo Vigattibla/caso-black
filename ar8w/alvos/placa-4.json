@@ -1,14 +1,9 @@
 {
   "imagePath": "./alvos/placa-4_luminance.png",
   "metadata": {
-    "placeholder": true,
+    "placeholder": false,
     "local": "CAFETERIA",
-    "personagem": [
-      80,
-      1000,
-      390,
-      1370
-    ]
+    "personagens": {}
   },
   "name": "placa-4",
   "type": "PLANAR",
