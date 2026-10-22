@@ -1,6 +1,6 @@
 import {historia} from './historia.js';
 export const STORAGE = 'cb8w_v1';
-const novo = () => ({versao: 1, concluidas: [], dentes: {}, itens: {lente: false, chave: null}, mao: null, provas: {}, final: false, fotos: []});
+const novo = () => ({versao: 1, concluidas: [], dentes: {}, itens: {lente: false, chave: null}, mao: null, provas: {}, final: false, fotos: [], rastro4: false});
 const fotoValida = f => typeof f === 'string' && /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(f);
 export function criarEstado(storage) {
   try { storage ??= window.localStorage; } catch { /* privacidade/restrição do navegador */ }
@@ -18,6 +18,7 @@ export function criarEstado(storage) {
       valor.itens.lente = valor.concluidas.includes(1);
       valor.itens.chave = Object.keys(valor.dentes).length === 4 && salvo.itens?.chave?.codigo === 'CBBC' ? {codigo: 'CBBC', img: fotoValida(salvo.itens.chave.img) ? salvo.itens.chave.img : ''} : null;
       valor.final = valor.concluidas.includes(5) && !!salvo.final;
+      valor.rastro4 = valor.itens.lente && !valor.concluidas.includes(4) && salvo.rastro4 === true;
       valor.fotos = (Array.isArray(salvo.fotos) ? salvo.fotos : []).filter(fotoValida).slice(-5);
     }
   } catch { /* armazenamento indisponível: a sessão continua */ }
@@ -40,6 +41,7 @@ export function criarEstado(storage) {
     // Lupa mora na carta; tocada no verso, vai para a mão (bandeja da tela) até ser usada.
     pegar(item) { if (item !== 'lente' || !valor.itens.lente || valor.concluidas.includes(4)) return false; valor.mao = item; salvar(); return true; },
     soltar() { valor.mao = null; salvar(); },
+    rastro() { if (!valor.itens.lente || valor.concluidas.includes(4)) return false; valor.rastro4 = true; salvar(); return true; },
     reset() { valor = novo(); salvar(); },
   };
 }

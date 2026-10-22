@@ -10,10 +10,21 @@ export function criarEstacao4(ctx) {
     if (item !== 'lente' || iniciou || p.venceu) return false;
     if (ctx.estado.valor.mao !== 'lente') { falar(ctx.estado.valor.itens.lente ? historia.lupa.naCarta : p.texto['sem lente']); return false; }
     iniciou = true; p.q('.pegadas-pipoca').hidden = false; p.q('.usar-lente').hidden = true;
-    sequencia([p.texto['lente usada'], p.texto.jogo], memoria); return true;
+    // Na placa: o Pipoca leva até a folha escondida (rastro AR no chão). Sem rastro (pista, demo) o jogo abre aqui.
+    if (ctx.pista || !ctx.estado.rastro()) sequencia([p.texto['lente usada'], p.texto.jogo], memoria);
+    else sequencia([p.texto['lente usada']], seguir);
+    return true;
   }
-  function memoria() {
-    if (!p.el.isConnected) return;
+  function seguir() {
+    if (!p.el.isConnected || p.venceu) return;
+    const ligou = ctx.rastro?.(true);
+    p.q('.lente-alvo').innerHTML = `<div class="rastro-aviso"><span class="pegadas-pipoca">🐾</span><b>SIGA AS PATINHAS NO CHÃO</b><small>A pista está escondida perto daqui</small>${ctx.demo ? '<button class="e1-rec usar-lente achei">🐾 Achei a pista (teste)</button>' : ''}<button class="e1-rec nao-sigo">Não consigo seguir</button></div>`;
+    p.q('.nao-sigo').onclick = () => { ctx.rastro?.(false); falar(p.texto.jogo, 'Pipoca'); memoria(); };
+    if (ctx.demo) p.q('.achei').onclick = () => { ctx.rastro?.(false); falar(p.texto.achou, 'Pipoca'); memoria(); };
+    falar(ligou === false ? p.texto['rastro dica'] : p.texto.rastro, 'Pipoca');
+  }
+  function memoria(agora) {
+    if (!agora && !p.el.isConnected) return; // sequência de falas terminou depois de trocar de placa
     const ordem = [2, 0, 4, 1, 5, 3, 4, 2, 3, 0, 1, 5];
     // Fisher-Yates: o novo encontro com a placa não repete a posição dos pares.
     for (let i = ordem.length - 1; i; i--) { const j = Math.floor(Math.random() * (i + 1)); [ordem[i], ordem[j]] = [ordem[j], ordem[i]]; }
@@ -29,5 +40,10 @@ export function criarEstacao4(ctx) {
   }
   p.el.usarFerramenta = usar; p.el.limpar = () => clearTimeout(timer);
   p.q('.usar-lente').onclick = () => { if (usar('lente')) ctx.estado.soltar(); };
-  p.iniciar(); return p.el;
+  const v = ctx.estado.valor;
+  if (v.concluidas.includes(4)) p.iniciar();
+  else if (ctx.pista && v.rastro4) { iniciou = true; falar(p.texto.achou, 'Pipoca'); memoria(true); } // chegou pelo rastro: sem repetir o vídeo
+  else if (v.rastro4) { iniciou = true; p.q('.usar-lente').hidden = true; seguir(); } // voltou à placa no meio do caminho
+  else p.iniciar();
+  return p.el;
 }
