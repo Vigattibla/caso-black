@@ -35,7 +35,7 @@ function selecionar(nome) {
   if (!/^(placa-[1-5]|verso|frente)$/.test(nome)) return false;
   if (alvoAtual === nome) return true;
   calar(); $('#fala-espera').append(balao); painel?.limpar?.();
-  if (quadroObj) raiz.remove(quadroObj);
+  fixar(false); if (quadroObj) raiz.remove(quadroObj);
   painel?.remove(); alvoAtual = nome; est.alvo = nome;
   const ctx = {estado, demo: !!DEMO, premiar: (item, origem) => mochila.premiar(item, origem), onGanhar: n => { est.eventos.push('concluiu-' + n); }};
   painel = nome === 'verso' ? criarVerso(ctx) : nome === 'frente' ? criarRetrato(ctx) : criar[Number(nome.slice(-1)) - 1](ctx);
@@ -45,14 +45,24 @@ function selecionar(nome) {
     quadroObj = new CSS3DObject(painel); quadroObj.position.z = .01; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600); raiz.add(quadroObj);
     painel.style.visibility = 'hidden'; ancora = criarAncora(); est.ancora = ancora; raiz.visible = false;
   }
+  $('#fixar').hidden = DEMO || !/^placa/.test(nome);
   return true;
+}
+// Resgate sem AR: o mesmo painel sai do alvo e fica preso na tela (criança que não alcança a placa).
+let fixado = false;
+function fixar(sim) {
+  if (DEMO || !painel || sim === fixado) return;
+  fixado = sim; document.body.classList.toggle('fixado', sim); $('#demo-palco').hidden = !sim; est.fixado = sim;
+  $('#fixar').textContent = sim ? '📷 Voltar pra câmera' : '📌 Trazer pra tela';
+  if (sim) { $('#demo-palco').append(painel); Object.assign(painel.style, {display: '', visibility: 'visible'}); status(''); redimensionarDemo(); }
+  else { Object.assign(painel.style, {transform: '', transformOrigin: '', visibility: 'hidden'}); } // CSS3D devolve o painel ao alvo no próximo render
 }
 function montarCss() {
   cssScene = new THREE.Scene(); cssRenderer = new CSS3DRenderer({element: $('#css3d')}); cssRenderer.setSize(innerWidth, innerHeight);
   raiz = new THREE.Object3D(); raiz.visible = false; cssScene.add(raiz);
 }
 function redimensionarDemo() {
-  if (!DEMO || !painel) return;
+  if ((!DEMO && !fixado) || !painel) return;
   const k = Math.min((innerWidth - 12) / 600, (innerHeight - 118) / 800);
   $('#demo-palco').style.width = 600 * k + 'px'; $('#demo-palco').style.height = 800 * k + 'px';
   painel.style.transform = `scale(${k})`; painel.style.transformOrigin = '0 0';
@@ -66,7 +76,7 @@ function receber(detail, found) {
     if (!found) return;
     if (alvoAtual && (rastreando || performance.now() - perdidoEm < TROCA_MS)) return;
   }
-  rastreando = true;
+  rastreando = true; if (found && detail.name === alvoAtual) fixar(false);
   alvoLargura = detail.scaledWidth || 1; selecionar(detail.name);
   bruto.position.set(detail.position.x, detail.position.y, detail.position.z); bruto.quaternion.set(detail.rotation.x, detail.rotation.y, detail.rotation.z, detail.rotation.w); bruto.scale.setScalar(detail.scale);
   if (found) { ancora.found(detail); est.eventos.push('found-' + detail.name); } else ancora.updated(detail);
@@ -87,14 +97,14 @@ const modulo = {
   name: 'casoblack',
   onStart() {
     const {camera} = XR8.Threejs.xrScene(); camera.position.set(0, 1.6, 0);
-    XR8.XrController.updateCameraProjectionMatrix({origin: camera.position, facing: camera.quaternion}); status(historia.abertura[2]);
+    XR8.XrController.updateCameraProjectionMatrix({origin: camera.position, facing: camera.quaternion}); status(historia.abertura[2]); $('#mirar').hidden = false;
   },
   onCanvasSizeChange() { cssRenderer.setSize(innerWidth, innerHeight); },
   onVideoSizeChange({videoWidth, videoHeight}) { est.video = `${videoWidth}x${videoHeight}`; },
   onUpdate({processCpuResult}) { const r = processCpuResult?.reality; if (r) $('#limitado').hidden = r.trackingStatus !== 'LIMITED'; },
   onRender() {
     const agora = performance.now(), dt = Math.min(.1, (agora - (ultimo || agora)) / 1000); ultimo = agora;
-    const p = ancora.passo(dt); if (!p || !quadroObj) return;
+    const p = ancora.passo(dt); if (!p || !quadroObj || fixado) return;
     raiz.position.set(...p.p); raiz.quaternion.set(...p.q); raiz.scale.setScalar(p.s); raiz.visible = true; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600);
     const {camera} = XR8.Threejs.xrScene(); tmp.set(...p.p).applyMatrix4(camera.matrixWorldInverse);
     painel.style.visibility = tmp.z < -.05 ? 'visible' : 'hidden'; cssRenderer.render(cssScene, camera);
@@ -103,7 +113,7 @@ const modulo = {
   listeners: [
     {event: 'reality.imagefound', process: ({detail}) => receber(detail, true)},
     {event: 'reality.imageupdated', process: ({detail}) => receber(detail, false)},
-    {event: 'reality.imagelost', process: ({detail}) => { if (detail.name !== alvoAtual) return; rastreando = false; perdidoEm = performance.now(); ancora.lost(); est.eventos.push('lost-' + detail.name); status(historia.abertura[2]); }},
+    {event: 'reality.imagelost', process: ({detail}) => { if (detail.name !== alvoAtual) return; rastreando = false; perdidoEm = performance.now(); ancora.lost(); est.eventos.push('lost-' + detail.name); if (/^placa/.test(alvoAtual)) fixar(true); else status(historia.abertura[2]); }},
   ],
   onCameraStatusChange({status: s}) { if (s === 'requesting') status('Permita o acesso à câmera…'); if (['failed', 'denied'].includes(s)) erro('Sem acesso à câmera. Libere a câmera nas permissões do navegador e recarregue.'); },
   onException() { erro('A câmera travou. Recarregue a página.'); },
@@ -129,6 +139,18 @@ async function abrir() {
   });
 }
 $('#abrir').onclick = abrir;
+$('#fixar').onclick = () => fixar(!fixado);
+// Número impresso na base da placa abre a estação direto, com ou sem câmera.
+const escolha = $('#estacoes');
+document.querySelectorAll('.sem-mira').forEach(b => b.onclick = () => { escolha.hidden = false; });
+escolha.onclick = e => {
+  const n = e.target.closest('[data-estacao]')?.dataset.estacao;
+  if (e.target.closest('.fechar') || n) escolha.hidden = true;
+  if (!n) return;
+  $('#inicio').hidden = true; rastreando = false; perdidoEm = performance.now();
+  selecionar('placa-' + n); fixar(true); est.eventos.push('codigo-' + n);
+};
+est.estacao = n => escolha.querySelector(`[data-estacao="${n}"]`).click();
 addEventListener('resize', redimensionarDemo);
 if (DEMO) {
   $('#inicio').hidden = true; $('#camera').hidden = true; $('#css3d').hidden = true; $('#credito').hidden = true; $('#demo-palco').hidden = false;

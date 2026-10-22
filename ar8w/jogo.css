@@ -23,3 +23,14 @@ body.demo{background:#191511}#demo-palco{position:absolute;top:8px;left:50%;tran
 #fala-repetir{min-height:38px;border:2px solid #fdc72f;padding:5px 12px;background:transparent;color:#fdc72f;font:700 14px Montserrat,sans-serif;cursor:pointer;margin-right:8px}
 
 .verso-lupa{position:absolute;left:45px;top:690px;width:240px;height:57px;pointer-events:auto;cursor:pointer;background:#fdc72f33;border:4px solid #fdc72f;border-radius:10px;animation:lupa-chama 1.2s ease-in-out infinite alternate}.verso-lupa img{position:absolute;right:8px;top:6px;height:42px}.verso-lupa[hidden]{display:none}@keyframes lupa-chama{to{box-shadow:0 0 22px 6px #fdc72f;background:#fdc72f66}}.verso .verso-rodape{left:300px}
+/* Resgate sem AR: painel preso na tela e escolha da estação pelo número da placa */
+body.fixado::before{content:'';position:fixed;inset:0;z-index:7;background:#191511f2}
+body.fixado #demo-palco{position:fixed;z-index:8}
+#fixar,#mirar{position:fixed;z-index:13;min-height:44px;padding:0 14px;border:2px solid #fdc72f;background:#111e;color:#fdc72f;font:800 13px Montserrat,sans-serif;cursor:pointer}
+#fixar{left:12px;bottom:calc(122px + env(safe-area-inset-bottom))}
+#mirar{left:12px;top:calc(62px + env(safe-area-inset-top));font-size:11px;min-height:36px;border-width:1px}
+body.fixado #mirar{display:none}
+#estacoes{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:24px;background:#111f}
+#estacoes .numeros{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
+#estacoes .numeros button{aspect-ratio:1;border:0;background:#fdc72f;color:#111;font:400 34px Anton,sans-serif;cursor:pointer}
+.caixa .link{display:block;margin:14px auto 0;background:none;border:0;color:#fdc72fcc;font:600 13px Montserrat,sans-serif;text-decoration:underline;cursor:pointer}
