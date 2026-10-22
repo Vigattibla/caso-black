@@ -36,6 +36,32 @@ const ampliar = () => /^placa/.test(alvoAtual) ? 2 : alvoAtual === 'pista-4' ? 1
 const rastro = criarRastro(THREE); let pose4 = null; est.rastro = rastro;
 // ?pegadas: teste de montagem — mirou a placa 4, as patinhas já saem (sem lupa); a folha vai onde elas terminam.
 const PEGADAS = Q.has('pegadas') && !DEMO; let pegadasVistas = false;
+// ?gravar: mira a placa 4, anda até a folha escondida e mira ela — o caminho andado vira o rastro (salvo no aparelho).
+const gravar = Q.has('gravar') && !DEMO ? (() => {
+  const caixa = document.createElement('div'); caixa.id = 'calibrar';
+  caixa.innerHTML = '<span class="g-st">1) Mire a placa 4</span><pre class="g-out" hidden></pre><div><button class="g-copia" hidden>📋 Copiar números</button><button onclick="location.reload()">↺ Recomeçar</button></div>';
+  document.body.append(caixa);
+  const st = t => { caixa.querySelector('.g-st').textContent = t; };
+  let pts = [], fim = false;
+  return {
+    andar(camera) {
+      if (fim || !pose4) return;
+      const q = paraPlaca(THREE, pose4, camera.position.toArray()), u = pts.at(-1);
+      if (Math.hypot(...q) < 1.5) { pts = []; st('2) Placa 4 ✓ — agora ande até a folha escondida'); return; } // ainda na placa: começa daqui
+      if (!u || Math.hypot(q[0] - u[0], q[1] - u[1]) > 1.2) { pts.push(q); st(`Gravando caminho… ${pts.length} ponto(s) · mire a folha quando chegar`); }
+    },
+    pista(detail) {
+      if (fim || !pose4) return false;
+      fim = true; const c = {pts: [[0, .8], ...pts, paraPlaca(THREE, pose4, [detail.position.x, detail.position.y, detail.position.z])]};
+      salvarCaminho(c); est.caminho = rastro.mostrar(pose4, c);
+      st('Caminho gravado ✓ — as patinhas já estão no chão. Mande os números:');
+      const out = caixa.querySelector('.g-out'), copia = caixa.querySelector('.g-copia');
+      out.textContent = JSON.stringify(c); out.hidden = copia.hidden = false;
+      copia.onclick = () => navigator.clipboard?.writeText(out.textContent).then(() => { copia.textContent = 'Copiado ✓'; });
+      return true;
+    },
+  };
+})() : null;
 const ligarRastro = liga => { if (!liga) { rastro.esconder(); return true; } if (!pose4) return false; est.caminho = rastro.mostrar(pose4); return true; };
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
 function selecionar(nome) {
@@ -80,6 +106,7 @@ let rastreando = false, perdidoEm = 0;
 const TROCA_MS = 2500;
 function receber(detail, found) {
   if (CALIBRAR) calibrar.ver(detail);
+  if (gravar && detail.name === 'pista-4' && (gravar.pista(detail) || rastro.ligado)) return; // gravando: a folha só fecha o caminho
   if (!/^(placa-[1-5]|pista-4|verso|frente)$/.test(detail.name)) return;
   if (detail.name !== alvoAtual) {
     if (!found) return;
@@ -118,6 +145,7 @@ const modulo = {
     const p = ancora.passo(dt); rastro.passo();
     if (p && alvoAtual === 'placa-4' && rastreando) pose4 = {p: [...p.p], q: [...p.q], s: p.s * alvoLargura};
     if (PEGADAS && pose4 && !pegadasVistas) { pegadasVistas = true; ligarRastro(true); }
+    gravar?.andar(XR8.Threejs.xrScene().camera);
     if (!p || !quadroObj || fixado) return;
     raiz.position.set(...p.p); raiz.quaternion.set(...p.q); raiz.scale.setScalar(p.s); raiz.visible = true; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600);
     const {camera} = XR8.Threejs.xrScene(); tmp.set(...p.p).applyMatrix4(camera.matrixWorldInverse);
