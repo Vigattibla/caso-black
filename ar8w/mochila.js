@@ -7,9 +7,13 @@ export function criarMochila(estado, painel, avisar) {
     for (const item of ['lente', 'chave']) {
       const b = el.querySelector(`[data-item="${item}"]`); b.innerHTML = icones[item] + `<span>${item === 'lente' ? 'Lupa' : 'Chave'}</span>`;
       if (item === 'chave' && estado.valor.itens.chave?.img) { const img = new Image(); img.src = estado.valor.itens.chave.img; img.alt = 'Sua chave desenhada'; b.querySelector('img').replaceWith(img); }
-      b.classList.toggle('vazio', !tem(item)); b.setAttribute('aria-label', rotulo(item));
+      b.hidden = !tem(item); b.setAttribute('aria-label', rotulo(item));
     }
-    document.querySelector('#dentes').textContent = [1, 2, 3, 4].map(n => estado.valor.dentes[n] ? estado.valor.dentes[n] === 'C' ? '↑' : '↓' : '·').join(' ');
+    // Só aparece o que já foi achado: dentes como uma chave em miniatura; itens só depois de pegos.
+    const d = estado.valor.dentes, achados = [1, 2, 3, 4].filter(n => d[n]);
+    const dentes = document.querySelector('#dentes'); dentes.hidden = !achados.length;
+    dentes.innerHTML = miniChave(d); dentes.setAttribute('aria-label', `Chave: ${achados.length} de 4 dentes`);
+    el.hidden = !achados.length && !['lente', 'chave'].some(tem);
   }
   function usar(item, alvo) { if (alvo && painel()?.contains(alvo)) if (painel().usarFerramenta?.(item) && item === 'lente') estado.soltar(); }
   el.addEventListener('pointerdown', e => {
@@ -45,4 +49,13 @@ export function criarMochila(estado, painel, avisar) {
       a.onfinish = () => v.remove();
     },
   };
+}
+
+function miniChave(d) {
+  const partes = [1, 2, 3, 4].map(n => {
+    const x = 34 + n * 16;
+    if (!d[n]) return `<text x="${x + 5}" y="30" class="falta">?</text>`;
+    return d[n] === 'C' ? `<path d="M${x} 19V7h10v12"/>` : `<path d="M${x} 31v12h10V31"/>`;
+  });
+  return `<svg viewBox="0 0 120 50" aria-hidden="true"><circle cx="16" cy="25" r="11"/><circle cx="16" cy="25" r="4"/><path d="M27 19h88v12H27"/>${partes.join('')}</svg>`;
 }

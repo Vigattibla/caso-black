@@ -10,7 +10,7 @@ import {criarEstacao5} from './estacao5.js';
 import {criarVerso} from './verso.js';
 import {criarRetrato, lerRetrato} from './retrato.js';
 import {criarEstado} from './estado.js';
-import {criarMochila} from './mochila.js';
+import {criarMochila} from './mochila.js?v=17';
 import {falar, sequencia, calar} from './fala.js';
 import {historia} from './historia.js';
 import {lerChave} from './chave/leitor.js';

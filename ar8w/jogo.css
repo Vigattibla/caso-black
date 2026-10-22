@@ -36,3 +36,7 @@ body.fixado #mirar{display:none}
 .caixa .link{display:block;margin:14px auto 0;background:none;border:0;color:#fdc72fcc;font:600 13px Montserrat,sans-serif;text-decoration:underline;cursor:pointer}
 /* Legibilidade: texto solto sobre a cortiça vira etiqueta escura (preto na cortiça some na câmera) */
 .e1 .progresso,.e1 .instrucao-chave,.e1 .montagem small{align-self:flex-start;background:#111e;color:#fdc72f;padding:4px 10px}
+/* Mochila: só o que já foi achado; dentes desenhados numa chave em miniatura */
+#mochila[hidden],#mochila button[hidden],#dentes[hidden]{display:none}
+#mochila>b{max-width:none}#dentes svg{width:78px;height:33px;margin-top:4px;fill:none;stroke:#fdc72f;stroke-width:3;stroke-linejoin:round}
+#dentes .falta{fill:#fdc72f80;stroke:none;font:700 13px 'Courier Prime',monospace;text-anchor:middle}
