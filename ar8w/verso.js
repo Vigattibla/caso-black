@@ -4,7 +4,7 @@ import {lerChave, adesivo} from './chave/leitor.js';
 import {IMG, MOLDURA, DENTES, HASTE, ARGOLA} from './chave/layout.js';
 export function criarVerso({estado, demo, premiar}) {
   const el = document.createElement('section'); el.className = 'e1 verso'; el.dataset.estacao = 'verso';
-  el.innerHTML = '<div class="leitura-moldura">' + guia(estado.valor.dentes) + '<p class="leitura-status" role="status"></p></div><div class="verso-rodape"><div class="fala-slot"></div></div>';
+  el.innerHTML = '<div class="leitura-moldura">' + guia(estado.valor.dentes) + '<p class="leitura-status" role="status"></p></div><button class="verso-lupa" hidden aria-label="Pegar a lupa guardada na carta"><img src="../assets/objetos/lente.webp" alt=""></button><div class="verso-rodape"><div class="fala-slot"></div></div>';
   const q = s => el.querySelector(s); let anterior = '', iguais = 0, guardando = false;
   const faltam = () => 4 - [1, 2, 3, 4].filter(n => estado.valor.dentes[n]).length;
   function avaliar(r) {
@@ -18,11 +18,14 @@ export function criarVerso({estado, demo, premiar}) {
     if (!estado.guardarChave(r.codigo, r.traco ? adesivo(r.traco).toDataURL('image/png') : '')) return false;
     guardando = true; premiar('chave', el); falar(historia.chave.certa); q('.leitura-status').textContent = 'CHAVE GUARDADA'; q('.chave-guia').classList.add('guardada'); return true;
   }
+  const lupaNaCarta = () => estado.valor.itens.lente && estado.valor.mao !== 'lente' && !estado.valor.concluidas.includes(4);
+  q('.verso-lupa').hidden = !lupaNaCarta();
+  q('.verso-lupa').onclick = e => { if (!estado.pegar('lente')) return; e.currentTarget.hidden = true; premiar('lente', e.currentTarget); falar(historia.lupa.pegou); };
   el.avaliar = avaliar;
   el.podeLer = () => estado.podeLer() && !estado.valor.itens.chave && !estado.valor.concluidas.includes(5);
   if (estado.valor.concluidas.includes(5)) { q('.chave-guia').classList.add('guardada'); q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e mira a câmera no retrato falado!'); }
   else {
-    falar(historia.chave[estado.valor.itens.chave ? 'certa' : 'pedido']);
+    falar(lupaNaCarta() ? historia.lupa.carta : historia.chave[estado.valor.itens.chave ? 'certa' : 'pedido']);
     q('.leitura-status').textContent = estado.valor.itens.chave ? 'CHAVE GUARDADA' : estado.podeLer() ? 'PASSE A CANETA POR CIMA DO AMARELO' : `COPIE O AMARELO · FALTA${faltam() > 1 ? 'M' : ''} ${faltam()} DENTE${faltam() > 1 ? 'S' : ''} NAS PLACAS`;
     if (estado.valor.itens.chave) q('.chave-guia').classList.add('guardada');
     if (demo) montarDemo();

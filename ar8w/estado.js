@@ -1,6 +1,6 @@
 import {historia} from './historia.js';
 export const STORAGE = 'cb8w_v1';
-const novo = () => ({versao: 1, concluidas: [], dentes: {}, itens: {lente: false, chave: null}, provas: {}, final: false, fotos: []});
+const novo = () => ({versao: 1, concluidas: [], dentes: {}, itens: {lente: false, chave: null}, mao: null, provas: {}, final: false, fotos: []});
 const fotoValida = f => typeof f === 'string' && /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(f);
 export function criarEstado(storage) {
   try { storage ??= window.localStorage; } catch { /* privacidade/restrição do navegador */ }
@@ -37,6 +37,9 @@ export function criarEstado(storage) {
     guardarChave(codigo, img = '') { if (!this.podeLer() || codigo !== 'CBBC') return false; valor.itens.chave = {codigo, img}; salvar(); return true; },
     fechar() { if (!valor.concluidas.includes(5)) return false; valor.final = true; salvar(); return true; },
     foto(img) { if (!fotoValida(img)) return false; valor.fotos = [...valor.fotos, img].slice(-5); return salvar(); },
+    // Lupa mora na carta; tocada no verso, vai para a mão (bandeja da tela) até ser usada.
+    pegar(item) { if (item !== 'lente' || !valor.itens.lente || valor.concluidas.includes(4)) return false; valor.mao = item; salvar(); return true; },
+    soltar() { valor.mao = null; salvar(); },
     reset() { valor = novo(); salvar(); },
   };
 }

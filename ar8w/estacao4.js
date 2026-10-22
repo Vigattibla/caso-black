@@ -1,13 +1,14 @@
 import {criarPainel} from './painel.js';
 import {falar, sequencia} from './fala.js';
+import {historia} from './historia.js';
 // Fotos/itens da vitrine original; pares embaralhados, sem solução indicada no DOM.
 const itens = [['Chapéu preto', 'chapeu'], ['Casquinha', 'casquinha'], ['Picolé', 'picole'], ['Café', 'cafe'], ['Taça', 'taca'], ['Cookie', 'cookie']];
 export function criarEstacao4(ctx) {
   const p = criarPainel(4, ctx); let iniciou = false, primeiro, ocupado = false, pares = 0, timer;
-  p.jogo.innerHTML = '<div class="lente-alvo" data-ferramenta="lente"><span class="pegadas-pipoca" hidden>🐾 🐾 🐾</span><button class="e1-rec usar-lente">USAR LUPA DA MOCHILA</button></div>';
+  p.jogo.innerHTML = '<div class="lente-alvo" data-ferramenta="lente"><span class="pegadas-pipoca" hidden>🐾 🐾 🐾</span><button class="e1-rec usar-lente">ARRASTE A LUPA PRA CÁ</button></div>';
   function usar(item) {
     if (item !== 'lente' || iniciou || p.venceu) return false;
-    if (!ctx.estado.valor.itens.lente) { falar(p.texto['sem lente']); return false; }
+    if (ctx.estado.valor.mao !== 'lente') { falar(ctx.estado.valor.itens.lente ? historia.lupa.naCarta : p.texto['sem lente']); return false; }
     iniciou = true; p.q('.pegadas-pipoca').hidden = false; p.q('.usar-lente').hidden = true;
     sequencia([p.texto['lente usada'], p.texto.jogo], memoria); return true;
   }
@@ -27,6 +28,6 @@ export function criarEstacao4(ctx) {
     };
   }
   p.el.usarFerramenta = usar; p.el.limpar = () => clearTimeout(timer);
-  p.q('.usar-lente').onclick = () => usar('lente');
+  p.q('.usar-lente').onclick = () => { if (usar('lente')) ctx.estado.soltar(); };
   p.iniciar(); return p.el;
 }

@@ -27,7 +27,7 @@ const est = window.__ar8w = {estado, eventos: [], demo: !!DEMO};
 let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, cssScene, cssRenderer, raiz, quadroObj, ultimo = 0, rodando = false, gl, ultimaLeitura = 0;
 est.ancora = ancora;
 const bruto = new THREE.Object3D(), M = new THREE.Matrix4(), escala = new THREE.Matrix4(), tmp = new THREE.Vector3();
-const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
+const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? estado.valor.itens.lente ? historia.lupa.naCarta : historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
 // Placas: quadro 1,5× maior que o papel; verso/frente ficam 1:1 porque a guia de leitura casa com o impresso.
 const ampliar = () => /^placa/.test(alvoAtual) ? 1.5 : 1;
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
