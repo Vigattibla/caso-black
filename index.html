@@ -1002,7 +1002,8 @@ const TXT={carta:['LUPA MÁGICA','Aponte para os <b style="display:inline;font:i
   final:['O SELO DA CARTA','Vire a carta e aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
 async function videoDe(e){const nome=`estacao${e+1}.mp4`;
   const {estacoes}=await Midias();return estacoes?.includes(nome)?`assets/v/${nome}`:null}
-async function abrirLupa(m='carta',usarFoto=true,fotoId=undefined){fecharLupa();const pedido=pedidoLupa;modo=m;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
+async function abrirLupa(m='carta',usarFoto=true,fotoId=undefined){if(!window.DEMO&&!DEV){location.href='ar8w/';return} // lupa oficial = jogo 8th Wall
+fecharLupa();const pedido=pedidoLupa;modo=m;const L=$('#lupa');L.className='on';L.setAttribute('aria-hidden','false');
   Mochila.iniciar();Placa.iniciar();
   $('#lupaTit').textContent=TXT[m][0];$('#lupaTxt').innerHTML=TXT[m][1];
   try{const recebido=Mochila.demo?Mochila.videoDemo():await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30}},audio:false});

@@ -43,7 +43,7 @@ export function lerRetrato(gl, M, cw, ch) {
   for (let j = 0; j < RH; j++) for (let i = 0; i < RW; i++) {
     const [x, y] = P(R.x0 + (i + .5) * du, R.y0 + (j + .5) * dv);
     const k = ((Math.min(bh - 1, Math.max(0, y - by0 | 0))) * bw + Math.min(bw - 1, Math.max(0, x - bx0 | 0))) * 4;
-    L[j * RW + i] = .299 * px[k] + .587 * px[k + 1] + .114 * px[k + 2];
+    L[j * RW + i] = Math.min(px[k], px[k + 1], px[k + 2]); // menor canal: caneta azul conta como tinta
   }
   const rgba = new Uint8ClampedArray(RW * RH * 4), FX = 6;
   let tinta = 0;

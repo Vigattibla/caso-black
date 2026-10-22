@@ -32,7 +32,7 @@ export function lerChave(gl, M, cw, ch) {
     const xi = Math.min(bw - 1, Math.max(0, x - bx0 | 0)), yi = Math.min(bh - 1, Math.max(0, y - by0 | 0));
     const k = (yi * bw + xi) * 4, o = (j * RW + i) * 4;
     rgb[o] = px[k]; rgb[o + 1] = px[k + 1]; rgb[o + 2] = px[k + 2];
-    L[j * RW + i] = 0.299 * px[k] + 0.587 * px[k + 1] + 0.114 * px[k + 2];
+    L[j * RW + i] = Math.min(px[k], px[k + 1], px[k + 2]); // menor canal: caneta azul/colorida conta como tinta, guia cinza continua clara
   }
 
   // Tinta = bem mais escuro que o papel da faixa (aguenta sombra e luz desigual; guia impressa clara fica de fora).
@@ -56,7 +56,7 @@ export function lerChave(gl, M, cw, ch) {
   };
   const dentes = DENTES.map(d => {
     const a = frac(d.cima), b = frac(d.baixo);
-    return a > 0.15 && a > 2 * b ? 'C' : b > 0.15 && b > 2 * a ? 'B' : '?';
+    return a > 0.08 && a > 2 * b ? 'C' : b > 0.08 && b > 2 * a ? 'B' : '?'; // 0.08: contorno fino de caneta já conta
   });
   const papel = [0, 0, 0];
   let np = 0;

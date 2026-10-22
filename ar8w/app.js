@@ -28,6 +28,8 @@ let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, cssScene, cssRen
 est.ancora = ancora;
 const bruto = new THREE.Object3D(), M = new THREE.Matrix4(), escala = new THREE.Matrix4(), tmp = new THREE.Vector3();
 const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
+// Placas: quadro 1,5× maior que o papel; verso/frente ficam 1:1 porque a guia de leitura casa com o impresso.
+const ampliar = () => /^placa/.test(alvoAtual) ? 1.5 : 1;
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
 function selecionar(nome) {
   if (!/^(placa-[1-5]|verso|frente)$/.test(nome)) return false;
@@ -40,7 +42,7 @@ function selecionar(nome) {
   painel.querySelector('.fala-slot').append(balao); est.quadro = painel;
   if (DEMO) { $('#demo-palco').append(painel); redimensionarDemo(); }
   else {
-    quadroObj = new CSS3DObject(painel); quadroObj.position.z = .01; quadroObj.scale.setScalar(alvoLargura / 600); raiz.add(quadroObj);
+    quadroObj = new CSS3DObject(painel); quadroObj.position.z = .01; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600); raiz.add(quadroObj);
     painel.style.visibility = 'hidden'; ancora = criarAncora(); est.ancora = ancora; raiz.visible = false;
   }
   return true;
@@ -55,9 +57,16 @@ function redimensionarDemo() {
   $('#demo-palco').style.width = 600 * k + 'px'; $('#demo-palco').style.height = 800 * k + 'px';
   painel.style.transform = `scale(${k})`; painel.style.transformOrigin = '0 0';
 }
+// Trava: outro alvo só assume se o atual sumiu há um tempo (evita trocar de tela no meio do jogo).
+let rastreando = false, perdidoEm = 0;
+const TROCA_MS = 2500;
 function receber(detail, found) {
   if (!/^(placa-[1-5]|verso|frente)$/.test(detail.name)) return;
-  if (!found && detail.name !== alvoAtual) return;
+  if (detail.name !== alvoAtual) {
+    if (!found) return;
+    if (alvoAtual && (rastreando || performance.now() - perdidoEm < TROCA_MS)) return;
+  }
+  rastreando = true;
   alvoLargura = detail.scaledWidth || 1; selecionar(detail.name);
   bruto.position.set(detail.position.x, detail.position.y, detail.position.z); bruto.quaternion.set(detail.rotation.x, detail.rotation.y, detail.rotation.z, detail.rotation.w); bruto.scale.setScalar(detail.scale);
   if (found) { ancora.found(detail); est.eventos.push('found-' + detail.name); } else ancora.updated(detail);
@@ -86,7 +95,7 @@ const modulo = {
   onRender() {
     const agora = performance.now(), dt = Math.min(.1, (agora - (ultimo || agora)) / 1000); ultimo = agora;
     const p = ancora.passo(dt); if (!p || !quadroObj) return;
-    raiz.position.set(...p.p); raiz.quaternion.set(...p.q); raiz.scale.setScalar(p.s); raiz.visible = true; quadroObj.scale.setScalar(alvoLargura / 600);
+    raiz.position.set(...p.p); raiz.quaternion.set(...p.q); raiz.scale.setScalar(p.s); raiz.visible = true; quadroObj.scale.setScalar(alvoLargura * ampliar() / 600);
     const {camera} = XR8.Threejs.xrScene(); tmp.set(...p.p).applyMatrix4(camera.matrixWorldInverse);
     painel.style.visibility = tmp.z < -.05 ? 'visible' : 'hidden'; cssRenderer.render(cssScene, camera);
     if (Q.has('debug')) $('#debug').textContent = `${alvoAtual} · vídeo ${est.video} · canvas ${$('#camera').width}x${$('#camera').height}`;
@@ -94,7 +103,7 @@ const modulo = {
   listeners: [
     {event: 'reality.imagefound', process: ({detail}) => receber(detail, true)},
     {event: 'reality.imageupdated', process: ({detail}) => receber(detail, false)},
-    {event: 'reality.imagelost', process: ({detail}) => { if (detail.name !== alvoAtual) return; ancora.lost(); est.eventos.push('lost-' + detail.name); status(historia.abertura[2]); }},
+    {event: 'reality.imagelost', process: ({detail}) => { if (detail.name !== alvoAtual) return; rastreando = false; perdidoEm = performance.now(); ancora.lost(); est.eventos.push('lost-' + detail.name); status(historia.abertura[2]); }},
   ],
   onCameraStatusChange({status: s}) { if (s === 'requesting') status('Permita o acesso à câmera…'); if (['failed', 'denied'].includes(s)) erro('Sem acesso à câmera. Libere a câmera nas permissões do navegador e recarregue.'); },
   onException() { erro('A lupa travou. Recarregue a página.'); },
