@@ -157,7 +157,7 @@ est.simular = (detail, tipo = 'found') => modulo.listeners.find(l => l.event ===
 function erro(t) { $('#erro p').textContent = t; $('#erro').hidden = false; }
 async function configurar() {
   const nomes = ['placa-1', 'placa-2', 'placa-3', 'placa-4', 'placa-5', 'pista-4', 'verso-teste', 'frente'];
-  const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`); if (!r.ok) throw Error(nome); const json = await r.json(); json.imagePath = new URL(`./alvos/${nome}_luminance.png`, location.href).href; return json; }));
+  const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`, {cache: 'no-cache'}); if (!r.ok) throw Error(nome); const json = await r.json(); json.imagePath = new URL(`./alvos/${nome}_luminance.png?v=${json.updated}`, location.href).href; return json; }));
   XR8.XrController.configure({imageTargetData: alvos, disableWorldTracking: false}); est.alvos = alvos.map(a => a.name);
 }
 async function abrir() {

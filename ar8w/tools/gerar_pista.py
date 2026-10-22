@@ -44,9 +44,6 @@ def main():
     d.rectangle((60, 430, W - 60, 560), fill='#111111')
     d.text((W // 2, 495), 'PISTA ESCONDIDA', font=fonte(96), fill=AMARELO, anchor='mm')
     d.text((W // 2, 610), 'ESTAÇÃO 4 · O FARO DO PIPOCA', font=win_fonte('courbd.ttf', 40), fill='#203b80', anchor='mm')
-    pip = Image.open(ROOT / 'assets/personagens/pipoca-detetive.png').convert('RGBA')
-    pip.thumbnail((620, 760), Image.Resampling.LANCZOS)
-    im.paste(pip, (W - pip.width - 30, H - pip.height - 20), pip)
     for i, nome in enumerate(('chapeu', 'cafe', 'cookie')):
         obj = Image.open(ROOT / f'assets/balcao/{nome}.webp').convert('RGBA')
         obj.thumbnail((210, 210), Image.Resampling.LANCZOS)
@@ -55,6 +52,7 @@ def main():
         ImageDraw.Draw(cartao).rectangle((0, 0, 249, 249), outline='#583a23', width=6)
         colar(im, cartao, (70 + (i % 2) * 230, 720 + i * 240), (-8, 6, -3)[i])
     post_it(im, 'AU AU!\nACHOU!', (560, 700), -6)
+    post_it(im, 'FARO DO\nPIPOCA', (700, 1150), 5)
     im.save(ALVOS / 'pista-4.png', optimize=True)
     im.convert('L').convert('RGB').save(ALVOS / 'pista-4_luminance.png', optimize=True)
     modelo = json.loads((ALVOS / 'placa-4.json').read_text(encoding='utf-8'))
