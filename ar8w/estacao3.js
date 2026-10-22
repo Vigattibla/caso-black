@@ -11,5 +11,6 @@ export function criarEstacao3(ctx) {
     p.q('.progresso').textContent = `ACHE AS 5 DIFERENÇAS · ${achou.size}/5`;
     if (achou.size === 5) p.ganhar();
   };
+  p.el.classList.add('alto'); // fotos 3:2 inteiras: o quadro cresce na altura
   p.iniciar(); return p.el;
 }

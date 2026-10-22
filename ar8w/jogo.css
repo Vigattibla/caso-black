@@ -42,3 +42,5 @@ body.fixado #mirar{display:none}
 #dentes .falta{fill:#fdc72f80;stroke:none;font:700 13px 'Courier Prime',monospace;text-anchor:middle}
 /* "Não consigo mirar" sai do topo (batia no texto de status) e fica empilhado acima do "Trazer pra tela" */
 #mirar{top:auto;bottom:calc(176px + env(safe-area-inset-bottom))}
+
+.e1.alto{height:1140px}.alto .camera-fotos{height:auto}.alto .cena{flex:none;aspect-ratio:1024/682}

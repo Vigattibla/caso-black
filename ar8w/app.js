@@ -4,7 +4,7 @@ import {CSS3DRenderer, CSS3DObject} from './vendor/CSS3DRenderer.js';
 import {criarAncora} from './ancora.js';
 import {criarEstacao1, CSS} from './estacao1.js';
 import {criarEstacao2} from './estacao2.js';
-import {criarEstacao3} from './estacao3.js';
+import {criarEstacao3} from './estacao3.js?v=19';
 import {criarEstacao4} from './estacao4.js';
 import {criarEstacao5} from './estacao5.js';
 import {criarVerso} from './verso.js';
@@ -63,8 +63,8 @@ function montarCss() {
 }
 function redimensionarDemo() {
   if ((!DEMO && !fixado) || !painel) return;
-  const k = Math.min((innerWidth - 12) / 600, (innerHeight - 118) / 800);
-  $('#demo-palco').style.width = 600 * k + 'px'; $('#demo-palco').style.height = 800 * k + 'px';
+  const alto = painel.offsetHeight || 800, k = Math.min((innerWidth - 12) / 600, (innerHeight - 118) / alto);
+  $('#demo-palco').style.width = 600 * k + 'px'; $('#demo-palco').style.height = alto * k + 'px';
   painel.style.transform = `scale(${k})`; painel.style.transformOrigin = '0 0';
 }
 // Trava: outro alvo só assume se o atual sumiu há um tempo (evita trocar de tela no meio do jogo).
