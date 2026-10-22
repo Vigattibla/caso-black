@@ -621,7 +621,7 @@ const PISTAS=[ // loc: lugar da placa (só aparece depois da prova ou da dica)
  {cod:'PASSA', dig:5,loc:'Recepção',   enig:'Por onde todo mundo passa, ninguém repara.'},
 ];
 // foto: recorte da pista (x/y do detalhe em %); sem foto, fica só o enigma
-const FOTO={0:{x:76,y:82},1:{x:47,y:66},2:{x:16,y:62}};
+const FOTO={0:{x:76,y:82},1:{x:47,y:66},2:{x:16,y:62},3:{x:86,y:34}};
 const ZOOM=[4.2,2.2];
 const RELATO='Na madrugada de ontem, as ofertas da Black Friday sumiram. E o Bê sumiu junto.\n\nSó ficou a lupa mágica dele. Ela lê as 5 placas espalhadas pelo resort e revela cada pista.\n\nSua missão: achar as 5 placas, guardar a foto de cada prova e salvar a Black antes do check-out.';
 let achadas=[];try{achadas=JSON.parse(localStorage.getItem('cb-achadas')||'[]').filter(n=>n>=0&&n<5)}catch(e){}
@@ -757,7 +757,7 @@ const ajNome=i=>i===4?'a turma toda':(i===3?'o ':i===2?'a ':'o ')+aj(i).nome;
 /* ---------- folha 02: estações (placa → lupa → prova) ---------- */
 function pintarEstacoes(novo=-1){const L=$('#estL');if(!L)return;const f=feitas(),px=PISTAS.findIndex((_,j)=>!f.has(j)),sv=typeof carimboSVG==='function';
   L.innerHTML=PISTAS.map((p,i)=>{const a=aj(i),ok=f.has(i);return `<button class="est${ok?' ok':''}${i===px?' prox':''}${i===novo?' novo':''}" data-i="${i}">
-    <span class="av foto">${conhece(i)?`<img src="${i<3?`assets/locais/${i+1}.webp?v=2`:`assets/est/${i+1}.svg`}" alt="${p.loc}">`:'<span class="secreto" aria-hidden="true">?</span>'}</span>
+    <span class="av foto">${conhece(i)?`<img src="${i<4?`assets/locais/${i+1}.webp?v=2`:`assets/est/${i+1}.svg`}" alt="${p.loc}">`:'<span class="secreto" aria-hidden="true">?</span>'}</span>
     <span class="tx"><small>${dois(i+1)} · ${conhece(i)?EVID[i]:"???"}</small><b>${conhece(i)?p.loc:'Local secreto'}</b><i>com ${ajNome(i)}</i></span>
     <span class="st">${ok&&sv?carimboSVG(i+1,'e'+(i+1)):i===px?'PRÓXIMA':'A ENCONTRAR'}</span></button>`}).join('');
   $$('#estL .est').forEach(b=>b.onclick=()=>abrirPista(+b.dataset.i));
