@@ -1,8 +1,8 @@
-/* Rastro do Pipoca: patinhas no chão (y=0 do SLAM) da placa 4 até a folha escondida.
+/* Rastro do Pipoca: patinhas no chão (y=0 do SLAM) da folha Faro do Pipoca até a placa 4.
    Caminho salvo no referencial da placa, em larguras de placa: x à direita, z saindo da parede. */
-const CHAVE = 'cb_rastro4';
-// Caminho gravado no local (?gravar, 22/10): da placa 4 até a folha escondida, sem o vaivém do fim.
-const PADRAO = {pts: [[0, .8], [-1.66, 2.25], [-2.88, 1.73], [-3.27, 2.91], [-4.34, 3.61], [-5.55, 3.08], [-6.8, 3.12], [-8.19, 3.25], [-8.17, 2.02], [-9.29, 1.33], [-10.35, .34], [-11.28, -.53], [-12.22, -1.63], [-13.43, -2.57], [-14.79, -3.16], [-16.11, -3.72], [-17.11, -4.39], [-16.7, -5.57], [-17.95, -6.03], [-19.41, -6.41], [-20.53, -7.09], [-22.03, -7.24], [-23.37, -6.7], [-24.66, -6.41], [-26.2, -5.57], [-27.5, -5.3]]};
+const CHAVE = 'cb_rastro4b'; // b: o rastro agora sai da folha (o gravado antes saía da placa)
+// Sem gravação (?gravar): reto pra frente da folha, ~15 larguras. Gravar no local o caminho até a placa 4.
+const PADRAO = {pts: [[0, .8], [0, 8], [0, 15]]};
 export const caminhoSalvo = () => { try { return JSON.parse(localStorage.getItem(CHAVE)) || PADRAO; } catch (e) { return PADRAO; } };
 export const salvarCaminho = c => { try { localStorage.setItem(CHAVE, JSON.stringify(c)); } catch (e) {} };
 
@@ -28,7 +28,7 @@ export function paraPlaca(THREE, pose, ponto) {
 }
 
 export function criarRastro(THREE) {
-  const grupo = new THREE.Group(), tex = textura(THREE), geo = new THREE.PlaneGeometry(.13, .13).rotateX(-Math.PI / 2);
+  const grupo = new THREE.Group(), tex = textura(THREE), geo = new THREE.PlaneGeometry(.18, .18).rotateX(-Math.PI / 2);
   let patas = [], t0 = 0, ligado = false; grupo.visible = false;
   function limpar() { patas.forEach(m => { grupo.remove(m); m.material.dispose(); }); patas = []; }
   return {
@@ -36,7 +36,7 @@ export function criarRastro(THREE) {
     mostrar(pose, caminho = caminhoSalvo()) {
       limpar(); const b = base(THREE, pose);
       const mundo = caminho.pts.map(([x, z]) => b.o.clone().addScaledVector(b.dir, x * b.s).addScaledVector(b.fre, z * b.s));
-      const passo = .2; let lado = 1;
+      const passo = .25; let lado = 1;
       for (let i = 0; i < mundo.length - 1; i++) {
         const a = mundo[i], c = mundo[i + 1], seg = c.clone().sub(a), L = seg.length(); if (L < .01) continue;
         const u = seg.clone().normalize(), lateral = new THREE.Vector3(-u.z, 0, u.x), ang = Math.atan2(u.x, u.z);

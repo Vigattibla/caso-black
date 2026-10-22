@@ -32,14 +32,14 @@ export const historia = {
       "prova": "Sombra de chapéu no Kids, 00h30."
     },
     "4": {
-      "fala": "O Pipoca farejou alguma coisa aqui. Pega a lupa na carta e arrasta até o quadro!",
+      "fala": "O Pipoca farejou alguma coisa aqui. Pega a lupa na carta e arrasta até a folha!",
       "sem lente": "Falta a lupa. Ela ficou na piscina!",
       "lente usada": "Pegadas do Pipoca! A lupa revelou a tinta escondida.",
       "jogo": "Agora ajuda o faro dele: acha os pares.",
-      "rastro": "Farejei! Segue minhas patinhas no chão até a pista escondida!",
-      "rastro dica": "Aponta o celular pro chão perto do quadro e anda devagar seguindo as patinhas.",
-      "pista cedo": "Ei, achou cedo demais! Primeiro usa a lupa na placa da Cafeteria e segue minhas patinhas até aqui.",
-      "achou": "Au au! Achou a pista! Agora ajuda o faro dele: acha os pares.",
+      "rastro": "Farejei! Segue minhas patinhas no chão até a placa da Cafeteria!",
+      "rastro dica": "Aponta o celular pro chão perto da folha e anda devagar seguindo as patinhas.",
+      "pista cedo": "Ei, achou cedo demais! Primeiro acha a folha do Faro do Pipoca, usa a lupa nela e segue minhas patinhas até aqui.",
+      "achou": "Au au! Chegou! Agora ajuda o faro dele: acha os pares.",
       "erro": "Au!",
       "dica": "Au! Era algo de usar na cabeça.",
       "resultado": "Sumiu um chapéu da cafeteria quinze pra uma!",
@@ -57,7 +57,7 @@ export const historia = {
   },
   "lupa": {
     "carta": "Tua lupa tá guardada aqui na mochila. Toca nela pra pegar!",
-    "pegou": "Lupa na mão! Agora arrasta ela até o quadro do Pipoca.",
+    "pegou": "Lupa na mão! Agora arrasta ela até a folha do Pipoca.",
     "naCarta": "A lupa tá guardada na carta. Mira o verso e toca nela!"
   },
   "chave": {

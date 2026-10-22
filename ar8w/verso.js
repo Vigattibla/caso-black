@@ -1,23 +1,31 @@
-import {historia} from './historia.js';
+import {historia} from './historia.js?v=22';
 import {falar, sequencia} from './fala.js';
-import {lerChave, adesivo} from './chave/leitor.js';
+import {lerChave, adesivo} from './chave/leitor.js?v=22';
 import {IMG, MOLDURA, DENTES, HASTE, ARGOLA} from './chave/layout.js';
 export function criarVerso({estado, demo, premiar}) {
   const el = document.createElement('section'); el.className = 'e1 verso'; el.dataset.estacao = 'verso';
-  el.innerHTML = '<div class="leitura-moldura">' + guia(estado.valor.dentes) + '<p class="leitura-status" role="status"></p></div><button class="verso-lupa" hidden aria-label="Pegar a lupa guardada na carta"><img src="../assets/objetos/lente.webp" alt=""></button><div class="verso-rodape"><div class="fala-slot"></div></div>';
-  const q = s => el.querySelector(s); let anterior = '', iguais = 0, guardando = false;
+  el.innerHTML = '<div class="leitura-moldura">' + guia(estado.valor.dentes) + '<p class="leitura-status" role="status"></p><button class="leitura-socorro" hidden>Não está lendo? Toque aqui</button></div><button class="verso-lupa" hidden aria-label="Pegar a lupa guardada na carta"><img src="../assets/objetos/lente.webp" alt=""></button><div class="verso-rodape"><div class="fala-slot"></div></div>';
+  const q = s => el.querySelector(s); let anterior = '', iguais = 0, guardando = false, inicio = 0, ultimo = null;
   const faltam = () => 4 - [1, 2, 3, 4].filter(n => estado.valor.dentes[n]).length;
   function avaliar(r) {
     if (guardando || estado.valor.itens.chave || estado.valor.concluidas.includes(5) || !estado.podeLer()) return false;
-    if (r.erro || !/^[CB]{4}$/.test(r.codigo) || r.haste < .08) { iguais = 0; anterior = ''; return false; }
+    // Retorno ao vivo do que a câmera está vendo; plano B depois de ~25 s tentando.
+    inicio ||= Date.now(); if (r.traco) ultimo = r;
+    if (Date.now() - inicio > 25000) q('.leitura-socorro').hidden = false;
+    const st = r.erro === 'longe' ? 'CHEGUE MAIS PERTO' : r.erro ? 'MOSTRE A CHAVE INTEIRA' : 'LENDO: ' + r.dentes.map(d => d === 'C' ? '↑' : d === 'B' ? '↓' : '?').join(' ');
+    if (q('.leitura-status').textContent !== st) q('.leitura-status').textContent = st;
+    if (r.erro || !/^[CB]{4}$/.test(r.codigo)) { iguais = 0; anterior = ''; return false; }
     iguais = r.codigo === anterior ? iguais + 1 : 1; anterior = r.codigo;
-    q('.leitura-status').textContent = 'LENDO O DESENHO…';
     if (iguais < 3) return false;
     iguais = 0;
     if (r.codigo !== 'CBBC') { falar(historia.chave.errada); return false; }
-    if (!estado.guardarChave(r.codigo, r.traco ? adesivo(r.traco).toDataURL('image/png') : '')) return false;
-    guardando = true; premiar('chave', el); falar(historia.chave.certa); q('.leitura-status').textContent = 'CHAVE GUARDADA'; q('.chave-guia').classList.add('guardada'); return true;
+    return guardar(r.codigo, r.traco);
   }
+  function guardar(codigo, traco) {
+    if (!estado.guardarChave(codigo, traco ? adesivo(traco).toDataURL('image/png') : '')) return false;
+    guardando = true; q('.leitura-socorro').hidden = true; premiar('chave', el); falar(historia.chave.certa); q('.leitura-status').textContent = 'CHAVE GUARDADA'; q('.chave-guia').classList.add('guardada'); return true;
+  }
+  q('.leitura-socorro').onclick = () => { if (!guardando && el.podeLer()) guardar('CBBC', ultimo?.traco); };
   const lupaNaCarta = () => estado.valor.itens.lente && estado.valor.mao !== 'lente' && !estado.valor.concluidas.includes(4);
   q('.verso-lupa').hidden = !lupaNaCarta();
   q('.verso-lupa').onclick = e => { if (!estado.pegar('lente')) return; e.currentTarget.hidden = true; premiar('lente', e.currentTarget); falar(historia.lupa.pegou); };
@@ -26,7 +34,7 @@ export function criarVerso({estado, demo, premiar}) {
   if (estado.valor.concluidas.includes(5)) { q('.chave-guia').classList.add('guardada'); q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e mira a câmera no retrato falado!'); }
   else {
     falar(lupaNaCarta() ? historia.lupa.carta : historia.chave[estado.valor.itens.chave ? 'certa' : 'pedido']);
-    q('.leitura-status').textContent = estado.valor.itens.chave ? 'CHAVE GUARDADA' : estado.podeLer() ? 'PASSE A CANETA POR CIMA DO AMARELO' : `COPIE O AMARELO · FALTA${faltam() > 1 ? 'M' : ''} ${faltam()} DENTE${faltam() > 1 ? 'S' : ''} NAS PLACAS`;
+    q('.leitura-status').textContent = estado.valor.itens.chave ? 'CHAVE GUARDADA' : estado.podeLer() ? 'PASSE LÁPIS OU CANETA POR CIMA DO AMARELO' : `COPIE O AMARELO · FALTA${faltam() > 1 ? 'M' : ''} ${faltam()} DENTE${faltam() > 1 ? 'S' : ''} NAS PLACAS`;
     if (estado.valor.itens.chave) q('.chave-guia').classList.add('guardada');
     if (demo) montarDemo();
   }

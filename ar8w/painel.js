@@ -1,4 +1,4 @@
-import {historia} from './historia.js';
+import {historia} from './historia.js?v=22';
 import {falar, sequencia} from './fala.js';
 import {tocarCaca} from './investigador.js';
 const locais = ['Piscina', 'Restaurante', 'Espaço Kids', 'Cafeteria', 'Recepção'];

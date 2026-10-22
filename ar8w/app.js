@@ -5,16 +5,16 @@ import {criarAncora} from './ancora.js';
 import {criarEstacao1, CSS} from './estacao1.js';
 import {criarEstacao2} from './estacao2.js';
 import {criarEstacao3} from './estacao3.js?v=19';
-import {criarEstacao4} from './estacao4.js?v=21';
-import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v=21';
+import {criarEstacao4} from './estacao4.js?v=22';
+import {criarRastro, caminhoSalvo, salvarCaminho, paraPlaca} from './rastro.js?v=22';
 import {criarEstacao5} from './estacao5.js';
-import {criarVerso} from './verso.js';
-import {criarRetrato, lerRetrato} from './retrato.js?v=18';
-import {criarEstado} from './estado.js?v=21';
+import {criarVerso} from './verso.js?v=22';
+import {criarRetrato, lerRetrato} from './retrato.js?v=22';
+import {criarEstado} from './estado.js?v=22';
 import {criarMochila} from './mochila.js?v=17';
 import {falar, sequencia, calar} from './fala.js';
-import {historia} from './historia.js';
-import {lerChave} from './chave/leitor.js';
+import {historia} from './historia.js?v=22';
+import {lerChave} from './chave/leitor.js?v=22';
 import {CSS_INV} from './investigador.js';
 window.THREE = THREE;
 const $ = s => document.querySelector(s), Q = new URLSearchParams(location.search);
@@ -32,14 +32,15 @@ const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente
 // Placas: quadro 2× maior que o papel; verso/frente ficam 1:1 porque a guia de leitura casa com o impresso.
 // Pista escondida (A4) 1,2×: o jogo da memória cabe sobre a folha.
 const ampliar = () => /^placa/.test(alvoAtual) ? 2 : alvoAtual === 'pista-4' ? 1.2 : 1;
-// Rastro do Pipoca: patinhas em AR no chão, da placa 4 até a pista; pose4 = última pose vista da placa 4.
+// Rastro do Pipoca: patinhas em AR no chão, da folha Faro do Pipoca (INICIO) até a placa 4 (DESTINO); pose4 = última pose vista da folha.
+const INICIO = 'pista-4', DESTINO = 'placa-4';
 const rastro = criarRastro(THREE); let pose4 = null; est.rastro = rastro;
-// ?pegadas: teste de montagem — mirou a placa 4, as patinhas já saem (sem lupa); a folha vai onde elas terminam.
+// ?pegadas: teste de montagem — mirou a folha do faro, as patinhas já saem (sem lupa); a placa 4 vai onde elas terminam.
 const PEGADAS = Q.has('pegadas') && !DEMO; let pegadasVistas = false;
-// ?gravar: mira a placa 4, anda até a folha escondida e mira ela — o caminho andado vira o rastro (salvo no aparelho).
+// ?gravar: mira a folha do faro, anda até a placa 4 e mira ela — o caminho andado vira o rastro (salvo no aparelho).
 const gravar = Q.has('gravar') && !DEMO ? (() => {
   const caixa = document.createElement('div'); caixa.id = 'calibrar';
-  caixa.innerHTML = '<span class="g-st">1) Mire a placa 4</span><pre class="g-out" hidden></pre><div><button class="g-copia" hidden>📋 Copiar números</button><button onclick="location.reload()">↺ Recomeçar</button></div>';
+  caixa.innerHTML = '<span class="g-st">1) Mire a folha Faro do Pipoca</span><pre class="g-out" hidden></pre><div><button class="g-copia" hidden>📋 Copiar números</button><button onclick="location.reload()">↺ Recomeçar</button></div>';
   document.body.append(caixa);
   const st = t => { caixa.querySelector('.g-st').textContent = t; };
   let pts = [], fim = false;
@@ -47,13 +48,13 @@ const gravar = Q.has('gravar') && !DEMO ? (() => {
     andar(camera) {
       if (fim || !pose4) return;
       const q = paraPlaca(THREE, pose4, camera.position.toArray()), u = pts.at(-1);
-      if (Math.hypot(...q) < 1.5) { pts = []; st('2) Placa 4 ✓ — agora ande até a folha escondida'); return; } // ainda na placa: começa daqui
-      if (!u || Math.hypot(q[0] - u[0], q[1] - u[1]) > 1.2) { pts.push(q); st(`Gravando caminho… ${pts.length} ponto(s) · mire a folha quando chegar`); }
+      if (Math.hypot(...q) < 1.5) { pts = []; st('2) Folha ✓ — agora ande até a placa 4'); return; } // ainda na placa: começa daqui
+      if (!u || Math.hypot(q[0] - u[0], q[1] - u[1]) > 1.2) { pts.push(q); st(`Gravando caminho… ${pts.length} ponto(s) · mire a placa 4 quando chegar`); }
     },
     pista(detail) {
       if (fim || !pose4) return false;
       fim = true; const folha = paraPlaca(THREE, pose4, [detail.position.x, detail.position.y, detail.position.z]), u = pts.at(-1);
-      // A distância estimada da folha às vezes salta longe; nesse caso o fim é onde a pessoa parou.
+      // A distância estimada da placa às vezes salta longe; nesse caso o fim é onde a pessoa parou.
       const c = {pts: [[0, .8], ...pts, ...(!u || Math.hypot(folha[0] - u[0], folha[1] - u[1]) < 4 ? [folha] : [])]};
       salvarCaminho(c); est.caminho = rastro.mostrar(pose4, c);
       st('Caminho gravado ✓ — as patinhas já estão no chão. Mande os números:');
@@ -64,7 +65,8 @@ const gravar = Q.has('gravar') && !DEMO ? (() => {
     },
   };
 })() : null;
-const ligarRastro = liga => { querRastro = liga; if (!liga) { rastro.esconder(); return true; } if (!pose4) return false; est.caminho = rastro.mostrar(pose4); return true; };
+// Ligou: sai da tela cheia (polaroid), senão ela cobre a câmera e as patinhas.
+const ligarRastro = liga => { querRastro = liga; if (!liga) { rastro.esconder(); return true; } fixar(false); status('Siga as patinhas no chão 🐾'); if (!pose4) return false; est.caminho = rastro.mostrar(pose4); return true; };
 const criar = [criarEstacao1, criarEstacao2, criarEstacao3, criarEstacao4, criarEstacao5];
 function selecionar(nome) {
   if (!/^(placa-[1-5]|pista-4|verso|frente)$/.test(nome)) return false;
@@ -72,7 +74,7 @@ function selecionar(nome) {
   calar(); $('#fala-espera').append(balao); painel?.limpar?.();
   fixar(false); if (quadroObj) raiz.remove(quadroObj);
   painel?.remove(); alvoAtual = nome; est.alvo = nome;
-  if (nome === 'pista-4') { rastro.esconder(); querRastro = false; }
+  if (nome === DESTINO) { rastro.esconder(); querRastro = false; }
   const ctx = {estado, demo: !!DEMO, pista: nome === 'pista-4', rastro: DEMO ? undefined : ligarRastro, premiar: (item, origem) => mochila.premiar(item, origem), onGanhar: n => { est.eventos.push('concluiu-' + n); }};
   painel = nome === 'verso' ? criarVerso(ctx) : nome === 'frente' ? criarRetrato(ctx) : criar[Number(nome.slice(-1)) - 1](ctx);
   painel.querySelector('.fala-slot').append(balao); est.quadro = painel;
@@ -92,7 +94,7 @@ function fixar(sim, motivo) {
   if (DEMO || !painel || sim === fixado) return;
   fixado = sim; document.body.classList.toggle('fixado', sim); $('#demo-palco').hidden = !sim; est.fixado = sim;
   const n = Number(alvoAtual?.slice(-1)), local = ['Piscina', 'Restaurante', 'Espaço Kids', 'Cafeteria', 'Recepção'][n - 1];
-  $('#tela-cheia').hidden = !sim; $('#tela-cheia .tc-onde').textContent = `${alvoAtual === 'pista-4' ? 'Pista' : 'Estação ' + n} · ${local}`;
+  $('#tela-cheia').hidden = !sim; $('#tela-cheia .tc-onde').textContent = `${alvoAtual === INICIO ? 'Faro do Pipoca' : 'Estação ' + n + ' · ' + local}`;
   if (motivo === 'placa') aviso('📷 Placa encontrada · voltou pra câmera'); else if (motivo === 'sair') { aviso('📷 Câmera ligada · mire a placa'); status(historia.abertura[2]); }
   $('#fixar').textContent = sim ? '📷 Voltar pra câmera' : '📌 Trazer pra tela';
   if (sim) { $('#demo-palco').append(painel, $('#tela-cheia')); Object.assign(painel.style, {display: '', visibility: 'visible'}); status(''); redimensionarDemo(); }
@@ -122,12 +124,12 @@ let rastreando = false, perdidoEm = 0;
 const TROCA_MS = 2500;
 function receber(detail, found) {
   if (CALIBRAR) calibrar.ver(detail);
-  if (gravar && detail.name === 'pista-4' && (gravar.pista(detail) || rastro.ligado)) return; // gravando: a folha só fecha o caminho
+  if (gravar && detail.name === DESTINO && (gravar.pista(detail) || rastro.ligado)) return; // gravando: a placa 4 só fecha o caminho
   if (!/^(placa-[1-5]|pista-4|verso|frente)$/.test(detail.name)) return;
   if (detail.name !== alvoAtual) {
     if (!found) return;
     // Achar a folha no fim do rastro assume na hora, mesmo com a placa ainda à vista.
-    if (alvoAtual && !(detail.name === 'pista-4' && rastro.ligado) && (rastreando || performance.now() - perdidoEm < TROCA_MS)) return;
+    if (alvoAtual && !(detail.name === DESTINO && rastro.ligado) && (rastreando || performance.now() - perdidoEm < TROCA_MS)) return;
   }
   rastreando = true; if (found && detail.name === alvoAtual) fixar(false, 'placa');
   const rc = recortes[detail.name]; alvoLargura = (detail.scaledWidth || 1) * (rc ? rc.W / rc.w : 1); selecionar(detail.name);
@@ -159,7 +161,7 @@ const modulo = {
   onRender() {
     const agora = performance.now(), dt = Math.min(.1, (agora - (ultimo || agora)) / 1000); ultimo = agora;
     const p = ancora.passo(dt); rastro.passo();
-    if (p && alvoAtual === 'placa-4' && rastreando) pose4 = {p: [...p.p], q: [...p.q], s: p.s * alvoLargura};
+    if (p && alvoAtual === INICIO && rastreando) pose4 = {p: [...p.p], q: [...p.q], s: p.s * alvoLargura};
     if (PEGADAS && pose4 && !pegadasVistas) { pegadasVistas = true; ligarRastro(true); }
     if (querRastro && pose4 && !rastro.ligado) est.caminho = rastro.mostrar(pose4); // lupa usada com a placa fora da mira
     gravar?.andar(XR8.Threejs.xrScene().camera);
@@ -179,7 +181,7 @@ const modulo = {
   onCameraStatusChange({status: s}) { if (s === 'requesting') status('Permita o acesso à câmera…'); if (['failed', 'denied'].includes(s)) erro('Sem acesso à câmera. Libere a câmera nas permissões do navegador e recarregue.'); },
   onException() { erro('A câmera travou. Recarregue a página.'); },
 };
-// ?calibrar: medir o caminho no local. Mira a placa 4, marca pontos andando, mira a pista; salva neste aparelho.
+// ?calibrar: medir o caminho no local. Mira a folha do faro, marca pontos andando, mira a placa 4; salva neste aparelho.
 const CALIBRAR = Q.has('calibrar') && !DEMO;
 const calibrar = (() => {
   if (!CALIBRAR) return null;
@@ -188,20 +190,20 @@ const calibrar = (() => {
   document.body.append(caixa);
   let pts = [], pista = null;
   const st = t => { caixa.querySelector('.cal-st').textContent = t; }, out = t => { caixa.querySelector('.cal-out').textContent = t; };
-  const resumo = () => st(`${pose4 ? 'Placa 4 ✓' : '1) Mire a placa 4'} · ${pts.length} ponto(s) · ${pista ? 'pista ✓' : 'pista ✗'}`);
+  const resumo = () => st(`${pose4 ? 'Folha ✓' : '1) Mire a folha Faro do Pipoca'} · ${pts.length} ponto(s) · ${pista ? 'placa 4 ✓' : 'placa 4 ✗'}`);
   const final = () => [[0, .8], ...pts, ...(pista ? [paraPlaca(THREE, pose4, pista)] : [])];
-  const mostrar = c => { if (!pose4) return st('Mire a placa 4 antes'); est.caminho = rastro.mostrar(pose4, c); out(JSON.stringify(c)); };
+  const mostrar = c => { if (!pose4) return st('Mire a folha Faro do Pipoca antes'); est.caminho = rastro.mostrar(pose4, c); out(JSON.stringify(c)); };
   caixa.onclick = e => {
     const c = e.target.closest('[data-c]')?.dataset.c; if (!c) return;
     if (c === 'curto' || c === 'padrao') { const k = {pts: c === 'curto' ? [[0, 1], [1.5, 2], [3, 2]] : [[0, 1.5], [3, 3], [6, 3]]}; salvarCaminho(k); mostrar(k); return; }
-    if (!pose4) return st('Mire a placa 4 antes');
+    if (!pose4) return st('Mire a folha Faro do Pipoca antes');
     if (c === 'ponto') { const {camera} = XR8.Threejs.xrScene(); pts.push(paraPlaca(THREE, pose4, camera.position.toArray())); navigator.vibrate?.(20); }
     if (c === 'desfaz') pts.pop();
     if (c === 'ver' || c === 'salvar') { const k = {pts: final()}; if (k.pts.length < 2) return st('Marque ao menos um ponto'); mostrar(k); if (c === 'salvar') { salvarCaminho(k); st('Salvo neste aparelho ✓ · mande os números'); return; } }
     resumo();
   };
   out('Atual: ' + JSON.stringify(caminhoSalvo()));
-  return {ver(d) { if (d.name === 'pista-4') pista = [d.position.x, d.position.y, d.position.z]; setTimeout(resumo); }};
+  return {ver(d) { if (d.name === DESTINO) pista = [d.position.x, d.position.y, d.position.z]; setTimeout(resumo); }};
 })();
 est.simular = (detail, tipo = 'found') => modulo.listeners.find(l => l.event === 'reality.image' + tipo).process({detail});
 function erro(t) { $('#erro p').textContent = t; $('#erro').hidden = false; }

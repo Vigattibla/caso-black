@@ -1,7 +1,7 @@
-import {historia} from './historia.js';
+import {historia} from './historia.js?v=22';
 export const STORAGE = 'cb8w_v1';
 // Rodada: trocar o valor zera o progresso de todos os aparelhos no próximo acesso.
-const RODADA = '2026-10-22b';
+const RODADA = '2026-10-22d';
 try { if (localStorage.getItem('cb_rodada') !== RODADA) { ['cb8w_v1', 'cb_rastro4', 'cb-chave', 'cb_tv'].forEach(k => localStorage.removeItem(k)); localStorage.setItem('cb_rodada', RODADA); } } catch { /* sem armazenamento: nada a zerar */ }
 const novo = () => ({versao: 1, concluidas: [], dentes: {}, itens: {lente: false, chave: null}, mao: null, provas: {}, final: false, fotos: [], rastro4: false});
 const fotoValida = f => typeof f === 'string' && /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(f);

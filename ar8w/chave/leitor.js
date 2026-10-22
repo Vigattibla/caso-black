@@ -35,28 +35,34 @@ export function lerChave(gl, M, cw, ch) {
     L[j * RW + i] = Math.min(px[k], px[k + 1], px[k + 2]); // menor canal: caneta azul/colorida conta como tinta, guia cinza continua clara
   }
 
-  // Tinta = bem mais escuro que o papel da faixa (aguenta sombra e luz desigual; guia impressa clara fica de fora).
-  const tinta = new Float32Array(RW * RH), FX = 8;
-  for (let f = 0; f < FX; f++) {
-    const i0 = f * RW / FX | 0, i1 = (f + 1) * RW / FX | 0, vals = [];
-    for (let j = 0; j < RH; j += 2) for (let i = i0; i < i1; i += 2) vals.push(L[j * RW + i]);
+  // Papel de referência por bloco (8 faixas × 3 bandas): aguenta sombra e luz desigual.
+  // Tinta = mais escuro que o papel do bloco; limiar frouxo para lápis (cinza fraco) também contar.
+  const tinta = new Float32Array(RW * RH), escuro = new Float32Array(RW * RH), FX = 8, FY = 3;
+  for (let f = 0; f < FX; f++) for (let g = 0; g < FY; g++) {
+    const i0 = f * RW / FX | 0, i1 = (f + 1) * RW / FX | 0, j0 = g * RH / FY | 0, j1 = (g + 1) * RH / FY | 0, vals = [];
+    for (let j = j0; j < j1; j += 2) for (let i = i0; i < i1; i += 2) vals.push(L[j * RW + i]);
     vals.sort((a, b) => a - b);
     const ref = Math.max(60, vals[vals.length * 0.85 | 0]);
-    for (let j = 0; j < RH; j++) for (let i = i0; i < i1; i++) {
-      const n = j * RW + i, t = Math.min(1, Math.max(0, (0.72 * ref - L[n]) / (0.2 * ref)));
-      tinta[n] = t; rgb[n * 4 + 3] = t * 255;
+    for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) {
+      const n = j * RW + i, t = Math.min(1, Math.max(0, (0.86 * ref - L[n]) / (0.14 * ref)));
+      tinta[n] = t; escuro[n] = Math.max(0, (ref - L[n]) / ref); rgb[n * 4 + 3] = t * 255;
     }
   }
 
-  const frac = r => {
+  const area = (r, mapa, f) => {
     const i0 = (r.x0 - MOLDURA.x0) / du | 0, i1 = (r.x1 - MOLDURA.x0) / du | 0, j0 = (r.y0 - MOLDURA.y0) / dv | 0, j1 = (r.y1 - MOLDURA.y0) / dv | 0;
     let s = 0, n = 0;
-    for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) { s += tinta[j * RW + i] > 0.5; n++; }
+    for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) { s += f(mapa[j * RW + i]); n++; }
     return s / n;
   };
+  const frac = r => area(r, tinta, v => v > 0.5), media = r => area(r, escuro, v => v);
   const dentes = DENTES.map(d => {
     const a = frac(d.cima), b = frac(d.baixo);
-    return a > 0.08 && a > 2 * b ? 'C' : b > 0.08 && b > 2 * a ? 'B' : '?'; // 0.08: contorno fino de caneta já conta
+    if (a > 0.08 && a > 2 * b) return 'C'; // 0.08: contorno fino de caneta já conta
+    if (b > 0.08 && b > 2 * a) return 'B';
+    // Lápis: compara o quanto cada lado escureceu (guias impressas iguais nos dois lados se cancelam).
+    const ma = media(d.cima), mb = media(d.baixo);
+    return ma - mb > 0.006 && ma > 1.15 * mb ? 'C' : mb - ma > 0.006 && mb > 1.15 * ma ? 'B' : '?';
   });
   const papel = [0, 0, 0];
   let np = 0;
