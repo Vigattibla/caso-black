@@ -91,10 +91,11 @@ function aviso(t) { const a = $('#aviso'); a.textContent = t; a.hidden = false; 
 function fixar(sim, motivo) {
   if (DEMO || !painel || sim === fixado) return;
   fixado = sim; document.body.classList.toggle('fixado', sim); $('#demo-palco').hidden = !sim; est.fixado = sim;
-  $('#tela-cheia').hidden = !sim; $('#tela-cheia .tc-onde').textContent = alvoAtual === 'pista-4' ? 'Pista da estação 4' : 'Estação ' + alvoAtual?.slice(-1);
+  const n = Number(alvoAtual?.slice(-1)), local = ['Piscina', 'Restaurante', 'Espaço Kids', 'Cafeteria', 'Recepção'][n - 1];
+  $('#tela-cheia').hidden = !sim; $('#tela-cheia .tc-onde').textContent = `${alvoAtual === 'pista-4' ? 'Pista' : 'Estação ' + n} · ${local}`;
   if (motivo === 'placa') aviso('📷 Placa encontrada · voltou pra câmera'); else if (motivo === 'sair') { aviso('📷 Câmera ligada · mire a placa'); status(historia.abertura[2]); }
   $('#fixar').textContent = sim ? '📷 Voltar pra câmera' : '📌 Trazer pra tela';
-  if (sim) { $('#demo-palco').append(painel); Object.assign(painel.style, {display: '', visibility: 'visible'}); status(''); redimensionarDemo(); }
+  if (sim) { $('#demo-palco').append(painel, $('#tela-cheia')); Object.assign(painel.style, {display: '', visibility: 'visible'}); status(''); redimensionarDemo(); }
   else { Object.assign(painel.style, {transform: '', transformOrigin: '', visibility: 'hidden'}); } // CSS3D devolve o painel ao alvo no próximo render
 }
 // O alvo é só a foto da placa (recorte); o painel continua centrado na folha inteira.
@@ -112,7 +113,7 @@ function montarCss() {
 }
 function redimensionarDemo() {
   if ((!DEMO && !fixado) || !painel) return;
-  const alto = painel.offsetHeight || 800, k = Math.min((innerWidth - 12) / 600, (innerHeight - (fixado ? 200 : 118)) / alto);
+  const alto = painel.offsetHeight || 800, k = fixado ? Math.min((innerWidth - 56) / 600, (innerHeight - 150) / alto) : Math.min((innerWidth - 12) / 600, (innerHeight - 118) / alto);
   $('#demo-palco').style.width = 600 * k + 'px'; $('#demo-palco').style.height = alto * k + 'px';
   painel.style.transform = `scale(${k})`; painel.style.transformOrigin = '0 0';
 }
