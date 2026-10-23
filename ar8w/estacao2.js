@@ -1,4 +1,4 @@
-import {criarPainel} from './painel.js?v=25';
+import {criarPainel} from './painel.js?v=26';
 export function criarEstacao2(ctx) {
   const p = criarPainel(2, ctx), partes = ['COMANDA SEM NOME', '00h15', '1 refri de laranja', 'PRA VIAGEM'];
   let n = 0;

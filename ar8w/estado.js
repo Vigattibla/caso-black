@@ -1,4 +1,4 @@
-import {historia} from './historia.js?v=24';
+import {historia} from './historia.js?v=25';
 export const STORAGE = 'cb8w_v1';
 // Rodada: trocar o valor zera o progresso de todos os aparelhos no próximo acesso.
 const RODADA = '2026-10-22d';

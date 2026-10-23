@@ -1,4 +1,4 @@
-import {Voz} from './voz.js';
+import {Voz} from './voz.js?v=2';
 const balao = document.querySelector('#balao');
 let fila = [], fim, atual;
 export function calar() { fila = []; fim = null; atual = null; Voz.para(); balao.hidden = true; }

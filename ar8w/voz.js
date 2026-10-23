@@ -1,5 +1,5 @@
 // Mesmo contrato de voz.js: chave por texto normalizado; mídia ausente deixa só o balão.
-const mapa = await fetch('./vozes.json').then(r => r.json()).catch(() => ({}));
+const mapa = await fetch('./vozes.json?v=2').then(r => r.json()).catch(() => ({}));
 const disponiveis = new Set(await fetch('./vozes-disponiveis.json').then(r => r.json()).catch(() => []));
 const normalizar = t => String(t).replace(/<[^>]+>/g, '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
 let audio;

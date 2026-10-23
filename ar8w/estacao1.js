@@ -1,4 +1,4 @@
-import {criarPainel} from './painel.js?v=25';
+import {criarPainel} from './painel.js?v=26';
 /* Estação 1 (Piscina · Pegadas molhadas) como DOM 600x800 (3:4, igual à placa). Arte e regras copiadas de quadro.js. */
 const svg=(b,v='0 0 92 70')=>`<svg viewBox="${v}" aria-hidden="true">${b}</svg>`;
 const sola='<path d="M46 4 C64 4 66 30 62 48 C58 66 34 66 30 48 C26 30 28 4 46 4Z"/>';

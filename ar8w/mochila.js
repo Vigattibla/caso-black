@@ -2,10 +2,10 @@ export function criarMochila(estado, painel, avisar) {
   const el = document.querySelector('#mochila'); let selecionado, arrasto;
   const icones = {lente: '<img class="obj" src="../assets/objetos/lente.webp" alt="">', chave: '<img class="obj" src="../assets/objetos/chave-item.webp" alt="">'};
   const tem = item => !!estado.valor.itens[item];
-  const rotulo = item => `${item === 'lente' ? 'Lupa' : 'Chave'} ${tem(item) ? 'na mochila' : 'ainda não encontrada'}`;
+  const rotulo = item => `${item === 'lente' ? 'Lente' : 'Chave'} ${tem(item) ? 'na mochila' : 'ainda não encontrada'}`;
   function atualizar() {
     for (const item of ['lente', 'chave']) {
-      const b = el.querySelector(`[data-item="${item}"]`); b.innerHTML = icones[item] + `<span>${item === 'lente' ? 'Lupa' : 'Chave'}</span>`;
+      const b = el.querySelector(`[data-item="${item}"]`); b.innerHTML = icones[item] + `<span>${item === 'lente' ? 'Lente' : 'Chave'}</span>`;
       if (item === 'chave' && estado.valor.itens.chave?.img) { const img = new Image(); img.src = estado.valor.itens.chave.img; img.alt = 'Sua chave desenhada'; b.querySelector('img').replaceWith(img); }
       b.classList.toggle('vazio', !tem(item)); b.setAttribute('aria-label', rotulo(item));
     }

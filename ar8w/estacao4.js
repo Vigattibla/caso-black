@@ -1,6 +1,6 @@
-import {criarPainel} from './painel.js?v=25';
+import {criarPainel} from './painel.js?v=26';
 import {falar, sequencia} from './fala.js';
-import {historia} from './historia.js?v=24';
+import {historia} from './historia.js?v=25';
 // Fotos/itens da vitrine original; pares embaralhados, sem solução indicada no DOM.
 const itens = [['Chapéu preto', 'chapeu'], ['Casquinha', 'casquinha'], ['Picolé', 'picole'], ['Café', 'cafe'], ['Taça', 'taca'], ['Cookie', 'cookie']];
 export function criarEstacao4(ctx) {

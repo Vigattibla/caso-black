@@ -1,5 +1,5 @@
 /* Frente da carta: lê o retrato falado desenhado, faz ele saltar do papel, falar e tirar o disfarce (é o Bê). */
-import {historia} from './historia.js?v=24';
+import {historia} from './historia.js?v=25';
 import {falar, sequencia} from './fala.js';
 import {projetor} from './chave/leitor.js?v=22';
 import {tirarFoto} from './foto.js?v=1';
