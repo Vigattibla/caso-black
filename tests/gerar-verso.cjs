@@ -34,6 +34,12 @@ async function main() {
       x.lineCap='butt';
       // Parte de baixo livre para a criança escrever; só o Lucas no canto direito.
       const h=540,w=img.width*h/img.height;x.drawImage(img,1150-w,1555-h,w,h);
+      text('ANOTE AQUI O QUE VOCÊ DESCOBRIU',78,1000,'30px Anton','#16140f');
+      text('Escreva suas pistas, desenhe, invente: o espaço é seu.',78,1034,'19px Montserrat','#5c5446');
+      // Chamada final pros stories, com símbolo de câmera.
+      x.save();x.translate(78,1488);x.strokeStyle=x.fillStyle='#16140f';x.lineWidth=3;x.beginPath();x.roundRect(0,6,40,28,6);x.stroke();x.beginPath();x.roundRect(12,0,16,8,3);x.fill();x.beginPath();x.arc(20,20,8,0,Math.PI*2);x.stroke();x.restore();
+      text('Terminou? Tire uma foto da carta e marque a gente',134,1505,'19px Montserrat','#16140f');
+      text('nos stories: @villageresortmg',134,1531,'22px Anton','#16140f');
       text('2026-BF',49,1584,'18px Courier Prime','#777368');text('TURMA DO BÊ',1008,1584,'18px Courier Prime','#777368');
       const png=c.toDataURL('image/png');const raw=x.getImageData(0,0,1200,1600);for(let i=0;i<raw.data.length;i+=4){const l=Math.round(.299*raw.data[i]+.587*raw.data[i+1]+.114*raw.data[i+2]);raw.data[i]=raw.data[i+1]=raw.data[i+2]=l}x.putImageData(raw,0,0);
       return {png,luminance:c.toDataURL('image/png')};
