@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'">
+<title>Equipe · Caso Black</title>
+<link rel="icon" href="assets/cb-logo.png">
+<link rel="stylesheet" href="painel.css">
+<script src="painel.js" defer></script>
+</head>
+<body>
+<main>
+  <header><img src="assets/cb-logo.png" alt="Caso Black"><h1>Painel da equipe</h1><button id="sair" hidden>Sair</button></header>
+  <p id="aviso" role="status" aria-live="polite"></p>
+  <section id="acesso">
+    <h2>Acesso da equipe Village</h2>
+    <p>Cadastros e álbuns ficam disponíveis somente para a equipe autorizada.</p>
+    <form id="login"><label for="senha">Senha da equipe</label><input type="password" id="senha" autocomplete="current-password" required maxlength="200"><button class="principal">Entrar</button></form>
+  </section>
+  <section id="conteudo" hidden>
+    <nav aria-label="Seções do painel"><a href="#albuns">Álbuns recebidos</a><a href="#cadastros">Cadastros</a><a href="#grupo">Grupo VIP</a><a href="mural.html">Imprimir aprovados</a><button id="atualizar">Atualizar</button></nav>
+    <section id="albuns"><h2>Álbuns recebidos</h2><p>Confira as fotos e o nome da equipe. Somente os aprovados entram na fila de impressão da recepção.</p><label for="filtro">Mostrar</label><select id="filtro"><option value="pendente">Aguardando aprovação</option><option value="aprovado">Aprovados</option><option value="rejeitado">Não aprovados</option><option value="todos">Todos</option></select><div id="lista-albuns"></div></section>
+    <section id="cadastros"><div class="titulo"><h2>Cadastros <span id="total"></span></h2><a class="botao" href="api/index.php?export=1">Baixar CSV de contatos</a></div><p id="limite-lista"></p><div class="tabela"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Telefone / WhatsApp</th><th>Provas</th><th>Cadastro</th></tr></thead><tbody id="contatos"></tbody></table></div></section>
+    <section id="grupo"><h2>Grupo VIP</h2><p>Cole o convite oficial. Esse botão aparecerá no final do caso. Enquanto o link não for cadastrado, o jogador pode registrar o contato para receber as novidades.</p><form id="ajustes"><label for="vip">Link do WhatsApp</label><input id="vip" type="url" placeholder="https://chat.whatsapp.com/..." maxlength="500"><button class="principal">Salvar link</button></form></section>
+  </section>
+</main>
+</body>
+</html>

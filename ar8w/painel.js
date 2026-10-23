@@ -37,7 +37,7 @@ export function criarPainel(n, {estado, onGanhar = () => {}, premiar = () => {}}
   // Foto da turma na estação: carimbada ESTAÇÃO n · LOCAL, vai pro álbum do final e fica pra salvar no carimbo.
   async function fotografar() {
     const dado = await tirarFoto({titulo: `FOTO DA ESTAÇÃO ${n}`, legenda: `CASO BLACK · ESTAÇÃO ${n} · ${locais[n - 1].toUpperCase()}`});
-    if (!dado || !el.isConnected) return; estado.foto(dado);
+    if (!dado || !el.isConnected) return; estado.foto(dado, n);
     const a = q('.e1-baixar'); a.href = dado; a.download = `caso-black-estacao-${n}.jpg`; a.innerHTML = `<img src="${dado}" alt="Foto da estação ${n}">Salvar foto`; a.hidden = false;
     q('.e1-foto').textContent = '📸 Outra foto';
   }

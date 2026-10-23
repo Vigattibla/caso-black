@@ -3,7 +3,7 @@ export const STORAGE = 'cb8w_v1';
 // Rodada: trocar o valor zera o progresso de todos os aparelhos no próximo acesso.
 const RODADA = '2026-10-22d';
 try { if (localStorage.getItem('cb_rodada') !== RODADA) { ['cb8w_v1', 'cb_rastro4', 'cb-chave', 'cb_tv'].forEach(k => localStorage.removeItem(k)); localStorage.setItem('cb_rodada', RODADA); } } catch { /* sem armazenamento: nada a zerar */ }
-const novo = () => ({versao: 1, concluidas: [], dentes: {}, itens: {lente: false, chave: null}, mao: null, provas: {}, final: false, fotos: [], rastro4: false});
+const novo = () => ({versao: 1, concluidas: [], dentes: {}, itens: {lente: false, chave: null}, mao: null, provas: {}, final: false, fotos: [], fotosEstacoes: {}, rastro4: false});
 const fotoValida = f => typeof f === 'string' && /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(f);
 export function criarEstado(storage) {
   try { storage ??= window.localStorage; } catch { /* privacidade/restrição do navegador */ }
@@ -23,6 +23,7 @@ export function criarEstado(storage) {
       valor.final = valor.concluidas.includes(5) && !!salvo.final;
       valor.rastro4 = valor.itens.lente && !valor.concluidas.includes(4) && salvo.rastro4 === true;
       valor.fotos = (Array.isArray(salvo.fotos) ? salvo.fotos : []).filter(fotoValida).slice(-8);
+      for (const n of [1,2,3,4,5]) if (fotoValida(salvo.fotosEstacoes?.[n])) valor.fotosEstacoes[n] = salvo.fotosEstacoes[n];
     }
   } catch { /* armazenamento indisponível: a sessão continua */ }
   const eventos = new EventTarget();
@@ -40,7 +41,7 @@ export function criarEstado(storage) {
     podeLer() { return [1, 2, 3, 4].every(n => valor.dentes[n] === 'CBBC'[n - 1]); },
     guardarChave(codigo, img = '') { if (!this.podeLer() || codigo !== 'CBBC') return false; valor.itens.chave = {codigo, img}; salvar(); return true; },
     fechar() { if (!valor.concluidas.includes(5)) return false; valor.final = true; salvar(); return true; },
-    foto(img) { if (!fotoValida(img)) return false; valor.fotos = [...valor.fotos, img].slice(-8); return salvar(); },
+    foto(img, estacao) { if (!fotoValida(img)) return false; valor.fotos = [...valor.fotos, img].slice(-8); if ([1,2,3,4,5].includes(estacao)) valor.fotosEstacoes[estacao] = img; return salvar(); },
     // Lupa mora na carta; tocada no verso, vai para a mão (bandeja da tela) até ser usada.
     pegar(item) { if (item !== 'lente' || !valor.itens.lente || valor.concluidas.includes(4)) return false; valor.mao = item; salvar(); return true; },
     soltar() { valor.mao = null; salvar(); },

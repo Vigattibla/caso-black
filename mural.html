@@ -86,7 +86,7 @@ h1{font:400 clamp(34px,8vw,54px)/1 Anton;color:var(--amarelo);text-transform:upp
   const ler = () => { try { return JSON.parse(localStorage.getItem(KEY)) || [] } catch (e) { return [] } };
   const gravar = v => { try { localStorage.setItem(KEY, JSON.stringify(v)) } catch (e) {} };
   const EXEMPLOS = ['Equipe Lucas', 'Detetives da Piscina', 'Família Rocha', 'Os Sherlocks'].map((equipe, i) => ({id: 'ex' + i, equipe, url: `assets/mural-exemplo/${i + 1}.jpg`, ex: true}));
-  let lista = [], sel = new Set();
+  let lista = [], sel = new Set(), csrf = '';
 
   async function carregar() {
     try {
@@ -95,8 +95,13 @@ h1{font:400 clamp(34px,8vw,54px)/1 Anton;color:var(--amarelo);text-transform:upp
           {headers: {apikey: C.supabaseAnon, Authorization: 'Bearer ' + C.supabaseAnon}});
         if (r.ok) return (await r.json()).map(m => ({id: m.id, equipe: m.equipe, em: m.criado_em, url: `${C.supabaseUrl}/storage/v1/object/public/mural/${m.arquivo}`}));
       } else if (C.backend === 'endpoint' && C.endpoint) {
+        const session = await fetch(C.endpoint + '?session=1', {cache: 'no-store'}).then(r => r.json());
+        if (!session.autenticado) { location.replace('painel.html?voltar=mural'); return []; }
+        csrf = session.csrf;
         const r = await fetch(C.endpoint + (C.endpoint.includes('?') ? '&' : '?') + 'mural=1');
-        if (r.ok) return (await r.json()).map(m => ({id: m.id || m.url, equipe: m.equipe, em: m.criado_em, url: m.url}));
+        if (!r.ok) throw Error('Não foi possível carregar os álbuns.');
+        const albuns = await r.json(); gravar(albuns.filter(m => m.impresso_em).map(m => m.id));
+        return albuns.map(m => ({id: m.id, equipe: m.equipe, em: m.criado_em, url: C.endpoint + '?imagem=' + encodeURIComponent(m.id)}));
       }
     } catch (e) {}
     return null;
@@ -141,11 +146,22 @@ h1{font:400 clamp(34px,8vw,54px)/1 Anton;color:var(--amarelo);text-transform:upp
   }
 
   $('#imp').onclick = async () => { await montarFolhas(); print() };
-  $('#marca').onclick = () => { if (!sel.size) return; gravar([...new Set([...ler(), ...sel])]); sel.clear(); pintar() };
+  $('#marca').onclick = async () => {
+    if (!sel.size) return;
+    if (C.backend === 'endpoint') {
+      const r = await fetch(C.endpoint, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({evento: 'impressos', ids: [...sel], csrf})}).catch(() => null);
+      if (!r?.ok) { $('#n').textContent = 'Não foi possível marcar. Atualize a página e tente novamente.'; return; }
+    }
+    gravar([...new Set([...ler(), ...sel])]); sel.clear(); pintar();
+  };
   $('#todos').onclick = () => { const feitos = ler(); lista.forEach(m => ($('#verFeitos').checked || !feitos.includes(m.id)) && sel.add(m.id)); pintar() };
   $('#verFeitos').onchange = pintar;
 
-  carregar().then(real => { document.body.classList.toggle('ex', !real); lista = real || EXEMPLOS; pintar() });
+  carregar().then(real => {
+    const demo = new URLSearchParams(location.search).has('demo');
+    document.body.classList.toggle('ex', !real && demo); lista = real || (demo ? EXEMPLOS : []); pintar();
+    if (!real && !demo) $('#n').textContent = 'Sem conexão com o painel. Atualize para tentar novamente.';
+  });
 })();
 </script>
 </body>

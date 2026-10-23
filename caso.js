@@ -114,7 +114,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <p class="mono">O Village imprime o álbum e cola no Mural da Black, na parede da recepção. Passa lá pra ver o seu!</p>
   <img class="muPrev" id="muPrev" alt="Prévia do álbum">
   <label for="muEq">NOME DA EQUIPE</label><input id="muEq" maxlength="40" placeholder="Família Silva">
-  <label class="lgpd"><input type="checkbox" id="muOk"><span>Autorizo o Village Resort a imprimir este álbum e expor, com o nome da equipe, no Mural da Black da recepção. Todos que aparecem nas fotos concordam. Posso pedir pra tirar quando quiser (LGPD).</span></label>
+  <label class="lgpd"><input type="checkbox" id="muOk"><span>Autorizo o Village Resort a imprimir este álbum e expor, com o nome da equipe, no Mural da Black da recepção. Sou maior de idade e tenho autorização de todos que aparecem nas fotos e dos responsáveis pelos menores. Posso pedir a retirada na recepção.</span></label>
   <div class="erro" id="muErro"></div>
   <button class="btn" id="muEnv">Mandar pro mural</button>
   <p class="mono pq" style="margin-top:10px">Antes de aparecer, a equipe do Village confere cada álbum.</p>
@@ -139,7 +139,7 @@ $('#cOk').onclick = async () => {
   // pistas já registradas antes do cadastro viram carimbos
   for (const i of achadas) await Dados.carimbar(i + 1, 'antes-cadastro');
   $('#cOk').disabled = false; fechaOv('#cad'); pintarFicha();
-  toast(`Ficha aberta, ${nome.split(' ')[0]}. Ache as placas!`);
+  toast(Dados.pendentes() ? 'Ficha salva no aparelho. Conecte-se à internet para confirmar o envio ao Village.' : `Ficha registrada, ${nome.split(' ')[0]}. Ache as placas!`);
   const f = depoisCad; depoisCad = null; f && f();
 };
 
@@ -301,7 +301,8 @@ pintaOpina();
 let muBlob = null;
 async function porNoMural() {
   if (!resolvido()) return toast('O mural é das equipes que resolveram o caso. Falta pouco!');
-  const ja = Dados.noMural(); if (ja) return toast(`O álbum da ${ja.equipe} já foi pro mural.`);
+  if (![1,2,3,4,5].some(n => fotoDe(n))) return toast('Tire ao menos uma foto da equipe para montar o álbum.');
+  const ja = Dados.noMural(); if (ja) return toast(`O álbum da ${ja.equipe} já foi enviado para a equipe do Village conferir.`);
   pedirCadastro(async () => {
     toast('Montando o álbum...'); const c = await albumStory();
     // vai impresso no mural da recepção: manda em 1080x1920
@@ -315,6 +316,6 @@ $('#muEnv').onclick = async () => {
   if (!$('#muOk').checked) return err('Marque a autorização pra mandar o álbum.');
   $('#muEnv').disabled = true; const ok = await Dados.mural(eq, muBlob); $('#muEnv').disabled = false;
   if (!ok) return err('Não deu pra enviar agora. Confira a internet e tente de novo.');
-  fechaOv('#muralOv'); toast('Álbum enviado! A equipe do Village confere, imprime e cola no mural da recepção.');
+  fechaOv('#muralOv'); toast('Álbum recebido! A equipe do Village vai conferir antes de imprimir para o mural da recepção.');
 };
 $('#muPor').onclick = porNoMural; $('#muPor2').onclick = porNoMural;

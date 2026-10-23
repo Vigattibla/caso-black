@@ -98,3 +98,5 @@ body.fotografando > :not(#camera):not(#foto-camera){visibility:hidden}
 #foto-camera .fc-pronta div{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 #foto-camera .fc-pronta a,#foto-camera .fc-pronta button{display:inline-flex;align-items:center;min-height:46px;padding:0 18px;border:2px solid #fdc72f;background:#111;color:#fdc72f;font:800 14px Montserrat,sans-serif;text-decoration:none;cursor:pointer}
 #foto-camera .fc-pronta .fc-ok{background:#fdc72f;color:#111}
+
+.btn-caderno{display:block;margin:12px 0 0;padding:12px;min-height:44px;background:#fdc72f;color:#111;font:700 15px/1.35 Montserrat,sans-serif;text-align:center;text-decoration:none;pointer-events:auto}.btn-caderno:focus-visible{outline:3px solid #fff;outline-offset:3px}

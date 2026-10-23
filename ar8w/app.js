@@ -1,3 +1,4 @@
+import {integrarJogo} from './integracao.js';
 /* Jogo único: quadro CSS3D no alvo; demo usa os mesmos painéis sem ligar câmera. */
 import * as THREE from 'three';
 import {CSS3DRenderer, CSS3DObject} from './vendor/CSS3DRenderer.js';
@@ -21,6 +22,7 @@ window.THREE = THREE;
 const $ = s => document.querySelector(s), Q = new URLSearchParams(location.search);
 const balao = $('#balao'); // CSS3D pode manter o DOM fora do documento até o próximo render.
 const DEMO = Q.get('demo'), estado = criarEstado();
+integrarJogo(estado);
 if (Q.get('reset') === '1') { estado.reset(); $('#reset').hidden = false; }
 $('#reset').onclick = () => { estado.reset(); location.reload(); };
 const style = document.createElement('style'); style.textContent = CSS + CSS_INV + CSS_CUT; document.head.append(style);
