@@ -140,32 +140,14 @@ function amarrar() {
 function esticar(g, atraso) {
   Array.prototype.forEach.call(g.childNodes, function (l) { l.style.strokeDasharray = 4000; l.animate([{strokeDashoffset: 4000}, {strokeDashoffset: 4000}, {strokeDashoffset: 0}], {duration: 1400 + atraso, easing: 'ease-out'}); });
 }
-// Fundo: papelão escuro com grão, recortes de jornal desbotados e retícula vermelha; refeito só se a tela mudar.
+// Fundo: papelão escuro liso, só grão fino e vinheta, pra não brigar com os retratos; refeito só se a tela mudar.
 function fundo() {
-  var cv = document.getElementById('fundo'), w = innerWidth, h = innerHeight, x = cv.getContext('2d'), r = sorte(42), i, j, k;
+  var cv = document.getElementById('fundo'), w = innerWidth, h = innerHeight, x = cv.getContext('2d'), r = sorte(42), i;
   cv.width = w; cv.height = h;
   x.fillStyle = '#1b1916'; x.fillRect(0, 0, w, h);
-  for (i = 0; i < w * h / 40; i++) { x.fillStyle = r() < .5 ? '#ffffff0d' : '#00000026'; x.fillRect(r() * w, r() * h, 1.5, 1.5); }
-  var u = Math.min(w, h) / 100;
-  for (k = 0; k < 16; k++) {
-    var cxk = r() * w, cyk = r() * h, pw = (14 + r() * 22) * u, ph = (10 + r() * 18) * u;
-    x.save(); x.translate(cxk, cyk); x.rotate((r() - .5) * .5);
-    x.beginPath(); x.moveTo(-pw / 2, -ph / 2);
-    for (j = 1; j <= 8; j++) x.lineTo(-pw / 2 + pw * j / 8, -ph / 2 + (r() - .5) * u);
-    for (j = 1; j <= 6; j++) x.lineTo(pw / 2 + (r() - .5) * u, -ph / 2 + ph * j / 6);
-    for (j = 7; j >= 0; j--) x.lineTo(-pw / 2 + pw * j / 8, ph / 2 + (r() - .5) * u);
-    for (j = 5; j > 0; j--) x.lineTo(-pw / 2 + (r() - .5) * u, -ph / 2 + ph * j / 6);
-    x.closePath(); x.fillStyle = k % 5 === 0 ? '#4a3a2c' : '#5b574f'; x.fill();
-    x.clip(); x.fillStyle = '#2f2c28';
-    if (k % 4 === 0) { x.fillRect(-pw / 2 + u, -ph / 2 + u, pw * .8, 2.4 * u); }
-    for (j = -ph / 2 + 4.4 * u; j < ph / 2 - u; j += 1.3 * u) {
-      var col = r() < .5 ? 2 : 1, cw = (pw - 2 * u) / col;
-      for (var c = 0; c < col; c++) x.fillRect(-pw / 2 + u + c * (cw + .6 * u), j, cw * (.7 + r() * .3) - .6 * u, .55 * u);
-    }
-    if (k % 3 === 1) { x.fillStyle = '#7a1a1f'; for (j = 0; j < 18; j++) for (c = 0; c < 18; c++) { var rr = (1 - j / 18) * .45 * u; x.beginPath(); x.arc(-pw / 2 + c * 1.1 * u, ph / 2 - j * 1.1 * u, rr, 0, 7); x.fill(); } }
-    x.restore();
-  }
-  for (k = 0; k < 7; k++) { x.save(); x.translate(r() * w, r() * h); x.rotate((r() - .5) * 1.4); x.fillStyle = '#b9ad8a40'; x.fillRect(-6 * u, -1.4 * u, 12 * u, 2.8 * u); x.restore(); }
+  for (i = 0; i < w * h / 60; i++) { x.fillStyle = r() < .5 ? '#ffffff08' : '#00000018'; x.fillRect(r() * w, r() * h, 1.5, 1.5); }
+  var v = x.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .3, w / 2, h / 2, Math.max(w, h) * .75);
+  v.addColorStop(0, '#00000000'); v.addColorStop(1, '#00000080'); x.fillStyle = v; x.fillRect(0, 0, w, h);
 }
 fundo();
 var tamanho = innerWidth + 'x' + innerHeight;
