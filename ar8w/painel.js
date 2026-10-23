@@ -12,17 +12,17 @@ const roteiros = [[C('estacao1.mp4', 'Pegada molhada… opa, essa tem uma estrel
   [L('O Pipoca tá latindo pra essa placa!'), C('estacao4.mp4', 'Tem alguma coisa escondida ali, que só o celular mostra.')],
   [C('estacao5.mp4', 'Trancado!'), L('Ainda bem que vocês montaram a chave. Abre esse cadeado e coloca as pistas na ordem do relógio.')]];
 // Retrato falado (frente da carta): cada testemunha dá um traço do suspeito.
-const testemunhas = [{traco: 'ÓCULOS ESCUROS', texto: 'O salva-vidas viu o suspeito: óculos escuros! Desenha os óculos no retrato falado.'},
+const testemunhas = [{traco: 'ÓCULOS ESCUROS', texto: 'O salva-vidas viu o suspeito: óculos escuros! Desenha os óculos no retrato falado, na frente da sua carta.'},
   {traco: 'BIGODÃO', texto: 'O garçom lembrou: um bigodão enorme! Desenha o bigode no retrato.'},
   {traco: 'CHAPÉU', texto: 'Na câmera tem a sombra de um chapéu! Desenha o chapéu no retrato.'},
   {traco: 'GRAVATA-BORBOLETA', texto: 'A moça da cafeteria viu uma gravata-borboleta. Desenha no retrato!'},
-  {traco: 'SORRISÃO', texto: 'A recepcionista jura: ele saiu com um sorrisão. Desenha o sorriso e mira a câmera no retrato falado!'}];
+  {traco: 'SORRISÃO', texto: 'A recepcionista jura: ele saiu com um sorrisão. Desenha o sorriso no retrato falado!'}];
 const resultado5 = 'Uma da manhã: alguém de chapéu passou pela recepção sem fazer check-out.';
 export function criarPainel(n, {estado, onGanhar = () => {}, premiar = () => {}}) {
   const texto = historia.estacoes[n], quem = n === 3 ? 'Gabi' : 'Lucas';
   const el = document.createElement('section'); el.className = `e1 estacao estacao-${n}`; el.dataset.estacao = n;
   el.setAttribute('aria-label', `Estação ${n} · ${locais[n - 1]}`);
-  el.innerHTML = `<header class="e1-rec e1-ficha"><i class="e1-tacha"></i><img src="${n === 5 ? './alvos/recepcao.webp' : `../assets/locais/${n}.webp`}" alt=""><small>ESTAÇÃO ${n} · ${locais[n - 1]}</small><h2>${titulos[n - 1]}</h2></header><div class="e1-jogo"></div><button class="e1-dica">PRECISA DE DICA?</button><div class="fala-slot"></div><div class="e1-fim" hidden><div class="e1-rec e1-carimbo"><i class="e1-tacha"></i><div class="e1-st">PROVA ENCONTRADA</div><p class="prova"></p><p class="dente"></p><p class="testemunha"></p><p class="vire" hidden>VIRE A CARTA E MIRE A CÂMERA NO RETRATO FALADO</p><div class="e1-fotos"><button class="e1-foto">📸 Tirar foto</button><a class="e1-baixar" hidden></a></div><button class="e1-segue">Continuar</button></div></div>`;
+  el.innerHTML = `<header class="e1-rec e1-ficha"><i class="e1-tacha"></i><img src="${n === 5 ? './alvos/recepcao.webp' : `../assets/locais/${n}.webp`}" alt=""><small>ESTAÇÃO ${n} · ${locais[n - 1]}</small><h2>${titulos[n - 1]}</h2></header><div class="e1-jogo"></div><button class="e1-dica">PRECISA DE DICA?</button><div class="fala-slot"></div><div class="e1-fim" hidden><div class="e1-rec e1-carimbo"><i class="e1-tacha"></i><div class="e1-st">PROVA ENCONTRADA</div><p class="prova"></p><p class="dente"></p><p class="testemunha"></p><p class="vire" hidden>VIRE A CARTA E MIRE A LUPA NO RETRATO FALADO</p><div class="e1-fotos"><button class="e1-foto">📸 Tirar foto</button><a class="e1-baixar" hidden></a></div><button class="e1-segue">Continuar</button></div></div>`;
   const q = s => el.querySelector(s); let venceu = false, autoFoto;
   el.limpar = () => { clearTimeout(autoFoto); pararRoteiro(el); };
   q('.e1-dica').onclick = () => falar(texto.dica, n === 4 ? 'Pipoca' : quem);
@@ -32,7 +32,7 @@ export function criarPainel(n, {estado, onGanhar = () => {}, premiar = () => {}}
     const tes = testemunhas[n - 1]; q('.testemunha').textContent = `RETRATO FALADO · ${tes.traco}`;
     q('.e1-segue').onclick = () => { q('.e1-fim').hidden = true; }; q('.vire').hidden = n !== 5;
     q('.e1-foto').onclick = () => fotografar();
-    const falas = () => sequencia([n === 5 ? resultado5 : texto.resultado, ...(avisar ? [texto.lente, texto.dente] : [texto.dente]), tes.texto, n === 5 && 'Agora vira a carta e mira a câmera no RETRATO FALADO pra descobrir quem foi!'].filter(Boolean).map(t => ({texto: t, quem})));
+    const falas = () => sequencia([n === 5 ? resultado5 : texto.resultado, ...(avisar ? [texto.lente, texto.dente] : [texto.dente]), tes.texto, n === 5 && 'Agora vira a carta e aponta a lupa mágica pro RETRATO FALADO pra descobrir quem foi!'].filter(Boolean).map(t => ({texto: t, quem})));
     if (avisar) { premiar(n === 1 ? 'lente' : 'dente', el); onGanhar(n); autoFoto = setTimeout(() => { if (el.isConnected) fotografar().then(() => { if (el.isConnected) falas(); }); }, 900); } else falas(); // estação vencida agora: a câmera de foto abre direto
   }
   // Foto da turma na estação: carimbada ESTAÇÃO n · LOCAL, vai pro álbum do final e fica pra salvar no carimbo.

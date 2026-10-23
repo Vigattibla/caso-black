@@ -81,14 +81,15 @@ export function criarRetrato({estado, demo}) {
   window.Dados?.grupo().then(link => { if (link) { const a = el.querySelector('.btn-vip'); a.href = link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Entrar no grupo VIP'; } });
   const q = s => el.querySelector(s), teste = demo || new URLSearchParams(location.search).get('retrato') === '1';
   const liberado = () => teste || estado.valor.concluidas.includes(5);
-  let seguidas = 0, lido = false, boca, balanco, tempoFala, tempoRevelacao;
+  let seguidas = 0, vazio = 0, lido = false, boca, balanco, tempoFala, tempoRevelacao;
   el.limpar = () => { clearTimeout(tempoFala); clearTimeout(tempoRevelacao); clearInterval(boca); balanco?.cancel(); for (const a of el.getAnimations?.({subtree: true}) || []) a.cancel(); };
   const status = t => { q('.leitura-status').textContent = t; q('.leitura-status').hidden = !t; };
 
   function avaliar(r) {
     if (lido || !liberado()) return false;
     if (r.erro) { seguidas = 0; status(r.erro === 'longe' ? 'CHEGUE MAIS PERTO' : 'MOSTRE O RETRATO INTEIRO'); return false; }
-    if (r.tinta < TINTA_MIN) { seguidas = 0; status('DESENHE OS TRAÇOS NO ROSTO'); return false; }
+    // Desenho é opcional: sem tinta, espera um pouco e revela assim mesmo.
+    if (r.tinta < TINTA_MIN && ++vazio < 45) { seguidas = 0; status('SEM DESENHO? TUDO BEM, SEGURE FIRME…'); return false; }
     status('LENDO O RETRATO…');
     if (++seguidas < 3) return false;
     lido = true; ganharVida(r.traco); return true;
@@ -156,7 +157,7 @@ export function criarRetrato({estado, demo}) {
     const vivo = document.createElement('div'); vivo.className = 'ret-vivo'; vivo.innerHTML = '<img class="ret-be" src="../assets/be-cabeca.png" alt="Bê" style="opacity:1">'; el.append(vivo);
     const f = historia.final.at(-1); falar(f.texto, f.quem); q('.foto-convite').hidden = false; mostrarAlbum();
   } else if (!liberado()) { status('FALTAM TESTEMUNHAS'); falar('O retrato ainda tá incompleto. Termina as cinco placas e volta aqui!'); }
-  else { status('MOSTRE O RETRATO'); falar('Retrato falado pronto? Mira a câmera no rosto e segura firme!'); if (demo) montarDemo(); }
+  else { status('MOSTRE O RETRATO'); falar('Retrato falado pronto? Aponta a lupa pro rosto e segura firme. Não desenhou? Tudo bem, a lupa revela assim mesmo!'); if (demo) montarDemo(); }
 
   function montarDemo() {
     const area = document.createElement('div'); area.className = 'demo-retrato';

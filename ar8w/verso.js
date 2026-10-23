@@ -28,7 +28,7 @@ export function criarVerso({estado, demo, premiar}) {
   q('.leitura-socorro').onclick = () => { if (!guardando && el.podeLer()) guardar('CBBC', ultimo?.traco); };
   el.avaliar = avaliar;
   el.podeLer = () => estado.podeLer() && !estado.valor.itens.chave && !estado.valor.concluidas.includes(5);
-  if (estado.valor.concluidas.includes(5)) { q('.chave-guia').classList.add('guardada'); q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e mira a câmera no retrato falado!'); }
+  if (estado.valor.concluidas.includes(5)) { q('.chave-guia').classList.add('guardada'); q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e aponta a lupa mágica pro retrato falado!'); }
   else {
     falar(historia.chave[estado.valor.itens.chave ? 'certa' : 'pedido']);
     q('.leitura-status').textContent = estado.valor.itens.chave ? 'CHAVE GUARDADA' : estado.podeLer() ? 'PASSE LÁPIS OU CANETA POR CIMA DO AMARELO' : `COPIE O AMARELO · FALTA${faltam() > 1 ? 'M' : ''} ${faltam()} DENTE${faltam() > 1 ? 'S' : ''} NAS PLACAS`;
