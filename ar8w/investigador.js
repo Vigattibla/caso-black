@@ -1,5 +1,5 @@
 /* Vídeo do Cacá (fundo verde) por cima do quadro, antes da fala da estação. Sem MP4 no manifest, resolve na hora. */
-const TESTE = new URLSearchParams(location.search).has('cacateste');
+export const TESTE = new URLSearchParams(location.search).has('cacateste');
 let manifesto;
 const lista = () => manifesto || (manifesto = fetch('../assets/v/manifest.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).catch(() => ({})));
 export async function videoDoCaca(nome) {
@@ -19,7 +19,7 @@ const VS = 'attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*.5+.5,.5-p.
 // Chave pela dominância do verde, com despill para não sobrar borda verde no cabelo.
 const FS = `precision mediump float;varying vec2 uv;uniform sampler2D t;void main(){vec3 c=texture2D(t,uv).rgb;float m=max(c.r,c.b);float k=c.g-m;
 float a=1.-smoothstep(.06,.2,k);c.g=min(c.g,m+.02);gl_FragColor=vec4(c*a,a);}`;
-function keyer(canvas, video) {
+export function keyer(canvas, video, escala = .5) {
   const gl = canvas.getContext('webgl', {premultipliedAlpha: true, alpha: true}); if (!gl) return null;
   const sh = (tp, src) => { const s = gl.createShader(tp); gl.shaderSource(s, src); gl.compileShader(s); return s; };
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
@@ -29,7 +29,7 @@ function keyer(canvas, video) {
   for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
   return () => {
     if (video.readyState < 2) return;
-    const w = video.videoWidth >> 1, h = video.videoHeight >> 1; // meia resolução basta dentro do quadro
+    const w = Math.round(video.videoWidth * escala), h = Math.round(video.videoHeight * escala); // meia resolução basta dentro do quadro
     if (canvas.width !== w) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   };

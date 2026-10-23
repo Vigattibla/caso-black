@@ -16,13 +16,14 @@ import {falar, sequencia, calar} from './fala.js';
 import {historia} from './historia.js?v=25';
 import {lerChave} from './chave/leitor.js?v=22';
 import {CSS_INV, tocarCaca} from './investigador.js';
+import {CSS_CUT, cutscene} from './cutscene.js';
 window.THREE = THREE;
 const $ = s => document.querySelector(s), Q = new URLSearchParams(location.search);
 const balao = $('#balao'); // CSS3D pode manter o DOM fora do documento até o próximo render.
 const DEMO = Q.get('demo'), estado = criarEstado();
 if (Q.get('reset') === '1') { estado.reset(); $('#reset').hidden = false; }
 $('#reset').onclick = () => { estado.reset(); location.reload(); };
-const style = document.createElement('style'); style.textContent = CSS + CSS_INV; document.head.append(style);
+const style = document.createElement('style'); style.textContent = CSS + CSS_INV + CSS_CUT; document.head.append(style);
 const status = t => { $('#status').textContent = t; $('#status').hidden = !t; };
 const est = window.__ar8w = {estado, eventos: [], demo: !!DEMO};
 let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, recortes = {}, achadoEm = 0, querRastro = false, cssScene, cssRenderer, raiz, quadroObj, ultimo = 0, rodando = false, gl, ultimaLeitura = 0;
@@ -227,10 +228,11 @@ function sairCamera() {
   location.replace(location.pathname + location.search);
 }
 let voltou = false; try { voltou = sessionStorage.getItem('cb_volta') === '1'; sessionStorage.removeItem('cb_volta'); } catch (e) {}
-// Lucas e Cacá se apresentam na tela inicial (só sem MP4 no manifest não aparece). Abrir a câmera encerra o vídeo.
-const FALA_ABERTURA = 'Detetives, aqui é o Lucas! E esse é o Cacá, investigador oficial do Village. Temos um caso sério: a Black Friday sumiu… e o Bê sumiu junto! Mas ele deixou pistas em cinco placas espalhadas pelo resort. Abre a câmera mágica, aponta pra placa do Caso Black e resolve cada desafio. No final, a gente descobre quem é o culpado. Bora? Toca no botão amarelo!';
-if (!voltou && !new URLSearchParams(location.search).has('demo')) tocarCaca($('#inicio'), 'abertura.mp4', FALA_ABERTURA);
-$('#abrir').addEventListener('click', () => $('#inicio .inv-pular')?.click(), {capture: true});
+// Cutscene de abertura por cima de tudo (sem abertura.mp4 no manifest não aparece). Uma frase por item, na ordem da fala.
+const FALA_ABERTURA = ['Detetives, aqui é o Lucas! E esse é o Cacá, investigador oficial do Village.', 'Temos um caso sério: a <b>Black Friday</b> sumiu… e o Bê sumiu junto!',
+  'Mas ele deixou pistas em <b>cinco placas</b> espalhadas pelo resort.', 'Abre a câmera mágica, aponta pra placa do Caso Black e resolve cada desafio.',
+  'No final, a gente descobre <b>quem é o culpado</b>.', 'Bora? Toca no <b>botão amarelo</b>!'];
+if (!voltou && !new URLSearchParams(location.search).has('demo')) cutscene('abertura.mp4', FALA_ABERTURA);
 if (voltou) $('#abrir').textContent = 'Voltar pra câmera mágica';
 async function abrir() {
   if (rodando) return;
