@@ -15,7 +15,7 @@ import {criarMochila} from './mochila.js?v=18';
 import {falar, sequencia, calar} from './fala.js';
 import {historia} from './historia.js?v=23';
 import {lerChave} from './chave/leitor.js?v=22';
-import {CSS_INV} from './investigador.js';
+import {CSS_INV, tocarCaca} from './investigador.js';
 window.THREE = THREE;
 const $ = s => document.querySelector(s), Q = new URLSearchParams(location.search);
 const balao = $('#balao'); // CSS3D pode manter o DOM fora do documento até o próximo render.
@@ -227,6 +227,10 @@ function sairCamera() {
   location.replace(location.pathname + location.search);
 }
 let voltou = false; try { voltou = sessionStorage.getItem('cb_volta') === '1'; sessionStorage.removeItem('cb_volta'); } catch (e) {}
+// Cacá se apresenta na tela inicial (só sem MP4 no manifest não aparece). Abrir a câmera encerra o vídeo.
+const FALA_ABERTURA = 'Ei, detetive! Aqui é o Cacá. A Black Friday sumiu… e o Bê sumiu junto! Abre a câmera mágica e aponta pras cinco placas do Caso Black.';
+if (!voltou && !new URLSearchParams(location.search).has('demo')) tocarCaca($('#inicio'), 'abertura.mp4', FALA_ABERTURA);
+$('#abrir').addEventListener('click', () => $('#inicio .inv-pular')?.click(), {capture: true});
 if (voltou) $('#abrir').textContent = 'Voltar pra câmera mágica';
 async function abrir() {
   if (rodando) return;
