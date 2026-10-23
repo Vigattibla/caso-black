@@ -1,4 +1,4 @@
-import {historia} from './historia.js?v=23';
+import {historia} from './historia.js?v=24';
 import {falar, sequencia} from './fala.js';
 import {lerChave, adesivo} from './chave/leitor.js?v=22';
 import {IMG, MOLDURA, DENTES, HASTE, ARGOLA} from './chave/layout.js';

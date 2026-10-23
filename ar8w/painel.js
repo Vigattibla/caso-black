@@ -1,4 +1,4 @@
-import {historia} from './historia.js?v=23';
+import {historia} from './historia.js?v=24';
 import {falar, sequencia} from './fala.js';
 import {tocarCaca} from './investigador.js';
 import {tirarFoto} from './foto.js?v=1';

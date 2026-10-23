@@ -71,6 +71,7 @@ Código da chave: **CBBC** (1 cima · 2 baixo · 3 baixo · 4 cima).
 - revela (Lucas): `Uma digital dourada… é do Bê!`
 - Bê: `Fui eu! Peguei a Black emprestada pra preparar uma surpresa.`
 - Bê: `As ofertas chegam dia 27 de novembro. E quem resolveu o caso entra primeiro, no grupo VIP!`
+- Cacá: `Bom trabalho, detetives! Eu e o Lucas não teríamos resolvido sem vocês.`
 - Gabi: `Caso fechado! Tira uma foto da turma pro álbum.`
 
 ## Foto / álbum (mantidas)

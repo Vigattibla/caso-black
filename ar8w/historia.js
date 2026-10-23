@@ -79,6 +79,10 @@ export const historia = {
       "quem": "Bê"
     },
     {
+      "texto": "Bom trabalho, detetives! Eu e o Lucas não teríamos resolvido sem vocês.",
+      "quem": "Cacá"
+    },
+    {
       "texto": "Caso fechado! Tira uma foto da turma pro álbum.",
       "quem": "Gabi"
     }

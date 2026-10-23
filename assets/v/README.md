@@ -1,4 +1,4 @@
-Vídeos do Investigador Caca: `estacao1.mp4` até `estacao5.mp4`.
+Vídeos do Lucas + Cacá (fundo verde, os dois no quadro): `abertura.mp4` e `estacao1.mp4` até `estacao5.mp4`. Roteiro em Caso Black - PRODUCAO/02 Gravar Lucas e Caca.
 
 Ao adicionar um MP4, inclua o nome em `manifest.json`, por exemplo:
 `{"estacoes":["estacao1.mp4","estacao2.mp4"],"corpos":["be"]}`.
