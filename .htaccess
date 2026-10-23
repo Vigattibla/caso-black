@@ -1,6 +1,0 @@
-# Sem cache para HTML/JS/CSS/JSON: cada publicação aparece na hora (Cloudflare respeita no-cache da origem).
-<IfModule mod_headers.c>
-  <FilesMatch "\.(html|js|mjs|css|json)$">
-    Header set Cache-Control "no-cache, must-revalidate"
-  </FilesMatch>
-</IfModule>
