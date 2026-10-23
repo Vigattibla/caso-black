@@ -1,4 +1,5 @@
 /* Vídeo do Cacá (fundo verde) por cima do quadro, antes da fala da estação. Sem MP4 no manifest, resolve na hora. */
+import {sequencia} from './fala.js';
 export const TESTE = new URLSearchParams(location.search).has('cacateste');
 let manifesto;
 const lista = () => manifesto || (manifesto = fetch('../assets/v/manifest.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).catch(() => ({})));
@@ -51,4 +52,8 @@ export async function tocarCaca(el, nome, legenda = '') {
     video.play().catch(() => { video.muted = true; som.hidden = false; return video.play(); }).catch(sair);
     loop();
   });
+}
+/* Passos {caca, leg} (vídeo no quadro) ou {lucas} (balão com voz, avança no toque), na ordem. */
+export async function roteiro(el, passos) {
+  for (const p of passos) await (p.caca ? tocarCaca(el, p.caca, p.leg) : new Promise(r => sequencia([{texto: p.lucas, quem: 'Lucas'}], r)));
 }

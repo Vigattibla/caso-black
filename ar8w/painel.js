@@ -1,15 +1,16 @@
 import {historia} from './historia.js?v=25';
 import {falar, sequencia} from './fala.js';
-import {tocarCaca} from './investigador.js';
+import {roteiro} from './investigador.js';
 import {tirarFoto} from './foto.js?v=1';
 const locais = ['Piscina', 'Restaurante', 'Espaço Kids', 'Cafeteria', 'Recepção'];
 const titulos = ['Pegadas molhadas', 'Comanda sem nome', 'Câmera do Kids', 'O faro do Pipoca', 'Linha do tempo'];
-// Falas-guia do kit de gravação; viram legenda enquanto o vídeo do Cacá toca.
-const falasCaca = ['Pegada molhada… opa, essa tem uma estrela na sola! Me ajuda a achar as outras?',
-  'Uma comanda sem nome, meia-noite e quinze. Quem pede alguma coisa a essa hora? …Eu. Mas não fui eu! Monta esse pedido aí.',
-  'A câmera do Kids gravou alguma coisa de madrugada. Tem cinco coisas diferentes nessas fotos. Olho vivo!',
-  'O Pipoca tá latindo pra essa placa! Tem alguma coisa escondida aqui que só a lente mostra. Cadê a lente da piscina?',
-  'Trancado! Ainda bem que vocês montaram a chave. Abre esse cadeado e coloca as pistas na ordem do relógio.'];
+// Roteiro Lucas + Cacá: Lucas no balão (voz VoiceStudio), Cacá no vídeo com a fala dele de legenda, na ordem do roteiro.
+const C = (caca, leg) => ({caca, leg}), L = lucas => ({lucas});
+const roteiros = [[C('estacao1.mp4', 'Pegada molhada… opa, essa tem uma estrela na sola!'), L('Me ajuda a achar as outras?')],
+  [L('Uma comanda sem nome, meia-noite e quinze. Quem pede alguma coisa a essa hora?'), C('estacao2.mp4', '…Eu. Mas não fui eu! Monta esse pedido aí.')],
+  [C('estacao3.mp4', 'A câmera do Kids gravou alguma coisa de madrugada.'), L('Tem cinco coisas diferentes nessas fotos. Olho vivo!')],
+  [L('O Pipoca tá latindo pra essa placa!'), C('estacao4.mp4', 'Tem alguma coisa escondida ali, que só o celular mostra.')],
+  [C('estacao5.mp4', 'Trancado!'), L('Ainda bem que vocês montaram a chave. Abre esse cadeado e coloca as pistas na ordem do relógio.')]];
 // Retrato falado (frente da carta): cada testemunha dá um traço do suspeito.
 const testemunhas = [{traco: 'ÓCULOS ESCUROS', texto: 'O salva-vidas viu o suspeito: óculos escuros! Desenha os óculos no retrato falado.'},
   {traco: 'BIGODÃO', texto: 'O garçom lembrou: um bigodão enorme! Desenha o bigode no retrato.'},
@@ -43,7 +44,7 @@ export function criarPainel(n, {estado, onGanhar = () => {}, premiar = () => {}}
   return {
     el, q, jogo: q('.e1-jogo'), texto, quem,
     get venceu() { return venceu; },
-    iniciar() { if (estado.valor.concluidas.includes(n)) resultado(false); else tocarCaca(el, `estacao${n}.mp4`, falasCaca[n - 1]).then(() => falar(texto.fala, quem)); },
+    iniciar() { if (estado.valor.concluidas.includes(n)) resultado(false); else roteiro(el, roteiros[n - 1]).then(() => falar(texto.fala, quem)); },
     erro(alvo) { alvo?.classList.remove('e1-treme'); void alvo?.offsetWidth; alvo?.classList.add('e1-treme'); falar(texto.erro, n === 4 ? 'Pipoca' : quem); },
     ganhar() { if (venceu || !estado.concluir(n)) return; resultado(true); navigator.vibrate?.(40); },
   };
