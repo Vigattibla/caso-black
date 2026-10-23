@@ -1,4 +1,4 @@
-import {criarPainel} from './painel.js?v=24';
+import {criarPainel} from './painel.js?v=25';
 import {falar, sequencia} from './fala.js';
 import {historia} from './historia.js?v=23';
 // Fotos/itens da vitrine original; pares embaralhados, sem solução indicada no DOM.

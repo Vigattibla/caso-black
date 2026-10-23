@@ -227,8 +227,8 @@ function sairCamera() {
   location.replace(location.pathname + location.search);
 }
 let voltou = false; try { voltou = sessionStorage.getItem('cb_volta') === '1'; sessionStorage.removeItem('cb_volta'); } catch (e) {}
-// Cacá se apresenta na tela inicial (só sem MP4 no manifest não aparece). Abrir a câmera encerra o vídeo.
-const FALA_ABERTURA = 'Ei, detetive! Aqui é o Cacá. A Black Friday sumiu… e o Bê sumiu junto! Abre a câmera mágica e aponta pras cinco placas do Caso Black.';
+// Lucas e Cacá se apresentam na tela inicial (só sem MP4 no manifest não aparece). Abrir a câmera encerra o vídeo.
+const FALA_ABERTURA = 'Detetives, aqui é o Lucas! E esse é o Cacá, investigador oficial do Village. Temos um caso sério: a Black Friday sumiu… e o Bê sumiu junto! Mas ele deixou pistas em cinco placas espalhadas pelo resort. Abre a câmera mágica, aponta pra placa do Caso Black e resolve cada desafio. No final, a gente descobre quem é o culpado. Bora? Toca no botão amarelo!';
 if (!voltou && !new URLSearchParams(location.search).has('demo')) tocarCaca($('#inicio'), 'abertura.mp4', FALA_ABERTURA);
 $('#abrir').addEventListener('click', () => $('#inicio .inv-pular')?.click(), {capture: true});
 if (voltou) $('#abrir').textContent = 'Voltar pra câmera mágica';

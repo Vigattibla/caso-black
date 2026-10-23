@@ -8,7 +8,7 @@ const titulos = ['Pegadas molhadas', 'Comanda sem nome', 'Câmera do Kids', 'O f
 const falasCaca = ['Pegada molhada… opa, essa tem uma estrela na sola! Me ajuda a achar as outras?',
   'Uma comanda sem nome, meia-noite e quinze. Quem pede alguma coisa a essa hora? …Eu. Mas não fui eu! Monta esse pedido aí.',
   'A câmera do Kids gravou alguma coisa de madrugada. Tem cinco coisas diferentes nessas fotos. Olho vivo!',
-  'O Pipoca tá latindo pra essa placa. Tem alguma coisa escondida aqui que só a lupa mostra. Cadê a lupa da piscina?',
+  'O Pipoca tá latindo pra essa placa! Tem alguma coisa escondida aqui que só a lupa mostra. Cadê a lupa da piscina?',
   'Trancado! Ainda bem que vocês montaram a chave. Abre esse cadeado e coloca as pistas na ordem do relógio.'];
 // Retrato falado (frente da carta): cada testemunha dá um traço do suspeito.
 const testemunhas = [{traco: 'ÓCULOS ESCUROS', texto: 'O salva-vidas viu o suspeito: óculos escuros! Desenha os óculos no retrato falado.'},
