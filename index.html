@@ -453,7 +453,7 @@ body.aberto .fita span{animation-play-state:paused}
               </div>
               <div class="box"><h5>DEPOIMENTO DA GERÊNCIA</h5><div class="mono maquina" id="relato"></div></div>
               <div class="assin">A Gerência<small>ASSINATURA DO RESPONSÁVEL</small></div>
-              <img class="carimbo" id="carimbo1" src="assets/cb-confidencial.png" alt="" style="right:18px;bottom:30px;width:150px">
+              <img class="carimbo" id="carimbo1" src="assets/cb-confidencial.png" alt="" style="right:12px;bottom:8px;width:118px">
             </div><div class="luz"></div><div class="dobra"></div></div>
             <div class="face verso"></div>
           </article>
@@ -491,7 +491,7 @@ body.aberto .fita span{animation-play-state:paused}
               <div class="fimW">
                 <div class="k5">FOLHA 04 · ÚLTIMA PROVA</div>
                 <h2>A prova tá<br>na sua carta</h2>
-                <p>Alguém pegou na <b>sua carta</b> e deixou uma digital. Com as provas completas, aponte a câmera mágica para o <b>selo do arquivo</b>, no verso dela.</p>
+                <p>Cada placa dá um traço do <b>retrato falado</b> na frente da sua carta. Com as provas completas, aponte a lupa mágica pro retrato e descubra quem levou a Black.</p>
                 <div class="chave5" id="chave5">
                   <div class="ck">AS PROVAS<span id="chSt">0/5 CARIMBOS</span></div>
                   <div class="cs" id="chCar"></div>
@@ -625,7 +625,7 @@ const PISTAS=[ // loc: lugar da placa (só aparece depois da prova ou da dica)
 // foto: recorte da pista (x/y do detalhe em %); sem foto, fica só o enigma
 const FOTO={0:{x:76,y:82},1:{x:47,y:66},2:{x:16,y:62},3:{x:86,y:34},4:{x:41,y:27}};
 const ZOOM=[4.2,2.2];
-const RELATO='Na madrugada de ontem, as ofertas da Black Friday sumiram. E o Bê sumiu junto.\n\nMas ele deixou um truque: a câmera do seu celular agora é mágica. Ela lê as 5 placas espalhadas pelo resort e revela cada pista.\n\nSua missão: achar as 5 placas, guardar a foto de cada prova e salvar a Black antes do check-out.';
+const RELATO='Ontem à noite, as ofertas da Black sumiram. E o Bê sumiu junto.\n\nEle deixou uma lupa mágica no seu celular: ela lê as 5 placas do resort e revela as pistas.\n\nMissão: achar as 5 placas e salvar a Black antes do check-out.';
 let achadas=[];try{achadas=JSON.parse(localStorage.getItem('cb-achadas')||'[]').filter(n=>n>=0&&n<5)}catch(e){}
 const salvar=()=>{try{localStorage.setItem('cb-achadas',JSON.stringify(achadas))}catch(e){}};
 const vibra=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
@@ -872,13 +872,13 @@ function pintarChave(){if(typeof carimboSVG!=='function')return;const ch=chave()
   $('#chCar').innerHTML=[1,2,3,4,5].map(n=>(achadas.includes(n-1)||c.includes(n))?`<b class="tem">${carimboSVG(n,'ch'+n)}</b>`:`<b>${dois(n)}</b>`).join('');
   $('#chSt').textContent=ch.ok?'PROVAS COMPLETAS':`${ch.n}/5 CARIMBOS${ch.pal?' · PALAVRA OK':''}`;
   $('#chave5').classList.toggle('pal',ch.pal);$('#chave5').classList.toggle('pronta',ch.ok);$('#chPalV').textContent=ch.pal?PALAVRA:'';
-  $('#fimLupa').textContent=ch.feito?'Ver a digital de novo':'Ler o selo da carta';
+  $('#fimLupa').textContent=ch.feito?'Ver a digital de novo':'Ler o retrato da carta';
   $('#fimLupa').classList.toggle('brilho',ch.ok&&!ch.feito)}
 function conferePalavra(v,erro){v=v.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s/g,'');
   if(v!==PALAVRA){erro&&erro(v?'Não é essa. Junte os 5 pedaços do retrato e leia a palavra que aparece.':'');vibra([20,30,20]);return false}
   try{localStorage.setItem('cb-palavra','1')}catch(_){}vibra(40);pintarChave();pintarFicha();return true}
 $('#chPalOk').onclick=()=>{if(conferePalavra($('#chPal').value,t=>t&&beFala(t))){$('#chPal').blur();
-  beFala(chave().ok?'Provas completas! Vira sua carta, abre a câmera mágica e aponta pro selo do arquivo.':`Palavra certa! Faltam ${5-chave().n} carimbos.`,'PALAVRA CERTA')}};
+  beFala(chave().ok?'Provas completas! Abre a lupa mágica e aponta pro retrato falado na frente da sua carta.':`Palavra certa! Faltam ${5-chave().n} carimbos.`,'PALAVRA CERTA')}};
 $('#chPal').addEventListener('keydown',e=>{if(e.key==='Enter')$('#chPalOk').click()});
 $('#fimLupa').onclick=()=>{const ch=chave();if(ch.feito)return abrirFim('rever');
   if(!ch.ok)return beFala(ch.n<5?`Faltam ${5-ch.n} carimbos: olha a folha das estações!`:'Falta a palavra: junte os 5 pedaços do retrato e leia a palavra que aparece.','AINDA FALTA PROVA');
@@ -978,7 +978,7 @@ function beFala(t,tit,quem){const B=$('#balao'),be=$('#beBtn')||document.createE
   $('#beTx').innerHTML=(tit?`<b>${tit}</b>`:'')+t;!q.soTexto&&typeof Voz==='object'&&Voz.diz(t,q.nome);B.classList.add('on');clearTimeout(B._t);if(quem&&quem.fixo)return;be.classList.remove('fala');void be.offsetWidth;be.classList.add('fala');
   clearTimeout(B._t);B._t=setTimeout(()=>B.classList.remove('on'),Math.max(4500,t.length*70))}
 function beDica(){const nome=k>=0?pags[k].dataset.nome:'relatorio';if(nome!=='final')return beFala(DICAS[nome]);
-  const ch=chave();beFala(ch.feito?'Caso fechado! E o Bê apareceu, finalmente.':ch.ok?'Provas completas! Pega sua carta, abre a câmera mágica e aponta pro selo no verso. De quem será essa digital?':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra que aparece.')}
+  const ch=chave();beFala(ch.feito?'Caso fechado! E o Bê apareceu, finalmente.':ch.ok?'Provas completas! Pega sua carta, abre a lupa mágica e aponta pro retrato falado. Quem será o suspeito?':ch.n<5?`Faltam ${5-ch.n} carimbos. Depois a gente vê de quem é a digital...`:'Agora junte os 5 pedaços do retrato e leia a palavra que aparece.')}
 $('#balao').onclick=()=>{$('#balao').classList.remove('on');typeof Voz==='object'&&Voz.para()};
 function dicaLupa(){let v=0;try{v=localStorage.getItem('cbLupa')}catch(_){}if(v)return;beFala('Sua câmera agora é mágica! Toque nela e aponte pras placas e pra carta.','CÂMERA MÁGICA')}
 
@@ -1001,7 +1001,7 @@ $('#sNota').addEventListener('input',e=>{notas[atual]=e.target.value;try{localSt
 /* lupa: câmera limpa · códigos da carta (ArUco 306..310) · leitura das placas */
 let fluxo=null,laco=0,leituraLupa=0,modo='carta',avisou=-Infinity,ouroC=null,pedidoLupa=0,seloLido=null;
 const TXT={carta:['CÂMERA MÁGICA','Aponte para os <b style="display:inline;font:inherit;color:#fdc72f">códigos secretos</b> da carta (o quadradinho preto ao lado dos símbolos). Achou uma <b style="display:inline;font:inherit;color:#fdc72f">placa do caso</b>? Aponte pro quadriculado e veja a pista aparecer.'],
-  final:['O SELO DA CARTA','Vire a carta e aponte a câmera para o <b style="display:inline;font:inherit;color:#fdc72f">selo do arquivo</b>, no verso. De quem será essa digital?']};
+  final:['O RETRATO DA CARTA','Aponte a lupa para o <b style="display:inline;font:inherit;color:#fdc72f">retrato falado</b> na frente da carta. Quem será o suspeito?']};
 async function videoDe(e){const nome=`estacao${e+1}.mp4`;
   const {estacoes}=await Midias();return estacoes?.includes(nome)?`assets/v/${nome}`:null}
 async function abrirLupa(m='carta',usarFoto=true,fotoId=undefined){if(!window.DEMO&&!DEV){location.href='ar8w/';return} // lupa oficial = jogo 8th Wall
