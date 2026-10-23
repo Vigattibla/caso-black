@@ -3,7 +3,7 @@ const TESTE = new URLSearchParams(location.search).has('cacateste');
 let manifesto;
 const lista = () => manifesto || (manifesto = fetch('../assets/v/manifest.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).catch(() => ({})));
 export async function videoDoCaca(nome) {
-  if (TESTE) return '../assets/v/teste-duble.mp4';
+  if (TESTE) return '../assets/v/teste-caca.mp4';
   const {estacoes = []} = await lista(); return estacoes.includes(nome) ? `../assets/v/${nome}` : null;
 }
 export const CSS_INV = `
