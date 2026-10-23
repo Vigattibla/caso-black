@@ -1,11 +1,19 @@
 import {historia} from './historia.js?v=25';
 import {falar, sequencia} from './fala.js';
 import {lerChave, adesivo} from './chave/leitor.js?v=22';
-import {IMG, MOLDURA, DENTES, HASTE, ARGOLA} from './chave/layout.js';
+import {IMG, MOLDURA, DENTES, HASTE, ARGOLA, BOLSO} from './chave/layout.js';
+// Falas extras da mochila (só balão até gravar a voz).
+const EXPLICA = {
+  mochila: 'Lá embaixo da carta fica a mochila: tudo que você achar aparece nela quando você aponta a câmera do celular pra carta.',
+  guardou: 'Olha a mochila da carta: sua chave apareceu no bolso 1! Na placa da recepção, é só arrastar ela da mochila até o cadeado.',
+};
 export function criarVerso({estado, demo, premiar}) {
   const el = document.createElement('section'); el.className = 'e1 verso'; el.dataset.estacao = 'verso';
-  el.innerHTML = '<div class="leitura-moldura">' + guia(estado.valor.dentes) + '<p class="leitura-status" role="status"></p><button class="leitura-socorro" hidden>Não está lendo? Toque aqui</button></div><div class="verso-rodape"><div class="fala-slot"></div></div>';
+  el.innerHTML = '<div class="leitura-moldura">' + guia(estado.valor.dentes) + '<p class="leitura-status" role="status"></p><button class="leitura-socorro" hidden>Não está lendo? Toque aqui</button></div><div class="bolso-chave" hidden><img alt="Sua chave guardada na mochila"></div><div class="verso-rodape"><div class="fala-slot"></div></div>';
   const q = s => el.querySelector(s); let anterior = '', iguais = 0, guardando = false, inicio = 0, ultimo = null;
+  // Bolso 01 da mochila impressa: a chave desenhada aparece dentro dele (painel = metade da imagem do alvo).
+  Object.assign(q('.bolso-chave').style, {left: BOLSO.u / 2 - 105 + 'px', top: BOLSO.v / 2 - 30 + 'px'});
+  const mostrarBolso = () => { const c = estado.valor.itens.chave; if (!c) return; q('.bolso-chave img').src = c.img || '../assets/objetos/chave-item.webp'; q('.bolso-chave').hidden = false; };
   const faltam = () => 4 - [1, 2, 3, 4].filter(n => estado.valor.dentes[n]).length;
   function avaliar(r) {
     if (guardando || estado.valor.itens.chave || estado.valor.concluidas.includes(5) || !estado.podeLer()) return false;
@@ -23,14 +31,14 @@ export function criarVerso({estado, demo, premiar}) {
   }
   function guardar(codigo, traco) {
     if (!estado.guardarChave(codigo, traco ? adesivo(traco).toDataURL('image/png') : '')) return false;
-    guardando = true; q('.leitura-socorro').hidden = true; premiar('chave', el); falar(historia.chave.certa); q('.leitura-status').textContent = 'CHAVE GUARDADA'; q('.chave-guia').classList.add('guardada'); return true;
+    guardando = true; q('.leitura-socorro').hidden = true; premiar('chave', el); sequencia([historia.chave.certa, EXPLICA.guardou]); q('.leitura-status').textContent = 'CHAVE GUARDADA'; q('.chave-guia').classList.add('guardada'); mostrarBolso(); return true;
   }
   q('.leitura-socorro').onclick = () => { if (!guardando && el.podeLer()) guardar('CBBC', ultimo?.traco); };
-  el.avaliar = avaliar;
+  el.avaliar = avaliar; mostrarBolso();
   el.podeLer = () => estado.podeLer() && !estado.valor.itens.chave && !estado.valor.concluidas.includes(5);
   if (estado.valor.concluidas.includes(5)) { q('.chave-guia').classList.add('guardada'); q('.leitura-status').textContent = 'VIRE A CARTA: RETRATO FALADO'; falar('A chave já fez o trabalho dela. Vira a carta e aponta a lupa mágica pro retrato falado!'); }
   else {
-    falar(historia.chave[estado.valor.itens.chave ? 'certa' : 'pedido']);
+    sequencia(estado.valor.itens.chave ? [historia.chave.certa, EXPLICA.guardou] : [historia.chave.pedido, EXPLICA.mochila]);
     q('.leitura-status').textContent = estado.valor.itens.chave ? 'CHAVE GUARDADA' : estado.podeLer() ? 'PASSE LÁPIS OU CANETA POR CIMA DO AMARELO' : `COPIE O AMARELO · FALTA${faltam() > 1 ? 'M' : ''} ${faltam()} DENTE${faltam() > 1 ? 'S' : ''} NAS PLACAS`;
     if (estado.valor.itens.chave) q('.chave-guia').classList.add('guardada');
     if (demo) montarDemo();

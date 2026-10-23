@@ -7,7 +7,7 @@ export const DENTES = [530, 670, 810, 950].map(cx => ({
 }));
 export const HASTE = {x0: 440, y0: 560, x1: 1010, y1: 624};
 export const ARGOLA = {x: 290, y: 592, r: 140, furo: 72};
-export const BOLSO = {u: 330, v: 1220};
+export const BOLSO = {u: 330, v: 1245};
 export const CERTO = 'CBBC'; // 1 cima · 2 baixo · 3 baixo · 4 cima
 export const local = (u, v) => [u / IMG.w - 0.5, (0.5 - v / IMG.h) * IMG.h / IMG.w];
 export const tam = r => [(r.x1 - r.x0) / IMG.w, (r.y1 - r.y0) / IMG.w];

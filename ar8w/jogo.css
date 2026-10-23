@@ -103,3 +103,6 @@ body.fotografando > :not(#camera):not(#foto-camera){visibility:hidden}
 .btn-caderno.btn-vip{background:#111;color:#fdc72f;border:1px solid #fdc72f}
 
 .caixa a.link{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;color:#fdc72f;text-underline-offset:4px}
+/* 23/10: chave guardada aparece no bolso 01 da mochila impressa no verso */
+.verso .bolso-chave{position:absolute;width:210px;height:60px;background:#f6f0e2;border-radius:6px;animation:bolso-entra .6s ease-out}.verso .bolso-chave[hidden]{display:none}.bolso-chave img{width:100%;height:100%;object-fit:contain;display:block}
+@keyframes bolso-entra{from{transform:scale(1.6);opacity:0}}
