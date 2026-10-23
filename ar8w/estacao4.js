@@ -11,7 +11,7 @@ export function criarEstacao4(ctx) {
     if (!ctx.estado.valor.itens.lente) { falar(p.texto['sem lente']); return false; }
     iniciou = true; p.q('.pegadas-pipoca').hidden = false; p.q('.usar-lente').hidden = true;
     // Na folha do faro: o Pipoca leva até a placa 4 (rastro AR no chão). Sem rastro (demo) o jogo abre aqui.
-    if (!ctx.pista || ctx.demo || !ctx.estado.rastro()) sequencia([p.texto['lente usada'], p.texto.jogo], memoria);
+    if (ctx.semRastro || !ctx.pista || ctx.demo || !ctx.estado.rastro()) sequencia([p.texto['lente usada'], p.texto.jogo], memoria);
     else sequencia([p.texto['lente usada']], seguir);
     return true;
   }
@@ -44,7 +44,7 @@ export function criarEstacao4(ctx) {
   p.el.usarFerramenta = usar; p.el.limpar = () => { limparPainel?.(); clearTimeout(timer); clearTimeout(socorro); };
   p.q('.usar-lente').onclick = () => usar('lente');
   const v = ctx.estado.valor;
-  if (v.concluidas.includes(4)) p.iniciar();
+  if (v.concluidas.includes(4) || ctx.semRastro) p.iniciar(); // rastro desligado no painel: a lupa já vale na placa
   else if (!ctx.pista && v.rastro4) { iniciou = true; falar(p.texto.achou, 'Pipoca'); memoria(true); } // chegou à placa 4 pelo rastro: sem repetir o vídeo
   else if (v.rastro4) { iniciou = true; p.q('.usar-lente').hidden = true; seguir(); } // voltou à folha no meio do caminho
   else if (!ctx.pista && !ctx.demo) { iniciou = true; p.q('.lente-alvo').innerHTML = '<div class="rastro-aviso"><span class="pegadas-pipoca">🐾</span><b>O PIPOCA ESTÁ FAREJANDO</b><small>Ache a folha FARO DO PIPOCA, use a lupa nela e siga as patinhas até aqui</small></div>'; falar(p.texto['pista cedo'] ?? p.texto['rastro dica'], 'Pipoca'); } // placa achada antes do faro

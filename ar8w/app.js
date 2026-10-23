@@ -22,6 +22,11 @@ window.THREE = THREE;
 const $ = s => document.querySelector(s), Q = new URLSearchParams(location.search);
 const balao = $('#balao'); // CSS3D pode manter o DOM fora do documento até o próximo render.
 const DEMO = Q.get('demo'), estado = criarEstado();
+// Painel pode desligar o rastro do Pipoca: aí a lupa abre o jogo direto na placa 4. Até a API responder vale a última escolha vista.
+let semRastro = Q.has('semrastro'); try { semRastro ||= localStorage.getItem('cb_sem_rastro') === '1'; } catch { /* sem armazenamento */ }
+if (!Q.has('semrastro')) fetch('../api/index.php?config=1', {cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(c => {
+  if (typeof c?.rastro_pipoca !== 'boolean') return; semRastro = !c.rastro_pipoca; try { localStorage.setItem('cb_sem_rastro', semRastro ? '1' : '0'); } catch { /* idem */ }
+}).catch(() => {});
 integrarJogo(estado);
 if (Q.get('reset') === '1') { estado.reset(); $('#reset').hidden = false; }
 $('#reset').onclick = () => { estado.reset(); location.reload(); };
@@ -88,7 +93,7 @@ function selecionar(nome) {
   fixar(false); if (quadroObj) raiz.remove(quadroObj);
   painel?.remove(); alvoAtual = nome; est.alvo = nome;
   if (nome === DESTINO) { rastro.esconder(); querRastro = false; }
-  const ctx = {estado, demo: !!DEMO, pista: nome === 'pista-4', rastro: DEMO ? undefined : ligarRastro, premiar: (item, origem) => mochila.premiar(item, origem), onGanhar: n => { est.eventos.push('concluiu-' + n); }};
+  const ctx = {estado, demo: !!DEMO, pista: nome === 'pista-4', semRastro, rastro: DEMO || semRastro ? undefined : ligarRastro, premiar: (item, origem) => mochila.premiar(item, origem), onGanhar: n => { est.eventos.push('concluiu-' + n); }};
   painel = nome === 'verso' ? criarVerso(ctx) : nome === 'frente' ? criarRetrato(ctx) : criar[Number(nome.slice(-1)) - 1](ctx);
   painel.querySelector('.fala-slot').append(balao); est.quadro = painel;
   if (DEMO) { $('#demo-palco').append(painel); redimensionarDemo(); }

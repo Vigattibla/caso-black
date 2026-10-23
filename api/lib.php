@@ -92,6 +92,7 @@ function cb_csrf(array $body): void {
     cb_session();
     if (!is_string($body['csrf'] ?? null) || !hash_equals($_SESSION['csrf'], $body['csrf'])) cb_fail('Sessão expirada. Atualize a página.', 403);
 }
+function cb_rastro(): bool { return cb_sql("SELECT valor FROM ajustes WHERE chave='rastro_pipoca'")->fetchColumn() !== '0'; }
 function cb_vip(): string { return (string)(cb_sql("SELECT valor FROM ajustes WHERE chave='vip_url'")->fetchColumn() ?: ''); }
 function cb_audit(string $action, string $target = ''): void { cb_sql('INSERT INTO auditoria(acao,alvo,criado_em) VALUES(?,?,?)', [$action, $target, cb_now()]); }
 

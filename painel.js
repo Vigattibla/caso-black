@@ -60,7 +60,7 @@
     x.send(f);
   };
   async function carregar() {
-    dados = await api('?admin=1'); $('#total').textContent = '(' + dados.total + ')'; $('#vip').value = dados.vip_url;
+    dados = await api('?admin=1'); $('#total').textContent = '(' + dados.total + ')'; $('#vip').value = dados.vip_url; $('#rastro-ligado').checked = dados.rastro_pipoca !== false;
     $('#limite-lista').textContent = dados.total > dados.investigadores.length ? 'Últimos 1.000 cadastros na tela. O CSV contém a lista completa.' : '';
     const rows = $('#contatos'); rows.replaceChildren();
     for (const f of dados.investigadores) {
@@ -77,6 +77,8 @@
     } catch (e) { aviso(e.message); } finally { btn.disabled = false; }
   };
   $('#ajustes').onsubmit = async e => { e.preventDefault(); const btn = e.submitter; btn.disabled = true; try { await api('', {evento: 'ajustes', vip_url: $('#vip').value.trim()}); aviso('Link do grupo salvo.'); } catch (e) { aviso(e.message); } finally { btn.disabled = false; } };
+  $('#rastro-ligado').onchange = async e => { const c = e.target, liga = c.checked; c.disabled = true;
+    try { await api('', {evento: 'rastro', ligado: liga}); aviso(liga ? 'Rastro do Pipoca ligado.' : 'Rastro desligado: a lupa abre o jogo direto na placa 4.'); } catch (err) { c.checked = !liga; aviso(err.message); } finally { c.disabled = false; } };
   $('#sair').onclick = async () => { try { await api('', {evento: 'logout'}); location.reload(); } catch (e) { aviso(e.message); } };
   $('#atualizar').onclick = () => carregar().then(() => aviso('Atualizado.')).catch(e => aviso(e.message));
   $('#filtro').onchange = pintarAlbuns;

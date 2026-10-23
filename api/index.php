@@ -9,7 +9,7 @@ try {
     cb_db();
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     if ($method === 'GET') {
-        if (isset($_GET['config'])) cb_json(['vip_url' => cb_vip()]);
+        if (isset($_GET['config'])) cb_json(['vip_url' => cb_vip(), 'rastro_pipoca' => cb_rastro()]);
         if (isset($_GET['session'])) { $auth = cb_admin(); cb_json(['ok' => true, 'autenticado' => $auth, 'csrf' => $_SESSION['csrf']]); }
         if (isset($_GET['admin'])) {
             cb_require_admin();
@@ -19,7 +19,7 @@ try {
               FROM investigadores i ORDER BY criado_em DESC LIMIT 1000')->fetchAll(PDO::FETCH_ASSOC);
             foreach ($people as &$person) { $person['provas'] = (int)$person['provas']; $person['resolvido'] = (bool)(int)$person['resolvido']; } unset($person);
             $albums = cb_sql('SELECT m.*,i.nome FROM mural m JOIN investigadores i ON i.id=m.investigador_id ORDER BY m.criado_em DESC LIMIT 500')->fetchAll(PDO::FETCH_ASSOC);
-            cb_json(['ok' => true, 'investigadores' => $people, 'albuns' => $albums, 'vip_url' => cb_vip(),
+            cb_json(['ok' => true, 'investigadores' => $people, 'albuns' => $albums, 'vip_url' => cb_vip(), 'rastro_pipoca' => cb_rastro(),
               'total' => (int)cb_sql('SELECT count(*) FROM investigadores')->fetchColumn()]);
         }
         if (isset($_GET['export'])) {
@@ -81,7 +81,7 @@ try {
         session_regenerate_id(true); $_SESSION['admin_ate'] = time() + 28800; $_SESSION['csrf'] = bin2hex(random_bytes(24));
         cb_audit('login'); cb_json(['ok' => true, 'csrf' => $_SESSION['csrf']]);
     }
-    if (in_array($event, ['logout', 'moderar', 'impressos', 'ajustes', 'tv-ordem', 'tv-remover'], true)) {
+    if (in_array($event, ['logout', 'moderar', 'impressos', 'ajustes', 'rastro', 'tv-ordem', 'tv-remover'], true)) {
         cb_require_admin(); cb_csrf($b);
         if ($event === 'logout') { $_SESSION = []; session_destroy(); cb_json(['ok' => true]); }
         if ($event === 'moderar') {
@@ -105,6 +105,10 @@ try {
             $p['lista'] = array_values(array_diff($p['lista'], [$v])); unset($p['nomes'][$v]); cb_tv_salvar($p);
             if (str_starts_with($v, 'tv-videos/')) @unlink(dirname(__DIR__) . '/' . $v);
             cb_audit('tv-remover', $v);
+        }
+        if ($event === 'rastro') {
+            if (!is_bool($b['ligado'] ?? null)) cb_fail('Valor inválido.');
+            cb_sql("INSERT INTO ajustes(chave,valor) VALUES('rastro_pipoca',?) ON CONFLICT(chave) DO UPDATE SET valor=excluded.valor", [$b['ligado'] ? '1' : '0']); cb_audit('rastro-' . ($b['ligado'] ? 'ligado' : 'desligado'));
         }
         if ($event === 'ajustes') {
             $url = trim((string)($b['vip_url'] ?? '')); $u = parse_url($url);
