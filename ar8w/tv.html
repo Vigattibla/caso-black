@@ -153,6 +153,14 @@ function mostrar(r) {
   }, TEMPO * .5);
   setTimeout(function () { rodando = false; if (fila.length) mostrar(fila.shift()); else modoVideo(true); }, TEMPO);
 }
+// Vitrine: mesmo sem chegada nova, o quadro interrompe o vídeo de tempos em tempos (?vitrine=minutos).
+var VITRINE = (parseFloat(q.get('vitrine')) || 2) * 60000, PARADA = 15000;
+function vitrine() {
+  if (rodando || !historico.length || !lista.length) return;
+  rodando = true; modoVideo(false);
+  setTimeout(function () { rodando = false; if (fila.length) mostrar(fila.shift()); else modoVideo(true); }, PARADA);
+}
+setInterval(vitrine, VITRINE);
 function receber(r, animar) {
   if (!r || !r.img || vistos[r.id]) return; vistos[r.id] = 1;
   if (!animar) { historico = historico.concat([r]).slice(-VAGAS.length); return; }
@@ -183,7 +191,7 @@ acordar();
 setInterval(function () { var h = new Date().getHours(); if (h === 4 && performance.now() > 36e5 && !rodando) location.reload(); }, 6e5);
 
 fetch('../assets/tv/playlist.json', {cache: 'no-cache'}).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (l) {
-  lista = Array.isArray(l) ? l : []; if (lista.length) { tocar(0); modoVideo(true); }
+  lista = Array.isArray(l) ? l : []; if (lista.length) { tocar(0); modoVideo(true); setTimeout(vitrine, 4000); }
 });
 
 function falso() {
