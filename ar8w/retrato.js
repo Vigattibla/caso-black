@@ -157,7 +157,7 @@ export function criarRetrato({estado, demo}) {
     const vivo = document.createElement('div'); vivo.className = 'ret-vivo'; vivo.innerHTML = '<img class="ret-be" src="../assets/be-cabeca.png" alt="Bê" style="opacity:1">'; el.append(vivo);
     const f = historia.final.at(-1); falar(f.texto, f.quem); q('.foto-convite').hidden = false; mostrarAlbum();
   } else if (!liberado()) { status('FALTAM TESTEMUNHAS'); falar('O retrato ainda tá incompleto. Termina as cinco placas e volta aqui!'); }
-  else { status('MOSTRE O RETRATO'); falar('Retrato falado pronto? Aponta a lupa pro rosto e segura firme. Não desenhou? Tudo bem, a lupa revela assim mesmo!'); if (demo) montarDemo(); }
+  else { status('MOSTRE O RETRATO'); falar('Retrato falado pronto? Aponta a câmera pro rosto e segura firme. Não desenhou? Tudo bem, a câmera revela assim mesmo!'); if (demo) montarDemo(); }
 
   function montarDemo() {
     const area = document.createElement('div'); area.className = 'demo-retrato';

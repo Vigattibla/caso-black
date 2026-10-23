@@ -52,7 +52,7 @@ export const historia = {
       "abriu": "Abriu! Agora coloca as pistas na ordem do relógio.",
       "erro": "A ordem não bate. Olha os horários.",
       "dica": "Começa pela pegada da piscina.",
-      "resultado": "Uma da manhã: alguém de chapéu passou pela recepção sem fazer check-out. Vira a carta e aponta a lupa mágica pro RETRATO FALADO!"
+      "resultado": "Uma da manhã: alguém de chapéu passou pela recepção sem fazer check-out. Vira a carta e aponta a câmera mágica pro RETRATO FALADO!"
     }
   },
   "lupa": {
