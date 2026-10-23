@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Caso Black · Telão</title>
 <link rel="icon" type="image/png" href="../assets/cb-logo.png?v=20261023">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Abril+Fatface&family=Archivo+Black&family=Permanent+Marker&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* Mural em colagem: fundo de cortiça clara (canvas), retratos em papel rasgado presos com
-   fita crepe, letras de bilhete de resgate e sombra seca, sem degradê. O quadro entra por um rasgo de papel que
+   fita crepe, títulos em Anton (fonte da marca) e sombra seca, sem degradê. O quadro entra por um rasgo de papel que
    corta o vídeo. Unidade --u = 1vmin. */
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;background:#121110;overflow:hidden;cursor:none}
@@ -21,6 +21,7 @@ body{--u:1vmin;font-family:'Special Elite','Courier Prime',monospace;color:#1a17
 #fios{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
 #fios .sombra{stroke:#4a2e1040;stroke-width:calc(.35*var(--u));fill:none}
 #fios .fio{stroke:#c8102e;stroke-width:calc(.32*var(--u));fill:none;stroke-linecap:round}
+#fios .tacha{fill:#c8102e;stroke:#7c0814}
 .cartao{position:absolute;transform:translate(-50%,-50%) rotate(var(--g,0deg));z-index:4;filter:drop-shadow(calc(.4*var(--u)) calc(.6*var(--u)) 0 #5a3c1a59)}
 .papel{background:#f2ecdd;padding:calc(1.3*var(--u)) calc(1.3*var(--u)) calc(3.4*var(--u))}
 .papel img{display:block;height:calc(var(--h)*var(--u));aspect-ratio:432/528;object-fit:contain;background:#fffdf6;filter:contrast(1.08) sepia(.12)}
@@ -33,14 +34,11 @@ body{--u:1vmin;font-family:'Special Elite','Courier Prime',monospace;color:#1a17
 .centro{--h:24}
 .centro .papel{background:#c8102e;padding:calc(1.6*var(--u)) calc(2.4*var(--u)) calc(4*var(--u));text-align:center}
 .centro .papel img{width:calc(var(--h)*var(--u)*1.05);height:auto;aspect-ratio:auto;background:none;filter:none;margin:calc(1.6*var(--u)) auto 0}
-.centro .tit{font-size:calc(4.6*var(--u))}
-.recorte{display:inline-block;white-space:nowrap;line-height:1}
-.recorte i{display:inline-block;font-style:normal;padding:.1em .14em .04em;margin:0 .03em;box-shadow:.08em .1em 0 #000a}
-.recorte .esp{width:.35em;box-shadow:none;padding:0}
-.dymo{display:inline-block;background:#161616;color:#eee;font:700 calc(1.9*var(--u)) 'Courier Prime',monospace;letter-spacing:.28em;padding:calc(.5*var(--u)) calc(1.4*var(--u));text-shadow:0 -1px 0 #000,1px 1px 0 #777;box-shadow:calc(.3*var(--u)) calc(.4*var(--u)) 0 #000a}
-.etiqueta{position:absolute;left:50%;top:calc(9*var(--u));transform:translate(-50%,-50%) rotate(-1.5deg);z-index:4;text-align:center}
-.etiqueta .recorte{font-size:calc(6.4*var(--u))}
-.etiqueta .dymo{margin-top:calc(1.4*var(--u));transform:rotate(1.5deg)}
+.centro .tit{display:block;font:400 calc(5.4*var(--u))/1 Anton,sans-serif;color:#f2ecdd;letter-spacing:.08em}
+.etiqueta{left:50%;top:calc(9.5*var(--u));--g:-1.5deg;text-align:center}
+.etiqueta .papel{padding:calc(1.4*var(--u)) calc(4*var(--u)) calc(1.6*var(--u))}
+.marca{display:block;font:400 calc(6.4*var(--u))/1 Anton,sans-serif;color:#1a1714;letter-spacing:.04em}
+.sub{display:block;margin-top:calc(.7*var(--u));font:400 calc(2.2*var(--u))/1 Anton,sans-serif;color:#c8102e;letter-spacing:.3em}
 .nota{position:absolute;z-index:4;transform:translate(-50%,-50%) rotate(var(--g));filter:drop-shadow(calc(.4*var(--u)) calc(.6*var(--u)) 0 #5a3c1a59)}
 .nota .papel{padding:calc(2.6*var(--u)) calc(3*var(--u)) calc(2*var(--u)) calc(4*var(--u));text-align:center;
   background:linear-gradient(90deg,transparent calc(2.4*var(--u)),#d6475a calc(2.4*var(--u)) calc(2.6*var(--u)),transparent 0),repeating-linear-gradient(#f6f1e3 0 calc(2.6*var(--u) - 1px),#a9bcd8 0 calc(2.6*var(--u)))}
@@ -52,10 +50,10 @@ body{--u:1vmin;font-family:'Special Elite','Courier Prime',monospace;color:#1a17
 #chegada .canto{--h:34}
 #chegada .tarja{font-size:calc(3.4*var(--u))}
 #chegada .canto .tarja{font-size:calc(2.4*var(--u))}
-.aviso{position:absolute;left:50%;top:calc(-5*var(--u));transform:translateX(-50%) rotate(-4deg);font-size:calc(4.2*var(--u));z-index:5;transition:opacity .3s}
+.aviso{position:absolute;left:50%;top:calc(-5*var(--u));transform:translateX(-50%) rotate(-4deg);white-space:nowrap;background:#f2ecdd;color:#c8102e;font:400 calc(4.2*var(--u))/1 Anton,sans-serif;letter-spacing:.06em;padding:calc(.8*var(--u)) calc(2*var(--u)) calc(.6*var(--u));box-shadow:calc(.4*var(--u)) calc(.6*var(--u)) 0 #5a3c1a59;z-index:5;transition:opacity .3s}
 .foco .aviso{opacity:0}
-.carimbo{white-space:nowrap;position:absolute;right:calc(-7*var(--u));bottom:calc(10*var(--u));padding:calc(.6*var(--u)) calc(2.2*var(--u));border:calc(.9*var(--u)) double #c8102e;border-radius:calc(1*var(--u));color:#c8102e;font:400 calc(6.5*var(--u)) Anton,sans-serif;letter-spacing:.04em;transform:rotate(-14deg);opacity:0;z-index:4;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.7'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.7'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
-@media (orientation:portrait){.retrato{--h:15}.centro{--h:20}#chegada .cartao{--h:50}#chegada .canto{--h:30}.etiqueta .recorte{font-size:calc(5*var(--u))}}
+.carimbo{white-space:nowrap;position:absolute;right:calc(-13*var(--u));bottom:calc(6.5*var(--u));padding:calc(.5*var(--u)) calc(1.8*var(--u));border:calc(.8*var(--u)) double #c8102e;border-radius:calc(1*var(--u));color:#c8102e;font:400 calc(5*var(--u)) Anton,sans-serif;letter-spacing:.04em;transform:rotate(-8deg);opacity:0;z-index:4;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.7'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.7'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+@media (orientation:portrait){.retrato{--h:15}.centro{--h:20}#chegada .cartao{--h:50}#chegada .canto{--h:30}.marca{font-size:calc(5.6*var(--u))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -65,8 +63,8 @@ body{--u:1vmin;font-family:'Special Elite','Courier Prime',monospace;color:#1a17
 <div id="telao">
   <canvas id="fundo"></canvas><div id="luz"></div>
   <svg id="fios"></svg>
-  <div class="etiqueta"><div class="recorte" data-t="CASO BLACK"></div><br><span class="dymo">RETRATOS FALADOS</span></div>
-  <div class="cartao centro" id="centro" style="left:50%;top:55%;--g:-1.5deg"><i class="fita"></i><i class="fita d"></i><div class="papel"><div class="recorte tit" data-t="PROCURADO"></div><img src="../assets/cb-logo.png" alt=""></div><i class="pino"></i><b class="tarja">VILLAGE RESORT</b></div>
+  <div class="cartao etiqueta" id="etiqueta"><i class="fita"></i><i class="fita d"></i><div class="papel"><b class="marca">CASO BLACK</b><span class="sub">RETRATOS FALADOS</span></div></div>
+  <div class="cartao centro" id="centro" style="left:50%;top:55%;--g:-1.5deg"><i class="fita"></i><i class="fita d"></i><div class="papel"><b class="tit">PROCURADO</b><img src="../assets/cb-logo.png" alt=""></div><i class="pino"></i><b class="tarja">VILLAGE RESORT</b></div>
   <div class="nota" id="placar" style="--g:4deg"><div class="papel"><b id="total">0</b><span>retratos falados</span></div><i class="pino"></i></div>
   <div id="board"></div>
 </div>
@@ -81,23 +79,13 @@ var TEMPO = 13000, INTERVALO = 8000;
 var board = document.getElementById('board'), chegada = document.getElementById('chegada'), fios = document.getElementById('fios'), filme = document.getElementById('filme');
 var telao = document.getElementById('telao'), borda = document.getElementById('borda');
 var vistos = {}, fila = [], historico = [], contagem = 0, rodando = false, ultimo = '', lista = [], faixa = 0, aberto = true;
-// Vagas no quadro (x,y em % da tela, paisagem); em retrato troca x por y. Centro e topo livres pro título e a ficha.
-var VAGAS = [[9,26],[27,22],[73,22],[91,26],[9,76],[27,82],[73,82],[91,76],[30,52],[70,52],[50,90],[10,51]];
-var NOTA = [[91,51]];
+// Vagas no quadro (x,y em % da tela): cantos primeiro pra equilibrar; topo central é do título, centro do cartaz e o
+// canto de baixo à direita do placar. Retrato tem grade própria, sempre abaixo do título.
+var VAGAS = [[10,27],[90,27],[10,77],[70,81],[29,23],[71,23],[30,81],[10,52],[90,53],[50,89],[30,52],[70,52]];
+var VAGAS_R = [[20,25],[80,25],[20,87],[50,87],[20,42],[80,42],[20,67],[80,67],[50,25],[20,54],[80,54],[50,76]];
+var NOTA = [89,80], NOTA_R = [80,88];
 
 function sorte(s) { return function () { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
-// Letras de bilhete de resgate: cada uma recortada de um papel e fonte diferentes, sempre iguais para o mesmo texto.
-var LETRAS = [['#f2ecdd', '#111', 'Anton'], ['#111', '#f2ecdd', "'Abril Fatface'"], ['#c8102e', '#fff', "'Archivo Black'"], ['#ddd0ac', '#1e2a5a', "'Special Elite'"],
-  ['#fff', '#c8102e', "'Abril Fatface'"], ['#2a2a2a', '#fdc72f', 'Anton'], ['#e9e1cb', '#111', "'Courier Prime';font-weight:700"]];
-function recortar(el) {
-  var r = sorte(el.dataset.t.length * 71 + 7);
-  el.innerHTML = el.dataset.t.split('').map(function (c, i) {
-    if (c === ' ') return '<i class="esp"></i>';
-    var p = LETRAS[(i * 3 + (r() * 4 | 0)) % LETRAS.length];
-    return '<i style="background:' + p[0] + ';color:' + p[1] + ';font-family:' + p[2] + ';font-size:' + (.85 + r() * .3).toFixed(2) + 'em;transform:translateY(' + ((r() - .5) * .12).toFixed(2) + 'em) rotate(' + ((r() - .5) * 12).toFixed(1) + 'deg)">' + c + '</i>';
-  }).join('');
-}
-Array.prototype.forEach.call(document.querySelectorAll('.recorte'), recortar);
 // Papel rasgado: 6 contornos irregulares sorteados uma vez e reaproveitados pelos cartões.
 var RASGOS = [];
 (function () {
@@ -112,29 +100,34 @@ var RASGOS = [];
   }
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 })();
-document.getElementById('centro').classList.add('r1'); document.getElementById('placar').classList.add('r4');
+document.getElementById('centro').classList.add('r1'); document.getElementById('placar').classList.add('r4'); document.getElementById('etiqueta').classList.add('r2');
 
 function rotulo(n) { return String(n); }
-function xy(v) { return innerHeight > innerWidth ? [v[1], v[0]] : v; }
+function retrato() { return innerHeight > innerWidth; }
 function cartao(r, n) { return '<i class="fita"></i><i class="fita d"></i><div class="papel"><img src="' + r.img + '" alt="Retrato falado" decoding="async"></div><i class="pino"></i><b class="tarja">SUSPEITO Nº ' + n + '</b>'; }
 function desenharMural() {
   var base = contagem - historico.length;
   board.innerHTML = historico.map(function (r, i) {
-    var p = xy(VAGAS[(base + i) % VAGAS.length]);
+    var p = (retrato() ? VAGAS_R : VAGAS)[(base + i) % VAGAS.length];
     return '<div class="cartao retrato r' + ((base + i) % 6) + '" style="left:' + p[0] + '%;top:' + p[1] + '%;--g:' + (((base + i) * 37 % 9) - 4) + 'deg">' + cartao(r, base + i + 1) + '</div>';
   }).join('');
-  var nt = xy(NOTA[0]); var pl = document.getElementById('placar'); pl.style.left = nt[0] + '%'; pl.style.top = nt[1] + '%';
+  var nt = retrato() ? NOTA_R : NOTA; var pl = document.getElementById('placar'); pl.style.left = nt[0] + '%'; pl.style.top = nt[1] + '%';
   document.getElementById('total').textContent = rotulo(contagem);
   amarrar();
 }
-// Barbante: da tachinha de cada retrato até a da ficha central, com barriga leve.
+// Barbante: da tachinha de cada retrato até um alfinete na borda do cartaz central (nunca por cima do texto), com barriga leve.
 function amarrar() {
-  var c = document.querySelector('#centro .pino').getBoundingClientRect(), cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+  var c = document.querySelector('#centro .papel').getBoundingClientRect(), u = Math.min(innerWidth, innerHeight) / 100;
+  var cx = c.left + c.width / 2, cy = c.top + c.height / 2, mw = c.width / 2 - 1.4 * u, mh = c.height / 2 - 1.4 * u;
+  var tj = document.querySelector('#centro .tarja').getBoundingClientRect(), lado = false;
   fios.setAttribute('viewBox', '0 0 ' + innerWidth + ' ' + innerHeight);
   fios.innerHTML = Array.prototype.map.call(board.querySelectorAll('.pino'), function (t) {
     var b = t.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
-    var d = 'M' + x + ' ' + y + ' Q' + (x + cx) / 2 + ' ' + ((y + cy) / 2 + Math.hypot(cx - x, cy - y) * .06) + ' ' + cx + ' ' + cy;
-    return '<g><path class="sombra" transform="translate(3 5)" d="' + d + '"/><path class="fio" d="' + d + '"/></g>';
+    var k = Math.min(mw / (Math.abs(x - cx) || 1e-6), mh / (Math.abs(y - cy) || 1e-6)), ex = cx + (x - cx) * k, ey = cy + (y - cy) * k;
+    // Alfinete que cairia na tarja VILLAGE RESORT escorrega pro lado dela.
+    if (ey > tj.top - u && ex > tj.left - u && ex < tj.right + u) ex = (lado = !lado) ? tj.left - 1.6 * u : tj.right + 1.6 * u;
+    var d = 'M' + x + ' ' + y + ' Q' + (x + ex) / 2 + ' ' + ((y + ey) / 2 + Math.hypot(ex - x, ey - y) * .06) + ' ' + ex + ' ' + ey;
+    return '<g><path class="sombra" transform="translate(3 5)" d="' + d + '"/><path class="fio" d="' + d + '"/><circle class="tacha" cx="' + ex + '" cy="' + ey + '" r="' + .75 * u + '" stroke-width="' + .3 * u + '"/></g>';
   }).join('');
 }
 function esticar(g, atraso) {
@@ -191,8 +184,8 @@ function mostrar(r) {
   var n = contagem, sobreVideo = !aberto;
   chegada.className = '';
   chegada.innerHTML = '<div class="cartao r' + (n % 6) + (sobreVideo ? ' canto' : '') + '" style="left:' + (sobreVideo ? '80%;top:60%' : '50%;top:50%') + ';--g:' + (sobreVideo ? 5 : -2) + 'deg">' + cartao(r, n) +
-    '<div class="aviso recorte" data-t="NOVO SUSPEITO"></div><div class="carimbo">CASO RESOLVIDO</div></div>';
-  var card = chegada.firstChild; recortar(card.querySelector('.aviso'));
+    '<div class="aviso">NOVO SUSPEITO</div><div class="carimbo">CASO RESOLVIDO</div></div>';
+  var card = chegada.firstChild;
   if (card.animate) card.animate([{transform: 'translate(-50%,-50%) rotate(20deg) scale(1.8)', opacity: 0}, {opacity: 1, offset: .3}, {transform: getComputedStyle(card).transform}], {duration: 450, easing: 'cubic-bezier(.2,1.5,.5,1)'});
   // 1) colado no canto do vídeo; 2) rasgo corta pro mural e o retrato vai pro centro com o carimbo.
   var t1 = sobreVideo ? 3600 : 400;
@@ -202,7 +195,7 @@ function mostrar(r) {
     chegada.className = 'foco'; card.classList.remove('canto'); card.style.left = '50%'; card.style.top = '50%'; card.style.setProperty('--g', '-2deg');
     if (sobreVideo) voar(card, de, 900);
     var cb = card.querySelector('.carimbo');
-    if (cb.animate) cb.animate([{opacity: 0, transform: 'rotate(-14deg) scale(3)'}, {opacity: 1, transform: 'rotate(-14deg) scale(1)'}], {duration: 320, delay: 1300, easing: 'ease-in', fill: 'forwards'}); else cb.style.opacity = 1;
+    if (cb.animate) cb.animate([{opacity: 0, transform: 'rotate(-8deg) scale(3)'}, {opacity: 1, transform: 'rotate(-8deg) scale(1)'}], {duration: 320, delay: 1300, easing: 'ease-in', fill: 'forwards'}); else cb.style.opacity = 1;
   }, t1);
   // 3) voa até a vaga no mural e o barbante se estica.
   setTimeout(function () {
