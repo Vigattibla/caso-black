@@ -1,7 +1,8 @@
 /* node tests/ar8w.cjs — protótipo 8th Wall: carrega motor, aceita o alvo, âncora suaviza, quadro jogável. */
 const fs=require('fs'),path=require('path'),http=require('http'),os=require('os'),{spawn}=require('child_process');
 const ROOT=path.resolve(__dirname,'..'),OUT=path.join(os.tmpdir(),'cb-8w-shots');
-const CHROME=process.env.AR_CHROME||'C:/Users/Vigatti/AppData/Local/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-win64/chrome-headless-shell.exe';
+const CHROME=process.env.AR_CHROME||['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(p=>fs.existsSync(p));
+const PROFILE=fs.mkdtempSync(path.join(os.tmpdir(),'chrome-8w-profile-'));
 let browser,server,ws,id=0;const pending=new Map(),errors=[],faltando=[],checks=[];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function cdp(method,params={}){return new Promise((resolve,reject)=>{const n=++id,t=setTimeout(()=>{pending.delete(n);reject(Error('Timeout '+method))},20000);pending.set(n,{resolve:r=>{clearTimeout(t);resolve(r)},reject:e=>{clearTimeout(t);reject(e)}});ws.send(JSON.stringify({id:n,method,params}))})}
@@ -14,7 +15,8 @@ async function main(){
   const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.json':'application/json','.wasm':'application/wasm'};
   server=http.createServer((q,r)=>{let url=decodeURIComponent(q.url.split('?')[0]);if(url.endsWith('/'))url+='index.html';const file=path.resolve(ROOT,'.'+url);if(!file.startsWith(ROOT+path.sep)||path.basename(file)==='debug.log'){r.writeHead(403);return r.end()}fs.readFile(file,(e,b)=>{if(e&&!/\/assets\/a\/v\/v3-\d+\.m4a$/.test(url)&&url!=='/favicon.ico')faltando.push(url);r.writeHead(e?404:200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});r.end(e?'Not found':b)})});
   await new Promise(r=>server.listen(0,'127.0.0.1',r));
-  browser=spawn(CHROME,['--headless','--no-sandbox','--mute-audio','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--remote-debugging-port=0','--user-data-dir='+path.join(os.tmpdir(),'chrome-8w-profile'),'about:blank'],{windowsHide:true,stdio:['ignore','ignore','pipe']});
+  if(!CHROME)throw Error('Defina AR_CHROME com o caminho do Chrome/Edge.');
+  browser=spawn(CHROME,['--headless','--no-sandbox','--mute-audio','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--remote-debugging-port=0','--user-data-dir='+PROFILE,'about:blank'],{windowsHide:true,stdio:['ignore','ignore','pipe']});
   const endpoint=await new Promise((resolve,reject)=>{let s='';const t=setTimeout(()=>reject(Error('Sem CDP')),15000);browser.stderr.on('data',b=>{s+=b;const m=s.match(/DevTools listening on (ws:\/\/\S+)/);if(m){clearTimeout(t);resolve(m[1])}})});
   const targets=await(await fetch(endpoint.replace('ws:','http:').replace(/\/devtools.*/,'/json'))).json();ws=new WebSocket(targets.find(t=>t.type==='page').webSocketDebuggerUrl);await new Promise(r=>ws.onopen=r);
   ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);if(p)m.error?p.reject(Error(m.error.message)):p.resolve(m.result)}else if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails.exception?.description||m.params.exceptionDetails.text);else if(m.method==='Runtime.consoleAPICalled'&&m.params.type==='error')errors.push(m.params.args.map(x=>x.value||x.description).join(' '))};
@@ -25,8 +27,8 @@ async function main(){
   await cdp('Page.navigate',{url:base+'/ar8w/?reset=1'});
   await until(`window.__ar8w?.xr===true`,'motor 8th Wall carregou (xrloaded)');
   await until(`window.__ar8w.configurado===true||!!window.__ar8w.configErro`,'configure respondeu');
-  await ok(`!window.__ar8w.configErro&&__ar8w.alvos.length===6`,'configure aceitou os seis alvos');
-  await ok(`!document.querySelector('#abrir').disabled&&document.querySelector('#abrir').textContent==='Abrir lupa'`,'botão Abrir lupa liberado');
+  await ok(`!window.__ar8w.configErro&&__ar8w.alvos.length===8`,'configure aceitou os oito alvos');
+  await ok(`!document.querySelector('#abrir').disabled&&document.querySelector('#abrir').textContent==='Abrir câmera mágica'`,'botão da câmera liberado');
   await ok(`/8th Wall/.test(document.querySelector('#credito').textContent)`,'crédito 8th Wall visível');
   await ok(`(()=>{document.body.appendChild(document.querySelector('#camera'));const z=e=>+getComputedStyle(document.querySelector(e)).zIndex||0;return z('#css3d')>z('#camera')})()`,'quadro fica acima do canvas mesmo com o canvas no fim do body');
   await shot('8w-inicio');
@@ -57,6 +59,7 @@ async function main(){
   await cdp('Page.navigate',{url:base+'/ar8w/?b'});await until(`window.__ar8w?.configurado===true`,'recarregou');
   await ev(`document.querySelector('#abrir').click()`);await sleep(2500);
   await ok(`!document.querySelector('#erro').hidden||document.querySelector('#inicio').hidden`,'Abrir lupa responde (erro amigável ou câmera)');
+  await ok(`!document.querySelector('#sair-camera').hidden&&!!document.querySelector('#erro a')`,'falha de câmera mantém saída e retorno ao caderno');
   await shot('8w-abrir');
   const viu=await ev(`({erro:!document.querySelector('#erro').hidden&&document.querySelector('#erro p').textContent,status:document.querySelector('#status').textContent})`);
   if(faltando.length)throw Error('404: '+[...new Set(faltando)].join(', '));

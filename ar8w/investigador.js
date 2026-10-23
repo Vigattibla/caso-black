@@ -2,6 +2,12 @@
 import {sequencia} from './fala.js';
 export const TESTE = new URLSearchParams(location.search).has('cacateste');
 let manifesto;
+const videosAtivos = new WeakMap(), roteirosAtivos = new WeakMap();
+export function pararRoteiro(el) {
+  const controle = roteirosAtivos.get(el);
+  if (controle) { controle.cancelado = true; controle.avancar?.(); }
+  videosAtivos.get(el)?.();
+}
 const lista = () => manifesto || (manifesto = fetch('../assets/v/manifest.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).catch(() => ({})));
 export async function videoDoCaca(nome) {
   if (TESTE) return '../assets/v/teste-caca.mp4';
@@ -37,7 +43,8 @@ export function keyer(canvas, video, escala = .5) {
 }
 /* Toca no quadro `el`; resolve ao terminar ou pular. `legenda` é a fala-guia mostrada enquanto ele fala. */
 export async function tocarCaca(el, nome, legenda = '') {
-  const src = await videoDoCaca(nome); if (!src) return;
+  const controle = roteirosAtivos.get(el);
+  const src = await videoDoCaca(nome); if (!src || controle?.cancelado || !el.isConnected) return;
   const box = document.createElement('div'); box.className = 'inv';
   box.innerHTML = `<canvas></canvas><p class="inv-leg"></p><button class="inv-som" hidden>🔊 Ouvir</button><button class="inv-pular">PULAR ›</button>${TESTE ? '<span class="inv-teste">DUBLÊ DE TESTE</span>' : ''}`;
   const video = Object.assign(document.createElement('video'), {src, playsInline: true, preload: 'auto'}); video.setAttribute('playsinline', '');
@@ -46,7 +53,8 @@ export async function tocarCaca(el, nome, legenda = '') {
   return new Promise(fim => {
     let quadro, acabou = false;
     const loop = () => { desenhar?.(); box.dataset.quadros = (+box.dataset.quadros || 0) + 1; quadro = requestAnimationFrame(loop); }; // rVFC não dispara em vídeo fora do DOM
-    const sair = () => { if (acabou) return; acabou = true; video.pause(); cancelAnimationFrame(quadro); box.remove(); fim(); };
+    const sair = () => { if (acabou) return; acabou = true; video.pause(); video.removeAttribute('src'); video.load(); cancelAnimationFrame(quadro); box.remove(); if (videosAtivos.get(el) === sair) videosAtivos.delete(el); fim(); };
+    videosAtivos.set(el, sair);
     box.querySelector('.inv-pular').onclick = sair; video.onended = sair; video.onerror = sair;
     const som = box.querySelector('.inv-som'); som.onclick = () => { video.muted = false; som.hidden = true; };
     video.play().catch(() => { video.muted = true; som.hidden = false; return video.play(); }).catch(sair);
@@ -55,5 +63,10 @@ export async function tocarCaca(el, nome, legenda = '') {
 }
 /* Passos {caca, leg} (vídeo no quadro) ou {lucas} (balão com voz, avança no toque), na ordem. */
 export async function roteiro(el, passos) {
-  for (const p of passos) await (p.caca ? tocarCaca(el, p.caca, p.leg) : new Promise(r => sequencia([{texto: p.lucas, quem: 'Lucas'}], r)));
+  const controle = {cancelado: false, avancar: null}; roteirosAtivos.set(el, controle);
+  for (const p of passos) {
+    if (controle.cancelado) return false;
+    await (p.caca ? tocarCaca(el, p.caca, p.leg) : new Promise(r => { controle.avancar = r; sequencia([{texto: p.lucas, quem: 'Lucas'}], () => { controle.avancar = null; r(); }); }));
+  }
+  return !controle.cancelado;
 }

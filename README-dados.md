@@ -16,6 +16,17 @@ Configuração privada: `config.json` contém `password_hash` (PHP `password_has
 
 As alternativas abaixo continuam disponíveis para outra hospedagem.
 
+## Câmera e retomada
+
+- O botão Início fica acessível durante a abertura, no modo por número e nas falhas. Sair encerra os streams e recarrega a página preservando ficha, provas e fotos.
+- A entrada por número identifica quando não há câmera ativa; nesse caso o retorno leva ao início, sem esconder o jogo numa tela vazia.
+- Voltar do caderno pelo histórico reinicializa a câmera; o app não reutiliza uma sessão parada do cache de navegação.
+- Vídeos, falas, fotos automáticas e animações pendentes são cancelados ao trocar de estação. A recompensa já conquistada fica salva.
+- SDK/alvos com falha ou carregamento demorado oferecem nova tentativa e volta ao caderno. A inicialização/configuração não é duplicada na mesma página.
+- Foto salva na estação reaparece ao retomá-la e alimenta o álbum do caderno.
+- Os envelopes liberam Bronze com 2 provas, Prata com 4, Ouro com 5 e Nióbio depois da revelação. Enquanto os dados comerciais estiverem indefinidos, o WhatsApp pede detalhes sem enviar preços ou datas de exemplo.
+- Teste básico do SDK: `node tests/ar8w.cjs` (ou `AR_CHROME` apontando para Chrome/Edge). A câmera sintética valida o fluxo; placas impressas e rastreamento físico continuam exigindo Android/iPhone.
+
 ## Opção A · Supabase (grátis)
 1. Crie o projeto em supabase.com → SQL Editor → cole `supabase.sql` → Run.
 2. Settings → API: copie **Project URL** e a chave **anon public**.

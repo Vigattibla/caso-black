@@ -29,6 +29,8 @@ const style = document.createElement('style'); style.textContent = CSS + CSS_INV
 const status = t => { $('#status').textContent = t; $('#status').hidden = !t; };
 const est = window.__ar8w = {estado, eventos: [], demo: !!DEMO};
 let ancora = criarAncora(), painel, alvoAtual, alvoLargura = 1, recortes = {}, achadoEm = 0, querRastro = false, cssScene, cssRenderer, raiz, quadroObj, ultimo = 0, rodando = false, gl, ultimaLeitura = 0;
+let inicioTimer, motorTimer, configuracao, modulosInstalados = false, aberturaCancelada = false, reabrirAoVoltar = false;
+const cameraAtiva = () => document.body.dataset.camera === 'ar';
 est.ancora = ancora;
 const bruto = new THREE.Object3D(), M = new THREE.Matrix4(), escala = new THREE.Matrix4(), tmp = new THREE.Vector3();
 const mochila = criarMochila(estado, () => painel, item => falar(item === 'lente' ? historia.estacoes[4]['sem lente'] : historia.estacoes[5]['sem chave']));
@@ -103,12 +105,18 @@ let avisoT;
 function aviso(t) { const a = $('#aviso'); a.textContent = t; a.hidden = false; clearTimeout(avisoT); avisoT = setTimeout(() => { a.hidden = true; }, 2600); }
 function fixar(sim, motivo) {
   if (DEMO || !painel || sim === fixado) return;
+  if (!sim && motivo === 'sair' && !cameraAtiva()) return sairCamera();
   fixado = sim; document.body.classList.toggle('fixado', sim); $('#demo-palco').hidden = !sim; est.fixado = sim;
   const n = Number(alvoAtual?.slice(-1)), local = ['Piscina', 'Restaurante', 'Espaço Kids', 'Cafeteria', 'Recepção'][n - 1];
   $('#tela-cheia').hidden = !sim; $('#tela-cheia .tc-onde').textContent = `${alvoAtual === INICIO ? 'Faro do Pipoca' : 'Estação ' + n + ' · ' + local}`;
   if (motivo === 'placa') aviso('📷 Placa encontrada · voltou pra câmera'); else if (motivo === 'sair') { aviso('📷 Câmera ligada · mire a placa'); status(historia.abertura[2]); }
   $('#fixar').textContent = sim ? '📷 Voltar pra câmera' : '📌 Trazer pra tela';
-  if (sim) { $('#demo-palco').append(painel, $('#tela-cheia')); Object.assign(painel.style, {display: '', visibility: 'visible'}); status(''); redimensionarDemo(); }
+  if (sim) {
+    $('#sair-camera').hidden = false;
+    $('#tela-cheia .tc-sair').textContent = cameraAtiva() ? '📷 Câmera' : 'Voltar ao início';
+    $('#tela-cheia small').textContent = cameraAtiva() ? '📌 Tela cheia · mire a placa pra voltar à câmera' : 'Estação por número · a câmera não está ligada';
+    $('#demo-palco').append(painel, $('#tela-cheia')); Object.assign(painel.style, {display: '', visibility: 'visible'}); status(''); redimensionarDemo();
+  }
   else { Object.assign(painel.style, {transform: '', transformOrigin: '', visibility: 'hidden'}); } // CSS3D devolve o painel ao alvo no próximo render
 }
 // O alvo é só a foto da placa (recorte); o painel continua centrado na folha inteira.
@@ -162,6 +170,8 @@ const leitorMod = {
 const modulo = {
   name: 'casoblack',
   onStart() {
+    if (!rodando) { pararCamera(); return; }
+    clearTimeout(inicioTimer); est.iniciada = true;
     const {camera, scene} = XR8.Threejs.xrScene(); camera.position.set(0, 1.6, 0); scene.add(rastro.grupo);
     XR8.XrController.updateCameraProjectionMatrix({origin: camera.position, facing: camera.quaternion}); status(historia.abertura[2]); $('#mirar').hidden = false; $('#sair-camera').hidden = false; document.body.dataset.camera = 'ar';
     if (pendente) { selecionar('placa-' + pendente); fixar(true); pendente = null; }
@@ -190,7 +200,7 @@ const modulo = {
       if (rastro.ligado) status('Siga as patinhas no chão 🐾'); else if (/^(placa|pista)/.test(alvoAtual)) fixar(true); else status(historia.abertura[2]); }},
   ],
   onCameraStatusChange({status: s}) { if (s === 'requesting') status('Permita o acesso à câmera…'); if (['failed', 'denied'].includes(s)) erro('Sem acesso à câmera. Libere a câmera nas permissões do navegador e recarregue.'); },
-  onException() { erro('A câmera travou. Recarregue a página.'); },
+  onException(e) { est.runtimeErro = String(e?.message || e || 'Erro XR'); erro('Não foi possível iniciar a câmera. Tente novamente ou volte ao caderno.'); },
 };
 // ?calibrar: medir o caminho no local. Mira a folha do faro, marca pontos andando, mira a placa 4; salva neste aparelho.
 const CALIBRAR = Q.has('calibrar') && !DEMO;
@@ -217,15 +227,32 @@ const calibrar = (() => {
   return {ver(d) { if (d.name === DESTINO) pista = [d.position.x, d.position.y, d.position.z]; setTimeout(resumo); }};
 })();
 est.simular = (detail, tipo = 'found') => modulo.listeners.find(l => l.event === 'reality.image' + tipo).process({detail});
-function erro(t) { $('#erro p').textContent = t; $('#erro').hidden = false; }
+function pararCamera() {
+  clearTimeout(inicioTimer);
+  calar();
+  painel?.limpar?.();
+  try { window.XR8?.stop(); } catch (e) { /* motor ainda não iniciou */ }
+  document.querySelectorAll('video,audio').forEach(m => { m.pause(); m.srcObject?.getTracks?.().forEach(t => t.stop()); });
+  delete document.body.dataset.camera;
+}
+function erro(t) {
+  clearTimeout(motorTimer); aberturaCancelada = true; calar();
+  rodando = false; pararCamera(); $('#sair-camera').hidden = false;
+  document.querySelector('.cut-pular')?.click();
+  $('#erro p').textContent = t; $('#erro').hidden = false;
+}
 async function configurar() {
+  if (configuracao) return configuracao;
+  configuracao = (async () => {
   const nomes = ['placa-1', 'placa-2', 'placa-3', 'placa-4', 'placa-5', 'pista-4', 'verso-teste', 'frente'];
-  const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`, {cache: 'no-cache'}); if (!r.ok) throw Error(nome); const json = await r.json(); const rc = json.metadata?.recorte; if (rc) recortes[nome] = rc; json.imagePath = new URL(`./alvos/${nome}_${rc ? 'recorte' : 'luminance'}.png?v=${json.updated}`, location.href).href; return json; }));
+  const alvos = await Promise.all(nomes.map(async nome => { const r = await fetch(`./alvos/${nome}.json`, {cache: 'no-cache', signal: AbortSignal.timeout(20000)}); if (!r.ok) throw Error(nome); const json = await r.json(); const rc = json.metadata?.recorte; if (rc) recortes[nome] = rc; json.imagePath = new URL(`./alvos/${nome}_${rc ? 'recorte' : 'luminance'}.png?v=${json.updated}`, location.href).href; return json; }));
   XR8.XrController.configure({imageTargetData: alvos, disableWorldTracking: false}); est.alvos = alvos.map(a => a.name);
+  })().catch(e => { configuracao = null; throw e; });
+  return configuracao;
 }
 // Voltar ao início: recarrega a página (a câmera do 8th Wall não religa limpa depois de XR8.stop no celular). O progresso fica no localStorage.
 function sairCamera() {
-  try { XR8.stop(); } catch (e) { /* já parada */ }
+  aberturaCancelada = true; calar(); pararCamera();
   try { sessionStorage.setItem('cb_volta', '1'); } catch (e) {}
   location.replace(location.pathname + location.search);
 }
@@ -236,26 +263,25 @@ const ABERTURA = [{lucas: 'Detetives, aqui é o Lucas! E esse é o Cacá, invest
   {lucas: 'Mas ele deixou pistas em cinco placas espalhadas pelo resort.'},
   {lucas: 'Abre a câmera mágica, aponta pra placa do Caso Black e resolve cada desafio.'},
   {lucas: 'No final, a gente descobre quem é o culpado. Bora? Toca no botão amarelo!'}];
-async function abertura() { for (const p of ABERTURA) await (p.caca ? cutscene(p.caca, p.falas) : new Promise(r => sequencia([{texto: p.lucas, quem: 'Lucas'}], r))); }
-if (!voltou && !new URLSearchParams(location.search).has('demo')) abertura();
+async function abertura() { for (const p of ABERTURA) { if (aberturaCancelada) return; await (p.caca ? cutscene(p.caca, p.falas) : new Promise(r => sequencia([{texto: p.lucas, quem: 'Lucas'}], r))); } }
+if (!voltou && !estado.valor.concluidas.length && !new URLSearchParams(location.search).has('demo')) abertura();
 if (voltou) $('#abrir').textContent = 'Voltar pra câmera mágica';
 async function abrir() {
   if (rodando) return;
+  if (!window.XR8 || !est.configurado) return erro('A câmera ainda não terminou de carregar. Tente novamente.');
   if (!XR8.XrDevice.isDeviceBrowserCompatible()) return erro('Este navegador não abre a câmera mágica. Use o Chrome (Android) ou o Safari (iPhone).');
-  rodando = true; $('#inicio').hidden = true;
-  // Quem volta do início (ou já tem progresso) não ouve a abertura de novo.
-  const intro = voltou || estado.valor.concluidas.length ? [] : historia.abertura.slice(0, 2);
-  sequencia(intro, async () => {
-    calar();
+  aberturaCancelada = true; calar();
+  rodando = true; $('#inicio').hidden = true; $('#sair-camera').hidden = false;
+  inicioTimer = setTimeout(() => erro('A câmera está demorando para abrir. Confira a permissão ou tente novamente.'), 30000);
     try {
       await configurar();
-      XR8.addCameraPipelineModules([XR8.FullWindowCanvas.pipelineModule(), XR8.GlTextureRenderer.pipelineModule(), XR8.CanvasScreenshot.pipelineModule(), leitorMod, XR8.Threejs.pipelineModule(), XR8.XrController.pipelineModule(), modulo]);
-      XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS});
+      if (!modulosInstalados) { XR8.addCameraPipelineModules([XR8.FullWindowCanvas.pipelineModule(), XR8.GlTextureRenderer.pipelineModule(), XR8.CanvasScreenshot.pipelineModule(), leitorMod, XR8.Threejs.pipelineModule(), XR8.XrController.pipelineModule(), modulo]); modulosInstalados = true; }
+      await XR8.run({canvas: $('#camera'), allowedDevices: XR8.XrConfig.device().MOBILE_AND_HEADSETS});
     } catch { erro('Não foi possível abrir a câmera. Recarregue a página.'); }
-  });
 }
 $('#abrir').onclick = abrir;
 $('#sair-camera').onclick = sairCamera;
+$('#erro-recarregar').onclick = sairCamera;
 $('#fixar').onclick = () => fixar(!fixado);
 $('#tela-cheia .tc-sair').onclick = () => fixar(false, 'sair');
 // Número impresso na base da placa abre a estação direto; a câmera liga junto porque a carta (verso/frente) só se lê com ela.
@@ -272,6 +298,8 @@ escolha.onclick = e => {
 };
 est.estacao = n => escolha.querySelector(`[data-estacao="${n}"]`).click();
 addEventListener('resize', redimensionarDemo);
+addEventListener('pagehide', () => { reabrirAoVoltar = rodando || fixado; if (reabrirAoVoltar) { try { sessionStorage.setItem('cb_volta', '1'); } catch (_) {} } pararCamera(); });
+addEventListener('pageshow', e => { if (e.persisted && reabrirAoVoltar) sairCamera(); });
 if (DEMO) {
   $('#inicio').hidden = true; $('#camera').hidden = true; $('#css3d').hidden = true; $('#credito').hidden = true; $('#demo-palco').hidden = false;
   document.body.classList.add('demo');
@@ -280,7 +308,8 @@ if (DEMO) {
   est.pronto = true;
 } else {
   montarCss();
-  const pronto = async () => { est.xr = true; try { await configurar(); est.configurado = true; $('#abrir').disabled = false; $('#abrir').textContent = voltou ? 'Voltar pra câmera mágica' : 'Abrir câmera mágica'; } catch (e) { est.configErro = String(e); erro('Não foi possível carregar as placas. Recarregue.'); } };
+  motorTimer = setTimeout(() => erro('Não foi possível carregar a câmera a tempo. Confira a conexão e tente novamente.'), 30000);
+  const pronto = async () => { est.xr = true; try { await configurar(); clearTimeout(motorTimer); est.configurado = true; $('#abrir').disabled = false; $('#abrir').textContent = voltou ? 'Voltar pra câmera mágica' : 'Abrir câmera mágica'; } catch (e) { est.configErro = String(e); erro('Não foi possível carregar as placas. Recarregue.'); } };
   window.XR8 ? pronto() : addEventListener('xrloaded', pronto, {once: true});
   const script = document.createElement('script'); script.src = './xr/xr.js'; script.async = true; script.dataset.preloadChunks = 'slam'; script.onerror = () => erro('Não foi possível carregar a câmera mágica. Recarregue.'); document.head.append(script);
 }

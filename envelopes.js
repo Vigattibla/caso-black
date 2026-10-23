@@ -21,6 +21,7 @@ const Envelopes = window.Envelopes = (() => {
   const podeAbrir = n => (demo && demoVip() === null) || liberado(n);
   const liberado = (n, c = carimbos(), fim = resolveu()) => n.regra.resolvido ? fim : c.length >= n.regra.carimbos;
   const esgotado = n => n.quantidade !== undefined && Number(n.restantes) <= 0;
+  const detalhesProntos = n => [n.dias, n.precoDe, n.precoPor, n.desconto, n.validade, ...(n.dayUse ? [] : [n.diarias])].every(v => v !== undefined && String(v).trim() && !/A DEFINIR|__/i.test(String(v)));
   const pendencia = n => n.regra.resolvido ? 'só para quem resolve o caso' : `faltam ${Math.max(0, n.regra.carimbos - carimbos().length)} provas`;
   const status = (n, livre = liberado(n), aberto = (/^#demo/.test(location.hash) ? demoAbertos : abertos).has(n.id)) => esgotado(n) ? 'ESGOTADO' : !livre ? pendencia(n) : aberto ? 'carta aberta' : 'segure o lacre';
   const perda = (n, livre) => !resolveu() && !livre && !esgotado(n) ? '<strong class="en-perda">desconto em risco</strong>' : '';
@@ -133,7 +134,7 @@ const Envelopes = window.Envelopes = (() => {
       <div class="en-preco"><s>DE ${esc(n.precoDe)}</s><strong>POR ${esc(n.precoPor)}</strong></div>
       <p>${esc(desconto)}</p><p>VALIDADE: ${esc(n.validade)}</p>
       ${n.quantidade !== undefined ? `<p>QUANTIDADE LIMITADA · ${esc(n.quantidade)} PACOTES<br>RESTAM ${esc(n.restantes)}</p>` : ''}
-      <button class="btn en-garantir" ${semEstoque ? 'disabled' : ''}>${semEstoque ? 'ESGOTADO' : 'GARANTIR'}</button></div>`;
+      <button class="btn en-garantir" ${semEstoque ? 'disabled' : ''}>${semEstoque ? 'ESGOTADO' : detalhesProntos(n) ? 'GARANTIR' : 'RECEBER DETALHES'}</button></div>`;
   }
   function montar() {
     cancelar?.();
@@ -201,7 +202,7 @@ const Envelopes = window.Envelopes = (() => {
     if (demo) return avisar('Demonstração: nenhuma reserva é enviada.');
     const numero = CONFIG.WHATS.replace(/\D/g, '');
     if (!/^\d{10,15}$/.test(numero)) return avisar('WhatsApp de reservas: A DEFINIR.');
-    const mensagem = `Olá! Conquistei o envelope ${n.nome} do Caso Black e quero garantir ${n.titulo}. ${n.dayUse ? 'Day use' : n.diarias + ' diárias'}, ${n.dias}. De ${n.precoDe} por ${n.precoPor}. Desconto: ${n.desconto}${typeof n.desconto === 'number' ? '%' : ''}. Validade: ${n.validade}.`;
+    const mensagem = detalhesProntos(n) ? `Olá! Conquistei o envelope ${n.nome} do Caso Black e quero garantir ${n.titulo}. ${n.dayUse ? 'Day use' : n.diarias + ' diárias'}, ${n.dias}. De ${n.precoDe} por ${n.precoPor}. Desconto: ${n.desconto}${typeof n.desconto === 'number' ? '%' : ''}. Validade: ${n.validade}.` : `Olá! Conquistei o envelope ${n.nome} do Caso Black e gostaria de receber os detalhes do ${n.titulo} quando forem divulgados.`;
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank', 'noopener');
   }
   function abrir(id, demonstracao = /^#demo/.test(location.hash)) {

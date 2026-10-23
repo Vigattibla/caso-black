@@ -40,7 +40,8 @@ export function criarEstacao4(ctx) {
       else { ocupado = true; p.erro(b); timer = setTimeout(() => { virar(a, false); virar(b, false); ocupado = false; }, 800); }
     };
   }
-  p.el.usarFerramenta = usar; p.el.limpar = () => { clearTimeout(timer); clearTimeout(socorro); };
+  const limparPainel = p.el.limpar;
+  p.el.usarFerramenta = usar; p.el.limpar = () => { limparPainel?.(); clearTimeout(timer); clearTimeout(socorro); };
   p.q('.usar-lente').onclick = () => usar('lente');
   const v = ctx.estado.valor;
   if (v.concluidas.includes(4)) p.iniciar();

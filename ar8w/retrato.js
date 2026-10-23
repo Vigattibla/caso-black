@@ -81,7 +81,8 @@ export function criarRetrato({estado, demo}) {
   window.Dados?.grupo().then(link => { if (link) { const a = el.querySelector('.btn-vip'); a.href = link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Entrar no grupo VIP'; } });
   const q = s => el.querySelector(s), teste = demo || new URLSearchParams(location.search).get('retrato') === '1';
   const liberado = () => teste || estado.valor.concluidas.includes(5);
-  let seguidas = 0, lido = false;
+  let seguidas = 0, lido = false, boca, balanco, tempoFala, tempoRevelacao;
+  el.limpar = () => { clearTimeout(tempoFala); clearTimeout(tempoRevelacao); clearInterval(boca); balanco?.cancel(); for (const a of el.getAnimations?.({subtree: true}) || []) a.cancel(); };
   const status = t => { q('.leitura-status').textContent = t; q('.leitura-status').hidden = !t; };
 
   function avaliar(r) {
@@ -106,15 +107,16 @@ export function criarRetrato({estado, demo}) {
     // Salta do papel (translateZ só aparece em AR; na demo vira um zoom).
     vivo.animate([{transform: 'translateZ(0) scale(1)', opacity: .2}, {transform: 'translateZ(140px) translateY(-30px) scale(1.18)', opacity: 1}],
       {duration: 1100, easing: 'cubic-bezier(.2,1.6,.4,1)', fill: 'forwards'});
-    const balanco = topo.animate([{transform: 'rotate(-2deg)'}, {transform: 'rotate(2deg)'}], {duration: 900, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out'});
+    balanco = topo.animate([{transform: 'rotate(-2deg)'}, {transform: 'rotate(2deg)'}], {duration: 900, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out'});
     let aberta = false;
-    const boca = setInterval(() => { aberta = !aberta; queixo.style.transform = aberta ? 'translateY(7%)' : 'none'; }, 140);
-    setTimeout(() => sequencia(falasSuspeito.map(texto => ({texto, quem: 'Suspeito'})), () => {
-      clearInterval(boca); balanco.cancel(); queixo.style.transform = 'none'; tirarDisfarce(vivo, img);
-    }), 900);
+    boca = setInterval(() => { aberta = !aberta; queixo.style.transform = aberta ? 'translateY(7%)' : 'none'; }, 140);
+    tempoFala = setTimeout(() => { if (!el.isConnected) return; sequencia(falasSuspeito.map(texto => ({texto, quem: 'Suspeito'})), () => {
+      clearInterval(boca); balanco.cancel(); if (!el.isConnected) return; queixo.style.transform = 'none'; tirarDisfarce(vivo, img);
+    }); }, 900);
   }
 
   function tirarDisfarce(vivo, img) {
+    if (!el.isConnected) return;
     const url = img.toDataURL('image/png'), C = 6, L = 7;
     enviarTela(url);
     vivo.querySelectorAll('canvas').forEach(c => c.remove());
@@ -129,9 +131,10 @@ export function criarRetrato({estado, demo}) {
     vivo.animate([{transform: 'translateZ(140px) translateY(-30px) scale(1.18) rotate(0)'}, {transform: 'translateZ(140px) translateY(-30px) scale(1.18) rotate(4deg)'}, {transform: 'translateZ(140px) translateY(-30px) scale(1.18) rotate(-4deg)'}],
       {duration: 160, iterations: 3});
     be.animate([{opacity: 0, transform: 'scale(.4)'}, {opacity: 1, transform: 'scale(1.08)'}, {opacity: 1, transform: 'scale(1)'}], {duration: 900, delay: 900, fill: 'forwards'});
-    setTimeout(() => {
+    tempoRevelacao = setTimeout(() => {
+      if (!el.isConnected) return;
       be.animate([{transform: 'translateY(0)'}, {transform: 'translateY(-6%)'}], {duration: 700, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out', composite: 'add'});
-      estado.fechar(); sequencia(historia.final.slice(1), () => { q('.foto-convite').hidden = false; mostrarAlbum(); fotoTurma(); });
+      estado.fechar(); if (!el.isConnected) return; sequencia(historia.final.slice(1), () => { if (!el.isConnected) return; q('.foto-convite').hidden = false; mostrarAlbum(); fotoTurma(); });
     }, 1900);
   }
 
@@ -140,6 +143,7 @@ export function criarRetrato({estado, demo}) {
   }
   // Caso fechado: a câmera abre direto pra foto da turma (sem perguntar); o botão tira outras.
   async function fotoTurma() {
+    if (!el.isConnected) return;
     const dado = await tirarFoto({titulo: 'FOTO DA TURMA · CASO FECHADO', legenda: 'CASO BLACK · CASO FECHADO!'});
     if (!dado || !el.isConnected) return; estado.foto(dado); mostrarAlbum(); falar('Foto guardada no álbum do caso! Toca nela pra salvar no celular.', 'Gabi');
   }
