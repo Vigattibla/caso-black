@@ -77,7 +77,7 @@ function boneco(traco) {
 export function criarRetrato({estado, demo}) {
   if (!document.querySelector('#css-retrato')) { const s = document.createElement('style'); s.id = 'css-retrato'; s.textContent = CSS; document.head.append(s); }
   const el = document.createElement('section'); el.className = 'e1 retrato'; el.dataset.estacao = 'frente';
-  el.innerHTML = `<div class="ret-area"></div><p class="leitura-status" role="status"></p><div class="ret-rodape"><div class="fala-slot"></div><div class="foto-convite" hidden><button class="escolher-foto">📸 Tirar outra foto</button><div class="album"></div></div></div>`;
+  el.innerHTML = `<div class="ret-area"></div><p class="leitura-status" role="status"></p><div class="ret-rodape"><div class="fala-slot"></div><div class="foto-convite" hidden><button class="escolher-foto">📸 Tirar outra foto</button><div class="album"></div><a class="btn-caderno" href="../?album=1">Ver meu álbum e enviar à recepção</a></div></div>`;
   const q = s => el.querySelector(s), teste = demo || new URLSearchParams(location.search).get('retrato') === '1';
   const liberado = () => teste || estado.valor.concluidas.includes(5);
   let seguidas = 0, lido = false;
@@ -188,4 +188,13 @@ function enviarTela(img) {
     const lista = JSON.parse(localStorage.getItem('cb_tv') || '[]');
     localStorage.setItem('cb_tv', JSON.stringify([...lista, {id: Date.now() + '-' + Math.random().toString(36).slice(2, 6), img}].slice(-12)));
   } catch (e) {}
+  // Telão em rede (tv.php): JPEG leve de até 432 px, fundo branco por baixo da transparência.
+  const im = new Image();
+  im.onload = () => {
+    const k = Math.min(1, 432 / im.width), c = document.createElement('canvas'), x = c.getContext('2d');
+    c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+    x.fillStyle = '#fffdf6'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+    c.toBlob(b => b && fetch('./tv.php', {method: 'POST', body: b, headers: {'Content-Type': 'image/jpeg'}, keepalive: true}).catch(() => {}), 'image/jpeg', .8);
+  };
+  im.src = img;
 }
