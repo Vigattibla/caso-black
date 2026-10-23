@@ -77,7 +77,8 @@ function boneco(traco) {
 export function criarRetrato({estado, demo}) {
   if (!document.querySelector('#css-retrato')) { const s = document.createElement('style'); s.id = 'css-retrato'; s.textContent = CSS; document.head.append(s); }
   const el = document.createElement('section'); el.className = 'e1 retrato'; el.dataset.estacao = 'frente';
-  el.innerHTML = `<div class="ret-area"></div><p class="leitura-status" role="status"></p><div class="ret-rodape"><div class="fala-slot"></div><div class="foto-convite" hidden><button class="escolher-foto">📸 Tirar outra foto</button><div class="album"></div><a class="btn-caderno" href="../?album=1">Ver meu álbum e enviar à recepção</a></div></div>`;
+  el.innerHTML = `<div class="ret-area"></div><p class="leitura-status" role="status"></p><div class="ret-rodape"><div class="fala-slot"></div><div class="foto-convite" hidden><button class="escolher-foto">📸 Tirar outra foto</button><div class="album"></div><a class="btn-caderno" href="../?album=1">Ver meu álbum e enviar à recepção</a><a class="btn-caderno btn-vip" href="../#vip">Receber as ofertas da Black</a></div></div>`;
+  window.Dados?.grupo().then(link => { if (link) { const a = el.querySelector('.btn-vip'); a.href = link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Entrar no grupo VIP'; } });
   const q = s => el.querySelector(s), teste = demo || new URLSearchParams(location.search).get('retrato') === '1';
   const liberado = () => teste || estado.valor.concluidas.includes(5);
   let seguidas = 0, lido = false;
