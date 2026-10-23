@@ -5,155 +5,234 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Caso Black · Telão</title>
 <link rel="icon" type="image/png" href="../assets/cb-logo.png?v=20261023">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Abril+Fatface&family=Archivo+Black&family=Permanent+Marker&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* Quadro de investigação: cortiça gerada em canvas (uma vez por tamanho de tela), moldura de madeira,
-   polaroides presas com percevejo e barbante vermelho com barriga até a ficha do Bê. Unidade --u = 1vmin. */
+/* Mural em colagem: fundo de papelão escuro com recortes de jornal (canvas), retratos em papel rasgado presos com
+   fita crepe, letras de bilhete de resgate e sombra seca, sem degradê. O quadro entra por um rasgo de papel que
+   corta o vídeo. Unidade --u = 1vmin. */
 *{box-sizing:border-box;margin:0}
-html,body{height:100%;background:#2b1a0e;overflow:hidden;cursor:none}
-body{--u:1vmin;font-family:'Special Elite','Courier Prime',monospace;color:#2a1a0e}
-#filme{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#000;transition:opacity .6s;z-index:20}
-body:not(.video) #filme{opacity:0}
-#telao{position:fixed;inset:0;overflow:hidden}
-#telao:after{content:'';position:absolute;inset:0;pointer-events:none;z-index:9;border:calc(2.2*var(--u)) solid #5a3519;
-  border-image:linear-gradient(135deg,#7b4a22,#4a2a12 30%,#6e421d 55%,#3d230f 80%,#6a3f1c) 1;
-  box-shadow:inset 0 0 0 calc(.35*var(--u)) #2a170a,inset 0 calc(1.4*var(--u)) calc(3*var(--u)) #000a,inset 0 0 calc(18*var(--u)) #0009}
-#cortica{position:absolute;inset:0;width:100%;height:100%}
-#luz{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 42%,#fff2d01c,transparent 70%),radial-gradient(ellipse at 50% 50%,transparent 55%,#1a0d0499);pointer-events:none;z-index:1}
+html,body{height:100%;background:#121110;overflow:hidden;cursor:none}
+body{--u:1vmin;font-family:'Special Elite','Courier Prime',monospace;color:#1a1714}
+#filme{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:1}
+#borda{position:fixed;inset:0;z-index:2;background:#efe8d6}
+#telao{position:fixed;inset:0;overflow:hidden;z-index:3;background:#1b1916}
+#fundo{position:absolute;inset:0;width:100%;height:100%}
+#luz{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 48%,transparent 50%,#000a);pointer-events:none;z-index:1}
 #fios{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
-#fios .sombra{stroke:#0000004d;stroke-width:calc(.55*var(--u));fill:none}
-#fios .fio{stroke:#a3101c;stroke-width:calc(.38*var(--u));fill:none;stroke-linecap:round}
-#fios .brilho{stroke:#ff6b6b66;stroke-width:calc(.1*var(--u));fill:none}
-.cartao{position:absolute;transform:translate(-50%,-50%) rotate(var(--g,0deg));z-index:4;padding:calc(1.1*var(--u)) calc(1.1*var(--u)) calc(4.2*var(--u));
-  background:linear-gradient(160deg,#fffef9,#f3ecdc);
-  box-shadow:0 0 0 1px #0000000f,calc(.5*var(--u)) calc(1.6*var(--u)) calc(2.2*var(--u)) #0000006b,0 calc(.3*var(--u)) calc(.4*var(--u)) #0004}
-.cartao img{display:block;height:calc(var(--h)*var(--u));aspect-ratio:432/528;object-fit:contain;background:#fffdf6;box-shadow:inset 0 0 0 1px #0000001a}
-.cartao small{position:absolute;left:0;right:0;bottom:calc(.9*var(--u));text-align:center;font:calc(2.2*var(--u)) 'Permanent Marker',cursive;color:#1e2a5a;white-space:nowrap;transform:rotate(-1.5deg)}
-.pino{position:absolute;left:50%;top:calc(.6*var(--u));width:calc(2.8*var(--u));height:calc(2.8*var(--u));margin-left:calc(-1.4*var(--u));border-radius:50%;z-index:6;
-  background:radial-gradient(circle at 34% 30%,#fff 0 8%,var(--c1,#ff5a5a) 22%,var(--c2,#c8102e) 55%,var(--c3,#5c0610) 100%);
-  box-shadow:calc(.7*var(--u)) calc(.9*var(--u)) calc(.5*var(--u)) #0000007a}
+#fios .sombra{stroke:#0008;stroke-width:calc(.35*var(--u));fill:none}
+#fios .fio{stroke:#c8102e;stroke-width:calc(.32*var(--u));fill:none;stroke-linecap:round}
+.cartao{position:absolute;transform:translate(-50%,-50%) rotate(var(--g,0deg));z-index:4;filter:drop-shadow(calc(.5*var(--u)) calc(.8*var(--u)) 0 #000000a6)}
+.papel{background:#f2ecdd;padding:calc(1.3*var(--u)) calc(1.3*var(--u)) calc(3.4*var(--u))}
+.papel img{display:block;height:calc(var(--h)*var(--u));aspect-ratio:432/528;object-fit:contain;background:#fffdf6;filter:contrast(1.08) sepia(.12)}
+.fita{position:absolute;top:calc(-1.2*var(--u));left:calc(-2.2*var(--u));width:calc(9*var(--u));height:calc(2.8*var(--u));background:#e2d6b0c9;transform:rotate(-32deg);z-index:2;
+  clip-path:polygon(0 8%,6% 0,12% 10%,18% 0,82% 0,88% 12%,94% 0,100% 10%,100% 90%,94% 100%,88% 88%,82% 100%,18% 100%,12% 90%,6% 100%,0 92%)}
+.fita.d{left:auto;right:calc(-2.2*var(--u));transform:rotate(30deg)}
+.pino{position:absolute;left:50%;top:calc(.4*var(--u));width:calc(1.7*var(--u));height:calc(1.7*var(--u));margin-left:calc(-.85*var(--u));border-radius:50%;z-index:3;background:#c8102e;border:calc(.3*var(--u)) solid #7c0814}
+.tarja{position:absolute;left:50%;bottom:calc(.4*var(--u));transform:translateX(-50%) rotate(-2deg);white-space:nowrap;background:#111;color:#f2ecdd;font:400 calc(2*var(--u)) 'Special Elite',monospace;letter-spacing:.12em;padding:calc(.4*var(--u)) calc(1.2*var(--u)) calc(.2*var(--u))}
 .retrato{--h:18}
-.centro{--h:27;z-index:4}
-.centro .tit{font:400 calc(5*var(--u)) Anton,sans-serif;letter-spacing:.12em;text-align:center;color:#a3101c;margin:calc(.4*var(--u)) 0 calc(.8*var(--u))}
-.centro img{width:calc(var(--h)*var(--u)*1.1);aspect-ratio:auto;object-fit:contain;padding:calc(3*var(--u));background:#111}
-.centro small{font-family:'Special Elite',monospace;color:#2a1a0e;font-size:calc(1.9*var(--u));transform:none}
-.centro .pino{--c1:#ffe08a;--c2:#d9a520;--c3:#6b4a08}
-.etiqueta{position:absolute;left:50%;top:calc(7*var(--u));transform:translate(-50%,-50%) rotate(-1deg);z-index:4;background:#f2ead2;padding:calc(1*var(--u)) calc(3*var(--u));font-size:calc(3*var(--u));letter-spacing:.18em;white-space:nowrap;box-shadow:calc(.3*var(--u)) calc(.8*var(--u)) calc(1.2*var(--u)) #0006}
-.etiqueta:before,.etiqueta:after{content:'';position:absolute;top:calc(-1.2*var(--u));width:calc(7*var(--u));height:calc(2.6*var(--u));background:#e9dfb9b3;box-shadow:0 1px 2px #0002}
-.etiqueta:before{left:calc(-2*var(--u));transform:rotate(-28deg)}
-.etiqueta:after{right:calc(-2*var(--u));transform:rotate(26deg)}
-.nota{position:absolute;z-index:4;background:linear-gradient(170deg,#fff3a6,#f5dc68);padding:calc(2.4*var(--u)) calc(2.6*var(--u)) calc(2*var(--u));transform:translate(-50%,-50%) rotate(var(--g));text-align:center;
-  box-shadow:calc(.4*var(--u)) calc(1.4*var(--u)) calc(1.8*var(--u)) #0006}
-.nota b{display:block;font:calc(5.4*var(--u)) 'Permanent Marker',cursive;color:#a3101c;line-height:1}
-.nota span{display:block;font:calc(2.2*var(--u)) 'Permanent Marker',cursive;color:#1e2a5a;margin-top:calc(.6*var(--u))}
-.nota .pino{top:calc(.4*var(--u));--c1:#9ad0ff;--c2:#1f6fd1;--c3:#0a2d5c}
-#destaque{position:absolute;inset:0;display:grid;place-items:center;z-index:12;pointer-events:none;transition:background .4s}
-#destaque.on{background:#0a0603b3}
-#destaque .cartao{position:relative;transform:rotate(-2deg);--h:60;left:auto;top:auto}
-#destaque .cartao small{font-size:calc(4*var(--u))}
-.carimbo{white-space:nowrap;position:absolute;right:calc(-6*var(--u));bottom:calc(9*var(--u));padding:calc(.6*var(--u)) calc(2.2*var(--u));border:calc(.9*var(--u)) double #c8102e;border-radius:calc(1*var(--u));color:#c8102e;font:400 calc(6.5*var(--u)) Anton,sans-serif;letter-spacing:.04em;transform:rotate(-14deg);opacity:0;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.7'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.7'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
-@media (orientation:portrait){.cartao small{font-size:calc(1.6*var(--u))}.retrato{--h:15}.centro{--h:22}#destaque .cartao{--h:50}.etiqueta{font-size:calc(2.4*var(--u))}}
+.centro{--h:24}
+.centro .papel{background:#0d0d0d;padding:calc(1.6*var(--u)) calc(2.4*var(--u)) calc(4*var(--u));text-align:center}
+.centro .papel img{width:calc(var(--h)*var(--u)*1.05);height:auto;aspect-ratio:auto;background:none;filter:none;margin:calc(1.6*var(--u)) auto 0}
+.centro .tit{font-size:calc(4.6*var(--u))}
+.recorte{display:inline-block;white-space:nowrap;line-height:1}
+.recorte i{display:inline-block;font-style:normal;padding:.1em .14em .04em;margin:0 .03em;box-shadow:.08em .1em 0 #000a}
+.recorte .esp{width:.35em;box-shadow:none;padding:0}
+.dymo{display:inline-block;background:#161616;color:#eee;font:700 calc(1.9*var(--u)) 'Courier Prime',monospace;letter-spacing:.28em;padding:calc(.5*var(--u)) calc(1.4*var(--u));text-shadow:0 -1px 0 #000,1px 1px 0 #777;box-shadow:calc(.3*var(--u)) calc(.4*var(--u)) 0 #000a}
+.etiqueta{position:absolute;left:50%;top:calc(9*var(--u));transform:translate(-50%,-50%) rotate(-1.5deg);z-index:4;text-align:center}
+.etiqueta .recorte{font-size:calc(6.4*var(--u))}
+.etiqueta .dymo{margin-top:calc(1.4*var(--u));transform:rotate(1.5deg)}
+.nota{position:absolute;z-index:4;transform:translate(-50%,-50%) rotate(var(--g));filter:drop-shadow(calc(.4*var(--u)) calc(.6*var(--u)) 0 #000000a6)}
+.nota .papel{padding:calc(2.6*var(--u)) calc(3*var(--u)) calc(2*var(--u)) calc(4*var(--u));text-align:center;
+  background:linear-gradient(90deg,transparent calc(2.4*var(--u)),#d6475a calc(2.4*var(--u)) calc(2.6*var(--u)),transparent 0),repeating-linear-gradient(#f6f1e3 0 calc(2.6*var(--u) - 1px),#a9bcd8 0 calc(2.6*var(--u)))}
+.nota b{display:block;font:calc(6*var(--u)) 'Permanent Marker',cursive;color:#c8102e;line-height:1}
+.nota span{display:block;font:calc(2.1*var(--u)) 'Permanent Marker',cursive;color:#1e2a5a;margin-top:calc(.6*var(--u))}
+#chegada{position:fixed;inset:0;z-index:6;pointer-events:none;transition:background .5s}
+#chegada.foco{background:#000000b0}
+#chegada .cartao{--h:60}
+#chegada .canto{--h:34}
+#chegada .tarja{font-size:calc(3.4*var(--u))}
+#chegada .canto .tarja{font-size:calc(2.4*var(--u))}
+.aviso{position:absolute;left:50%;top:calc(-5*var(--u));transform:translateX(-50%) rotate(-4deg);font-size:calc(4.2*var(--u));z-index:5;transition:opacity .3s}
+.foco .aviso{opacity:0}
+.carimbo{white-space:nowrap;position:absolute;right:calc(-7*var(--u));bottom:calc(10*var(--u));padding:calc(.6*var(--u)) calc(2.2*var(--u));border:calc(.9*var(--u)) double #c8102e;border-radius:calc(1*var(--u));color:#c8102e;font:400 calc(6.5*var(--u)) Anton,sans-serif;letter-spacing:.04em;transform:rotate(-14deg);opacity:0;z-index:4;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.7'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.7'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+@media (orientation:portrait){.retrato{--h:15}.centro{--h:20}#chegada .cartao{--h:50}#chegada .canto{--h:30}.etiqueta .recorte{font-size:calc(5*var(--u))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <video id="filme" muted playsinline preload="auto"></video>
+<div id="borda"></div>
 <div id="telao">
-  <canvas id="cortica"></canvas><div id="luz"></div>
+  <canvas id="fundo"></canvas><div id="luz"></div>
   <svg id="fios"></svg>
-  <div class="etiqueta">CASO BLACK · RETRATOS FALADOS</div>
-  <div class="cartao centro" id="centro" style="left:50%;top:52%;--g:-1.5deg"><i class="pino"></i><div class="tit">PROCURADO</div><img src="../assets/cb-logo.png" alt=""><small>VILLAGE RESORT</small></div>
-  <div class="nota" id="placar" style="--g:4deg"><i class="pino"></i><b id="total">0</b><span>retratos falados</span></div>
+  <div class="etiqueta"><div class="recorte" data-t="CASO BLACK"></div><br><span class="dymo">RETRATOS FALADOS</span></div>
+  <div class="cartao centro" id="centro" style="left:50%;top:55%;--g:-1.5deg"><i class="fita"></i><i class="fita d"></i><div class="papel"><div class="recorte tit" data-t="PROCURADO"></div><img src="../assets/cb-logo.png" alt=""></div><i class="pino"></i><b class="tarja">VILLAGE RESORT</b></div>
+  <div class="nota" id="placar" style="--g:4deg"><div class="papel"><b id="total">0</b><span>retratos falados</span></div><i class="pino"></i></div>
   <div id="board"></div>
-  <div id="destaque"></div>
 </div>
+<div id="chegada"></div>
 <script>
-/* Telão: vídeos do resort em loop (../assets/tv/playlist.json); quando uma família resolve o caso, o retrato dela
-   chega pela VPS (tv.php), entra no telão junto com os anteriores e o vídeo volta de onde parou.
-   ES2017 de propósito (navegador de smart TV). ?demo simula chegadas. */
+/* Telão: vídeos do resort em loop (playlist do painel, via tv.php?lista). Quando uma família resolve o caso, o retrato
+   chega pela VPS (tv.php), aparece colado no canto do vídeo, um rasgo de papel corta para o mural, o retrato vai pro
+   centro com o carimbo, depois para a vaga dele, e o rasgo devolve o vídeo. ES2017 de propósito (navegador de smart TV).
+   ?demo simula chegadas. */
 var q = new URLSearchParams(location.search), demo = q.has('demo');
-var TEMPO = 11000, INTERVALO = 8000;
-var board = document.getElementById('board'), destaque = document.getElementById('destaque'), fios = document.getElementById('fios'), filme = document.getElementById('filme');
-var vistos = {}, fila = [], historico = [], contagem = 0, rodando = false, ultimo = '', lista = [], faixa = 0;
-// Vagas no quadro (x,y em % da tela, paisagem); em retrato troca x por y. Centro livre pra ficha do Bê.
-var VAGAS = [[9,24],[26,19],[74,19],[91,24],[9,76],[26,82],[74,82],[91,76],[30,50],[70,50],[50,88],[10,50]];
-var NOTA = [[91,50]];
+var TEMPO = 13000, INTERVALO = 8000;
+var board = document.getElementById('board'), chegada = document.getElementById('chegada'), fios = document.getElementById('fios'), filme = document.getElementById('filme');
+var telao = document.getElementById('telao'), borda = document.getElementById('borda');
+var vistos = {}, fila = [], historico = [], contagem = 0, rodando = false, ultimo = '', lista = [], faixa = 0, aberto = true;
+// Vagas no quadro (x,y em % da tela, paisagem); em retrato troca x por y. Centro e topo livres pro título e a ficha.
+var VAGAS = [[9,26],[27,22],[73,22],[91,26],[9,76],[27,82],[73,82],[91,76],[30,52],[70,52],[50,90],[10,51]];
+var NOTA = [[91,51]];
+
+function sorte(s) { return function () { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
+// Letras de bilhete de resgate: cada uma recortada de um papel e fonte diferentes, sempre iguais para o mesmo texto.
+var LETRAS = [['#f2ecdd', '#111', 'Anton'], ['#111', '#f2ecdd', "'Abril Fatface'"], ['#c8102e', '#fff', "'Archivo Black'"], ['#ddd0ac', '#1e2a5a', "'Special Elite'"],
+  ['#fff', '#c8102e', "'Abril Fatface'"], ['#2a2a2a', '#fdc72f', 'Anton'], ['#e9e1cb', '#111', "'Courier Prime';font-weight:700"]];
+function recortar(el) {
+  var r = sorte(el.dataset.t.length * 71 + 7);
+  el.innerHTML = el.dataset.t.split('').map(function (c, i) {
+    if (c === ' ') return '<i class="esp"></i>';
+    var p = LETRAS[(i * 3 + (r() * 4 | 0)) % LETRAS.length];
+    return '<i style="background:' + p[0] + ';color:' + p[1] + ';font-family:' + p[2] + ';font-size:' + (.85 + r() * .3).toFixed(2) + 'em;transform:translateY(' + ((r() - .5) * .12).toFixed(2) + 'em) rotate(' + ((r() - .5) * 12).toFixed(1) + 'deg)">' + c + '</i>';
+  }).join('');
+}
+Array.prototype.forEach.call(document.querySelectorAll('.recorte'), recortar);
+// Papel rasgado: 6 contornos irregulares sorteados uma vez e reaproveitados pelos cartões.
+var RASGOS = [];
+(function () {
+  var css = '';
+  for (var k = 0; k < 6; k++) {
+    var r = sorte(k * 131 + 17), p = [], i, n = 12;
+    for (i = 0; i < n; i++) p.push((i / n * 100).toFixed(1) + '% ' + (r() * 1.8).toFixed(2) + '%');
+    for (i = 0; i < n; i++) p.push((100 - r() * 1.8).toFixed(2) + '% ' + (i / n * 100).toFixed(1) + '%');
+    for (i = n; i > 0; i--) p.push((i / n * 100).toFixed(1) + '% ' + (100 - r() * 1.8).toFixed(2) + '%');
+    for (i = n; i > 0; i--) p.push((r() * 1.8).toFixed(2) + '% ' + (i / n * 100).toFixed(1) + '%');
+    css += '.r' + k + ' .papel{clip-path:polygon(' + p.join(',') + ')}';
+  }
+  var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+})();
+document.getElementById('centro').classList.add('r1'); document.getElementById('placar').classList.add('r4');
 
 function rotulo(n) { return String(n); }
 function xy(v) { return innerHeight > innerWidth ? [v[1], v[0]] : v; }
-function cartao(r, n) { return '<i class="pino" style="' + PINOS[n % PINOS.length] + '"></i><img src="' + r.img + '" alt="Retrato falado" decoding="async"><small>suspeito #' + n + '</small>'; }
+function cartao(r, n) { return '<i class="fita"></i><i class="fita d"></i><div class="papel"><img src="' + r.img + '" alt="Retrato falado" decoding="async"></div><i class="pino"></i><b class="tarja">SUSPEITO Nº ' + n + '</b>'; }
 function desenharMural() {
   var base = contagem - historico.length;
   board.innerHTML = historico.map(function (r, i) {
     var p = xy(VAGAS[(base + i) % VAGAS.length]);
-    return '<div class="cartao retrato" style="left:' + p[0] + '%;top:' + p[1] + '%;--g:' + (((base + i) * 37 % 9) - 4) + 'deg">' + cartao(r, base + i + 1) + '</div>';
+    return '<div class="cartao retrato r' + ((base + i) % 6) + '" style="left:' + p[0] + '%;top:' + p[1] + '%;--g:' + (((base + i) * 37 % 9) - 4) + 'deg">' + cartao(r, base + i + 1) + '</div>';
   }).join('');
   var nt = xy(NOTA[0]); var pl = document.getElementById('placar'); pl.style.left = nt[0] + '%'; pl.style.top = nt[1] + '%';
   document.getElementById('total').textContent = rotulo(contagem);
   amarrar();
 }
-// Barbante: da tachinha de cada retrato até a tachinha do Bê.
+// Barbante: da tachinha de cada retrato até a da ficha central, com barriga leve.
 function amarrar() {
   var c = document.querySelector('#centro .pino').getBoundingClientRect(), cx = c.left + c.width / 2, cy = c.top + c.height / 2;
   fios.setAttribute('viewBox', '0 0 ' + innerWidth + ' ' + innerHeight);
   fios.innerHTML = Array.prototype.map.call(board.querySelectorAll('.pino'), function (t) {
     var b = t.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
-    var d = 'M' + x + ' ' + y + ' Q' + (x + cx) / 2 + ' ' + ((y + cy) / 2 + Math.hypot(cx - x, cy - y) * .07) + ' ' + cx + ' ' + cy;
-    return '<g><path class="sombra" transform="translate(4 7)" d="' + d + '"/><path class="fio" d="' + d + '"/><path class="brilho" d="' + d + '"/></g>';
+    var d = 'M' + x + ' ' + y + ' Q' + (x + cx) / 2 + ' ' + ((y + cy) / 2 + Math.hypot(cx - x, cy - y) * .06) + ' ' + cx + ' ' + cy;
+    return '<g><path class="sombra" transform="translate(3 5)" d="' + d + '"/><path class="fio" d="' + d + '"/></g>';
   }).join('');
 }
-// Cortiça: grânulos de vários tons desenhados uma vez, refeitos só se a tela mudar de tamanho.
-function cortica() {
-  var cv = document.getElementById('cortica'), w = innerWidth, h = innerHeight, x = cv.getContext('2d'), n, i, r;
-  cv.width = w; cv.height = h;
-  x.fillStyle = '#b97b45'; x.fillRect(0, 0, w, h);
-  var tons = ['#8a5328', '#a2652f', '#c98d54', '#d9a26a', '#6e3f1b', '#e6b47c', '#b07038'];
-  n = w * h / 55;
-  for (i = 0; i < n; i++) {
-    r = Math.random() < .85 ? .6 + Math.random() * 1.6 : 1.6 + Math.random() * 3;
-    x.fillStyle = tons[(Math.random() * tons.length) | 0]; x.globalAlpha = .35 + Math.random() * .6;
-    x.beginPath(); x.ellipse(Math.random() * w, Math.random() * h, r, r * (.5 + Math.random() * .6), Math.random() * 3.2, 0, 7); x.fill();
-  }
-  x.globalAlpha = .5; x.fillStyle = '#4a2810';
-  for (i = 0; i < n / 12; i++) x.fillRect(Math.random() * w, Math.random() * h, 1.2, 1.2);
-  x.globalAlpha = 1;
+function esticar(g, atraso) {
+  Array.prototype.forEach.call(g.childNodes, function (l) { l.style.strokeDasharray = 4000; l.animate([{strokeDashoffset: 4000}, {strokeDashoffset: 4000}, {strokeDashoffset: 0}], {duration: 1400 + atraso, easing: 'ease-out'}); });
 }
-var PINOS = ['', '--c1:#ffe08a;--c2:#d9a520;--c3:#6b4a08', '--c1:#9ad0ff;--c2:#1f6fd1;--c3:#0a2d5c', '--c1:#a8f0a0;--c2:#2f9a3a;--c3:#0e3d14'];
-cortica();
+// Fundo: papelão escuro com grão, recortes de jornal desbotados e retícula vermelha; refeito só se a tela mudar.
+function fundo() {
+  var cv = document.getElementById('fundo'), w = innerWidth, h = innerHeight, x = cv.getContext('2d'), r = sorte(42), i, j, k;
+  cv.width = w; cv.height = h;
+  x.fillStyle = '#1b1916'; x.fillRect(0, 0, w, h);
+  for (i = 0; i < w * h / 40; i++) { x.fillStyle = r() < .5 ? '#ffffff0d' : '#00000026'; x.fillRect(r() * w, r() * h, 1.5, 1.5); }
+  var u = Math.min(w, h) / 100;
+  for (k = 0; k < 16; k++) {
+    var cxk = r() * w, cyk = r() * h, pw = (14 + r() * 22) * u, ph = (10 + r() * 18) * u;
+    x.save(); x.translate(cxk, cyk); x.rotate((r() - .5) * .5);
+    x.beginPath(); x.moveTo(-pw / 2, -ph / 2);
+    for (j = 1; j <= 8; j++) x.lineTo(-pw / 2 + pw * j / 8, -ph / 2 + (r() - .5) * u);
+    for (j = 1; j <= 6; j++) x.lineTo(pw / 2 + (r() - .5) * u, -ph / 2 + ph * j / 6);
+    for (j = 7; j >= 0; j--) x.lineTo(-pw / 2 + pw * j / 8, ph / 2 + (r() - .5) * u);
+    for (j = 5; j > 0; j--) x.lineTo(-pw / 2 + (r() - .5) * u, -ph / 2 + ph * j / 6);
+    x.closePath(); x.fillStyle = k % 5 === 0 ? '#4a3a2c' : '#5b574f'; x.fill();
+    x.clip(); x.fillStyle = '#2f2c28';
+    if (k % 4 === 0) { x.fillRect(-pw / 2 + u, -ph / 2 + u, pw * .8, 2.4 * u); }
+    for (j = -ph / 2 + 4.4 * u; j < ph / 2 - u; j += 1.3 * u) {
+      var col = r() < .5 ? 2 : 1, cw = (pw - 2 * u) / col;
+      for (var c = 0; c < col; c++) x.fillRect(-pw / 2 + u + c * (cw + .6 * u), j, cw * (.7 + r() * .3) - .6 * u, .55 * u);
+    }
+    if (k % 3 === 1) { x.fillStyle = '#7a1a1f'; for (j = 0; j < 18; j++) for (c = 0; c < 18; c++) { var rr = (1 - j / 18) * .45 * u; x.beginPath(); x.arc(-pw / 2 + c * 1.1 * u, ph / 2 - j * 1.1 * u, rr, 0, 7); x.fill(); } }
+    x.restore();
+  }
+  for (k = 0; k < 7; k++) { x.save(); x.translate(r() * w, r() * h); x.rotate((r() - .5) * 1.4); x.fillStyle = '#b9ad8a40'; x.fillRect(-6 * u, -1.4 * u, 12 * u, 2.8 * u); x.restore(); }
+}
+fundo();
 var tamanho = innerWidth + 'x' + innerHeight;
-addEventListener('resize', function () { var t = innerWidth + 'x' + innerHeight; if (t !== tamanho) { tamanho = t; cortica(); } });
+addEventListener('resize', function () { var t = innerWidth + 'x' + innerHeight; if (t !== tamanho) { tamanho = t; fundo(); } });
 addEventListener('resize', desenharMural);
 
-// Vídeo: só ocupa a tela quando há playlist; sem ela o telão fica fixo.
-function modoVideo(sim) { document.body.classList.toggle('video', sim && lista.length > 0); if (sim && lista.length) filme.play().catch(function () {}); else filme.pause(); }
+// Rasgo: borda de papel irregular que atravessa a tela; o mural fica à esquerda dela, o vídeo à direita.
+var BEIRA = (function () { var r = sorte(9), a = []; for (var i = 0; i <= 16; i++) a.push((r() - .5) * 5); return a; })();
+function rasgo(X) { return 'polygon(0% 0%,' + BEIRA.map(function (j, i) { return (X + j).toFixed(2) + '% ' + (i / 16 * 100).toFixed(2) + '%'; }).join(',') + ',0% 100%)'; }
+function cortar(el, de, para, ms) {
+  el.style.clipPath = el.style.webkitClipPath = rasgo(para);
+  if (el.animate && ms) el.animate([{clipPath: rasgo(de), webkitClipPath: rasgo(de)}, {clipPath: rasgo(para), webkitClipPath: rasgo(para)}], {duration: ms, easing: 'cubic-bezier(.75,0,.25,1)'});
+}
+// Mural aberto ou vídeo na tela; sem playlist o mural fica fixo.
+function modoVideo(sim) {
+  if (sim && !lista.length) sim = false;
+  if (aberto === !sim) return;
+  aberto = !sim; var ms = 900;
+  if (sim) { filme.play().catch(function () {}); cortar(telao, 112, -12, ms); cortar(borda, 114, -10, ms); }
+  else {
+    cortar(telao, -12, 112, ms); cortar(borda, -10, 114, ms);
+    setTimeout(function () { if (aberto) filme.pause(); }, ms);
+    // Cartões caem em sequência e o barbante se estica, pra o mural não aparecer parado.
+    if (board.animate) Array.prototype.forEach.call(board.children, function (c, i) {
+      c.animate([{transform: getComputedStyle(c).transform + ' scale(1.25)', opacity: 0}, {opacity: 1, offset: .4}, {transform: getComputedStyle(c).transform}], {duration: 500, delay: 250 + i * 70, easing: 'cubic-bezier(.3,1.4,.6,1)', fill: 'backwards'});
+    });
+    Array.prototype.forEach.call(fios.children, function (g, i) { if (g.animate || g.childNodes[0].animate) esticar(g, 300 + i * 70); });
+  }
+}
 function tocar(i) { if (!lista.length) return; faixa = (i + lista.length) % lista.length; filme.src = '../' + lista[faixa]; filme.play().catch(function () {}); }
 filme.addEventListener('ended', function () { lista.length === 1 ? (filme.currentTime = 0, filme.play()) : tocar(faixa + 1); });
 filme.addEventListener('error', function () { setTimeout(function () { tocar(faixa + 1); }, 2000); });
 
+// FLIP: anima um elemento do retângulo antigo até onde ele está agora.
+function voar(el, de, ms, curva) {
+  var a = el.getBoundingClientRect(), dx = de.left + de.width / 2 - (a.left + a.width / 2), dy = de.top + de.height / 2 - (a.top + a.height / 2), k = de.height / a.height, t = getComputedStyle(el).transform;
+  if (el.animate) el.animate([{transform: 'translate(' + dx + 'px,' + dy + 'px) ' + (t === 'none' ? '' : t) + ' scale(' + k + ')'}, {transform: t}], {duration: ms, easing: curva || 'cubic-bezier(.5,0,.2,1)'});
+}
 function mostrar(r) {
-  rodando = true; contagem++; modoVideo(false);
-  var n = contagem;
-  destaque.className = 'on';
-  destaque.innerHTML = '<div class="cartao">' + cartao(r, n) + '<div class="carimbo">CASO RESOLVIDO</div></div>';
-  var card = destaque.firstChild;
-  if (card.animate) {
-    card.animate([{transform: 'translateY(-110vh) rotate(-10deg)'}, {transform: 'translateY(2vh) rotate(0deg)', offset: .75}, {transform: 'rotate(-2deg)'}], {duration: 1100, easing: 'cubic-bezier(.3,1.3,.5,1)', fill: 'forwards'});
-    card.querySelector('.carimbo').animate([{opacity: 0, transform: 'rotate(-14deg) scale(3)'}, {opacity: 1, transform: 'rotate(-14deg) scale(1)'}], {duration: 320, delay: 1500, easing: 'ease-in', fill: 'forwards'});
-  } else card.querySelector('.carimbo').style.opacity = 1;
-  // Depois do destaque, o retrato voa até a vaga dele e o barbante se estica.
+  rodando = true; contagem++;
+  var n = contagem, sobreVideo = !aberto;
+  chegada.className = '';
+  chegada.innerHTML = '<div class="cartao r' + (n % 6) + (sobreVideo ? ' canto' : '') + '" style="left:' + (sobreVideo ? '80%;top:60%' : '50%;top:50%') + ';--g:' + (sobreVideo ? 5 : -2) + 'deg">' + cartao(r, n) +
+    '<div class="aviso recorte" data-t="NOVO SUSPEITO"></div><div class="carimbo">CASO RESOLVIDO</div></div>';
+  var card = chegada.firstChild; recortar(card.querySelector('.aviso'));
+  if (card.animate) card.animate([{transform: 'translate(-50%,-50%) rotate(20deg) scale(1.8)', opacity: 0}, {opacity: 1, offset: .3}, {transform: getComputedStyle(card).transform}], {duration: 450, easing: 'cubic-bezier(.2,1.5,.5,1)'});
+  // 1) colado no canto do vídeo; 2) rasgo corta pro mural e o retrato vai pro centro com o carimbo.
+  var t1 = sobreVideo ? 3600 : 400;
+  setTimeout(function () {
+    var de = card.getBoundingClientRect();
+    if (sobreVideo) modoVideo(false);
+    chegada.className = 'foco'; card.classList.remove('canto'); card.style.left = '50%'; card.style.top = '50%'; card.style.setProperty('--g', '-2deg');
+    if (sobreVideo) voar(card, de, 900);
+    var cb = card.querySelector('.carimbo');
+    if (cb.animate) cb.animate([{opacity: 0, transform: 'rotate(-14deg) scale(3)'}, {opacity: 1, transform: 'rotate(-14deg) scale(1)'}], {duration: 320, delay: 1300, easing: 'ease-in', fill: 'forwards'}); else cb.style.opacity = 1;
+  }, t1);
+  // 3) voa até a vaga no mural e o barbante se estica.
   setTimeout(function () {
     historico = historico.concat([r]).slice(-VAGAS.length); desenharMural();
-    var novo = board.lastChild, alvo = novo.getBoundingClientRect(), de = card.getBoundingClientRect();
-    destaque.className = ''; destaque.innerHTML = '';
-    if (novo.animate) {
-      var dx = de.left + de.width / 2 - (alvo.left + alvo.width / 2), dy = de.top + de.height / 2 - (alvo.top + alvo.height / 2), k = de.height / alvo.height;
-      novo.animate([{transform: 'translate(calc(-50% + ' + dx + 'px),calc(-50% + ' + dy + 'px)) scale(' + k + ')'}, {transform: getComputedStyle(novo).transform}], {duration: 900, easing: 'cubic-bezier(.5,0,.2,1)'});
-      if (fios.lastChild) Array.prototype.forEach.call(fios.lastChild.childNodes, function (l) { l.style.strokeDasharray = 4000; l.animate([{strokeDashoffset: 4000}, {strokeDashoffset: 4000}, {strokeDashoffset: 0}], {duration: 1800, easing: 'ease-out'}); });
-    }
-  }, TEMPO * .5);
-  setTimeout(function () { rodando = false; if (fila.length) mostrar(fila.shift()); else modoVideo(true); }, TEMPO);
+    var novo = board.lastChild, de = card.getBoundingClientRect();
+    chegada.className = ''; chegada.innerHTML = '';
+    voar(novo, de, 900);
+    if (fios.lastChild && fios.lastChild.animate) esticar(fios.lastChild, 400);
+  }, t1 + 5200);
+  setTimeout(function () { rodando = false; if (fila.length) mostrar(fila.shift()); else modoVideo(true); }, t1 + 9000);
 }
-// Vitrine: mesmo sem chegada nova, o quadro interrompe o vídeo de tempos em tempos (?vitrine=minutos).
+// Vitrine: mesmo sem chegada nova, o mural interrompe o vídeo de tempos em tempos (?vitrine=minutos).
 var VITRINE = (parseFloat(q.get('vitrine')) || 2) * 60000, PARADA = 15000;
 function vitrine() {
   if (rodando || !historico.length || !lista.length) return;
@@ -161,6 +240,7 @@ function vitrine() {
   setTimeout(function () { rodando = false; if (fila.length) mostrar(fila.shift()); else modoVideo(true); }, PARADA);
 }
 setInterval(vitrine, VITRINE);
+
 function receber(r, animar) {
   if (!r || !r.img || vistos[r.id]) return; vistos[r.id] = 1;
   if (!animar) { historico = historico.concat([r]).slice(-VAGAS.length); return; }
