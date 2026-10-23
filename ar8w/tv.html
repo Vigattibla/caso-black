@@ -7,58 +7,85 @@
 <link rel="icon" type="image/png" href="../assets/cb-logo.png?v=20261023">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* Unidade --u = 1% do menor lado: o mesmo layout serve TV 16:9, monitor, retrato e celular. */
+/* Quadro de investigação: cortiça, retratos presos com tachinha e barbante vermelho até a ficha do Bê.
+   Posições em % + unidade --u (1vmin): serve TV 16:9, retrato e celular. */
 *{box-sizing:border-box;margin:0}
-html,body{height:100%;background:#111;color:#fdc72f;overflow:hidden;cursor:none}
-body{--u:1vmin;font-family:'Courier Prime',monospace}
-#filme{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#000;transition:opacity .6s}
-#telao{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr auto;background:#111;transition:opacity .6s}
-body.video #telao{opacity:0;pointer-events:none}
+html,body{height:100%;background:#7a4a24;overflow:hidden;cursor:none}
+body{--u:1vmin;font-family:'Courier Prime',monospace;color:#2a1a0e}
+#filme{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#000;transition:opacity .6s;z-index:5}
 body:not(.video) #filme{opacity:0}
-header{display:flex;flex-wrap:wrap;align-items:center;gap:calc(3*var(--u));padding:calc(2.4*var(--u)) calc(4*var(--u));border-bottom:calc(.8*var(--u)) solid #fdc72f}
-header img{height:calc(10*var(--u))}
-header h1{font:400 calc(7*var(--u)) Anton,sans-serif;letter-spacing:.05em;color:#fff;white-space:nowrap}
-header span{margin-left:auto;font-size:calc(3.6*var(--u));text-align:right}
-main{display:grid;grid-template-columns:1.1fr 1fr;gap:calc(4*var(--u));padding:calc(4*var(--u));min-height:0}
-.palco{position:relative;display:grid;place-items:center;min-height:0;min-width:0}
-.ficha{position:relative;height:calc(100% - 7*var(--u));margin-top:calc(6*var(--u));max-height:calc(70*var(--u));max-width:100%;aspect-ratio:432/528;background:#fffdf6;padding:calc(2*var(--u));box-shadow:0 calc(2*var(--u)) calc(6*var(--u)) #000a}
-.ficha img{width:100%;height:100%;object-fit:contain;display:block}
-.ficha b{position:absolute;left:0;right:0;top:calc(-5.5*var(--u));text-align:center;font:400 calc(4*var(--u)) Anton,sans-serif;color:#fdc72f;letter-spacing:.08em;white-space:nowrap}
-.carimbo{position:absolute;right:calc(-4*var(--u));bottom:calc(6*var(--u));padding:var(--u) calc(2*var(--u));border:calc(.8*var(--u)) solid #c8102e;color:#c8102e;font:400 calc(6*var(--u)) Anton,sans-serif;transform:rotate(-12deg);background:#fffdf6cc;opacity:0}
-.espera{font:400 calc(6*var(--u)) Anton,sans-serif;color:#fff;text-align:center;line-height:1.3}
-.espera small{display:block;font-size:calc(3.4*var(--u));font-family:'Courier Prime',monospace;color:#fdc72f}
-.mural{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(15*var(--u)),1fr));grid-auto-rows:min-content;gap:calc(2.4*var(--u));align-content:center;min-height:0;overflow:hidden}
-.mural figure{background:#fffdf6;padding:var(--u);aspect-ratio:432/528;transform:rotate(var(--g));box-shadow:0 var(--u) calc(2*var(--u)) #0008}
-.mural img{width:100%;height:100%;object-fit:contain;display:block}
-footer{padding:calc(2*var(--u)) calc(4*var(--u));background:#fdc72f;color:#111;font-size:calc(3.4*var(--u));display:flex;justify-content:space-between;gap:calc(2*var(--u))}
-@media (orientation:portrait){main{grid-template-columns:1fr;grid-template-rows:1.3fr 1fr}header h1{font-size:calc(5.5*var(--u))}header span{font-size:calc(3*var(--u))}footer span+span{display:none}}
+body.video #filme{opacity:1}
+#telao{position:fixed;inset:0;background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .2 0 0 0 0 .08 0 0 0 1.1 -.35'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+  radial-gradient(ellipse at 50% 45%,#d39a63 0%,#c4864f 55%,#9c6334 100%);
+  box-shadow:inset 0 0 calc(12*var(--u)) #0007}
+#fios{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+#fios line{stroke:#b3121f;stroke-width:calc(.45*var(--u));stroke-linecap:round;filter:drop-shadow(0 calc(.4*var(--u)) calc(.3*var(--u)) #0006)}
+.cartao{position:absolute;transform:translate(-50%,-50%) rotate(var(--g,0deg));background:#fffdf6;padding:calc(1*var(--u)) calc(1*var(--u)) calc(3.4*var(--u));box-shadow:calc(.4*var(--u)) calc(1.2*var(--u)) calc(2*var(--u)) #0007;z-index:3}
+.cartao img{display:block;height:calc(var(--h)*var(--u));aspect-ratio:432/528;object-fit:contain;background:#fffdf6}
+.cartao i{position:absolute;left:50%;top:calc(-.6*var(--u));width:calc(2.6*var(--u));height:calc(2.6*var(--u));margin-left:calc(-1.3*var(--u));border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe7a0,#c99a2e 45%,#7a5a12);box-shadow:calc(.3*var(--u)) calc(.6*var(--u)) calc(.6*var(--u)) #0008;z-index:4}
+.cartao small{position:absolute;left:0;right:0;bottom:calc(.6*var(--u));text-align:center;font-size:calc(1.7*var(--u));font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.retrato{--h:19}
+.centro{--h:30;z-index:3}
+.centro .tit{font:400 calc(3.4*var(--u)) Anton,sans-serif;letter-spacing:.06em;text-align:center;margin-bottom:calc(.6*var(--u))}
+.centro img{object-fit:contain;padding:calc(3*var(--u));background:#111}
+.centro small{font-size:calc(1.8*var(--u))}
+.nota{position:absolute;background:#f6e9b8;padding:calc(1.6*var(--u)) calc(2.4*var(--u));transform:translate(-50%,-50%) rotate(var(--g));box-shadow:calc(.3*var(--u)) calc(.8*var(--u)) calc(1.4*var(--u)) #0006;z-index:3;text-align:center}
+.nota b{display:block;font:400 calc(4.6*var(--u)) Anton,sans-serif;letter-spacing:.05em;color:#111}
+.nota span{font-size:calc(2.2*var(--u));font-weight:700}
+.nota i{position:absolute;left:50%;top:calc(-.8*var(--u));width:calc(2.6*var(--u));height:calc(2.6*var(--u));margin-left:calc(-1.3*var(--u));border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff9a9a,#c8102e 50%,#5c0610);box-shadow:calc(.3*var(--u)) calc(.6*var(--u)) calc(.6*var(--u)) #0008}
+#destaque{position:absolute;inset:0;display:grid;place-items:center;z-index:8;pointer-events:none}
+#destaque.on{background:#0006}
+#destaque .cartao{position:relative;transform:rotate(-2deg);--h:62;left:auto;top:auto}
+#destaque .cartao small{font-size:calc(3*var(--u))}
+.carimbo{position:absolute;right:calc(-5*var(--u));bottom:calc(8*var(--u));padding:var(--u) calc(2*var(--u));border:calc(.8*var(--u)) solid #c8102e;color:#c8102e;font:400 calc(7*var(--u)) Anton,sans-serif;transform:rotate(-14deg);background:#fffdf6cc;opacity:0}
+@media (orientation:portrait){.cartao small{font-size:calc(1.3*var(--u))}.retrato{--h:15}.centro{--h:24}#destaque .cartao{--h:52}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <video id="filme" muted playsinline preload="auto"></video>
 <div id="telao">
-  <header><img src="../assets/cb-logo.png" alt=""><h1>RETRATOS FALADOS</h1><span id="total"></span></header>
-  <main>
-    <section class="palco" id="palco"><p class="espera">AGUARDANDO O PRÓXIMO DETETIVE…<small>Os retratos aparecem aqui quando o caso é resolvido</small></p></section>
-    <section class="mural" id="mural" aria-label="Retratos anteriores"></section>
-  </main>
-  <footer><span>CASO BLACK · VILLAGE RESORT</span><span>Desenhe o suspeito na sua carta</span></footer>
+  <svg id="fios"></svg>
+  <div class="cartao centro" id="centro" style="left:50%;top:50%;--g:-1.5deg"><i></i><div class="tit">SUSPEITO PRINCIPAL</div><img src="../assets/cb-logo.png" alt=""><small>VILLAGE RESORT</small></div>
+  <div class="nota" id="placar" style="--g:3deg"><i></i><b id="total">0 RETRATOS</b><span>falados pelos detetives</span></div>
+  <div id="board"></div>
+  <div id="destaque"></div>
 </div>
 <script>
 /* Telão: vídeos do resort em loop (../assets/tv/playlist.json); quando uma família resolve o caso, o retrato dela
    chega pela VPS (tv.php), entra no telão junto com os anteriores e o vídeo volta de onde parou.
    ES2017 de propósito (navegador de smart TV). ?demo simula chegadas. */
 var q = new URLSearchParams(location.search), demo = q.has('demo');
-var MAX = 12, TEMPO = 11000, INTERVALO = 8000;
-var palco = document.getElementById('palco'), mural = document.getElementById('mural'), filme = document.getElementById('filme');
+var TEMPO = 11000, INTERVALO = 8000;
+var board = document.getElementById('board'), destaque = document.getElementById('destaque'), fios = document.getElementById('fios'), filme = document.getElementById('filme');
 var vistos = {}, fila = [], historico = [], contagem = 0, rodando = false, ultimo = '', lista = [], faixa = 0;
+// Vagas no quadro (x,y em % da tela, paisagem); em retrato troca x por y. Centro livre pra ficha do Bê.
+var VAGAS = [[14,24],[33,17],[67,17],[86,24],[13,72],[32,80],[68,80],[87,71],[24,48],[76,48],[50,86],[50,14]];
+var NOTA = [[88,90],[90,8]];
 
-function rotulo(n) { return n ? n + ' CASO' + (n > 1 ? 'S' : '') + ' RESOLVIDO' + (n > 1 ? 'S' : '') : ''; }
+function rotulo(n) { return n + (n === 1 ? ' RETRATO' : ' RETRATOS'); }
+function xy(v) { return innerHeight > innerWidth ? [v[1], v[0]] : v; }
+function cartao(r, n) { return '<i></i><img src="' + r.img + '" alt="Retrato falado" decoding="async"><small>SUSPEITO Nº ' + String(n).padStart(3, '0') + '</small>'; }
 function desenharMural() {
-  mural.innerHTML = historico.slice().reverse().map(function (r, i) { return '<figure style="--g:' + ((i * 37 % 7) - 3) + 'deg"><img src="' + r.img + '" alt="" decoding="async"></figure>'; }).join('');
-  if (!rodando) document.getElementById('total').textContent = rotulo(contagem);
+  var base = contagem - historico.length;
+  board.innerHTML = historico.map(function (r, i) {
+    var p = xy(VAGAS[(base + i) % VAGAS.length]);
+    return '<div class="cartao retrato" style="left:' + p[0] + '%;top:' + p[1] + '%;--g:' + (((base + i) * 37 % 9) - 4) + 'deg">' + cartao(r, base + i + 1) + '</div>';
+  }).join('');
+  var nt = xy(NOTA[0]); var pl = document.getElementById('placar'); pl.style.left = nt[0] + '%'; pl.style.top = nt[1] + '%';
+  document.getElementById('total').textContent = rotulo(contagem);
+  amarrar();
 }
+// Barbante: da tachinha de cada retrato até a tachinha do Bê.
+function amarrar() {
+  var c = document.querySelector('#centro i').getBoundingClientRect(), cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+  fios.setAttribute('viewBox', '0 0 ' + innerWidth + ' ' + innerHeight);
+  fios.innerHTML = Array.prototype.map.call(board.querySelectorAll('i'), function (t) {
+    var b = t.getBoundingClientRect(); return '<line x1="' + (b.left + b.width / 2) + '" y1="' + (b.top + b.height / 2) + '" x2="' + cx + '" y2="' + cy + '"/>';
+  }).join('');
+}
+addEventListener('resize', desenharMural);
 
 // Vídeo: só ocupa a tela quando há playlist; sem ela o telão fica fixo.
 function modoVideo(sim) { document.body.classList.toggle('video', sim && lista.length > 0); if (sim && lista.length) filme.play().catch(function () {}); else filme.pause(); }
@@ -68,23 +95,30 @@ filme.addEventListener('error', function () { setTimeout(function () { tocar(fai
 
 function mostrar(r) {
   rodando = true; contagem++; modoVideo(false);
-  document.getElementById('total').textContent = rotulo(contagem);
-  palco.innerHTML = '<div class="ficha"><b>SUSPEITO Nº ' + String(contagem).padStart(3, '0') + '</b><img src="' + r.img + '" alt="Retrato falado"><div class="carimbo">É O BÊ!</div></div>';
-  var ficha = palco.querySelector('.ficha');
-  if (ficha.animate) {
-    ficha.animate([{transform: 'translateY(-110vh) rotate(-8deg)'}, {transform: 'translateY(2vh) rotate(2deg)', offset: .75}, {transform: 'none'}], {duration: 1100, easing: 'cubic-bezier(.3,1.3,.5,1)', fill: 'forwards'});
-    palco.querySelector('.carimbo').animate([{opacity: 0, transform: 'rotate(-12deg) scale(3)'}, {opacity: 1, transform: 'rotate(-12deg) scale(1)'}], {duration: 320, delay: 1500, easing: 'ease-in', fill: 'forwards'});
-  } else palco.querySelector('.carimbo').style.opacity = 1;
+  var n = contagem;
+  destaque.className = 'on';
+  destaque.innerHTML = '<div class="cartao">' + cartao(r, n) + '<div class="carimbo">É O BÊ!</div></div>';
+  var card = destaque.firstChild;
+  if (card.animate) {
+    card.animate([{transform: 'translateY(-110vh) rotate(-10deg)'}, {transform: 'translateY(2vh) rotate(0deg)', offset: .75}, {transform: 'rotate(-2deg)'}], {duration: 1100, easing: 'cubic-bezier(.3,1.3,.5,1)', fill: 'forwards'});
+    card.querySelector('.carimbo').animate([{opacity: 0, transform: 'rotate(-14deg) scale(3)'}, {opacity: 1, transform: 'rotate(-14deg) scale(1)'}], {duration: 320, delay: 1500, easing: 'ease-in', fill: 'forwards'});
+  } else card.querySelector('.carimbo').style.opacity = 1;
+  // Depois do destaque, o retrato voa até a vaga dele e o barbante se estica.
   setTimeout(function () {
-    historico = historico.concat([r]).slice(-MAX); desenharMural();
-    var novo = mural.querySelector('figure');
-    if (novo && novo.animate) novo.animate([{opacity: 0, transform: 'scale(1.6)'}, {opacity: 1}], {duration: 500});
-  }, TEMPO * .55);
+    historico = historico.concat([r]).slice(-VAGAS.length); desenharMural();
+    var novo = board.lastChild, alvo = novo.getBoundingClientRect(), de = card.getBoundingClientRect();
+    destaque.className = ''; destaque.innerHTML = '';
+    if (novo.animate) {
+      var dx = de.left + de.width / 2 - (alvo.left + alvo.width / 2), dy = de.top + de.height / 2 - (alvo.top + alvo.height / 2), k = de.height / alvo.height;
+      novo.animate([{transform: 'translate(calc(-50% + ' + dx + 'px),calc(-50% + ' + dy + 'px)) scale(' + k + ')'}, {transform: getComputedStyle(novo).transform}], {duration: 900, easing: 'cubic-bezier(.5,0,.2,1)'});
+      var linha = fios.lastChild; if (linha) { var L = 4000; linha.style.strokeDasharray = L; linha.animate([{strokeDashoffset: L}, {strokeDashoffset: L}, {strokeDashoffset: 0}], {duration: 1800, easing: 'ease-out'}); }
+    }
+  }, TEMPO * .5);
   setTimeout(function () { rodando = false; if (fila.length) mostrar(fila.shift()); else modoVideo(true); }, TEMPO);
 }
 function receber(r, animar) {
   if (!r || !r.img || vistos[r.id]) return; vistos[r.id] = 1;
-  if (!animar) { historico = historico.concat([r]).slice(-MAX); return; }
+  if (!animar) { historico = historico.concat([r]).slice(-VAGAS.length); return; }
   fila.push(r); if (!rodando) mostrar(fila.shift());
 }
 
@@ -94,7 +128,7 @@ function buscar(primeira) {
     if (!j) return;
     if (primeira) contagem = j.total;
     j.ids.forEach(function (id, i) {
-      if (primeira && i < j.ids.length - MAX) vistos[id] = 1; else receber({id: id, img: './tv.php?img=' + id}, !primeira);
+      if (primeira && i < j.ids.length - VAGAS.length) vistos[id] = 1; else receber({id: id, img: './tv.php?img=' + id}, !primeira);
     });
     if (j.ids.length) ultimo = j.ids[j.ids.length - 1];
     if (primeira) desenharMural();
