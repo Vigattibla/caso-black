@@ -32,7 +32,7 @@ Ler isto antes de mexer; não varrer o repositório inteiro.
 - 3º vídeo do telão; testar upload logado no painel.
 
 ## Mudanças (mais nova em cima)
-- 23/10 `em andamento` — Painel: chave "Rastro do Pipoca" (seção Estação 4, `ajustes.rastro_pipoca`, exposto em `?config`). Desligado: lupa direto na placa 4 abre o jogo da memória, sem folha do faro nem patinhas AR. Padrão ligado.
+- 23/10 `92f1403` — Painel: chave "Rastro do Pipoca" (seção Estação 4, `ajustes.rastro_pipoca`, exposto em `?config`). Desligado: lupa direto na placa 4 abre o jogo da memória, sem folha do faro nem patinhas AR. Padrão ligado.
 - 23/10 (fora do repo) — Carta impressa, frente: QR → https://ofertas.villageresort.com.br/caso-black/; COMO JOGAR com câmera mágica (sem lupa), "anote no verso", subtítulo "anote ou desenhe". Fonte `G:/Meu Drive/Campanhas/2026/Caso Black/Caso Black - carta.ai`; PDF em `Caso Black - PRODUCAO/01 Imprimir/2 - Carta…`.
 - 23/10 `037090a` — Telão: títulos CASO BLACK/PROCURADO em Anton (sem letras recortadas), fios terminam em alfinetes na borda do cartaz, placar no canto inferior direito, carimbo fora do rosto, retrato não cobre o título no vertical. Publicado.
 - 23/10 `9d9d7c9` — Verso: "ANOTE AQUI O QUE VOCÊ DESCOBRIU" + chamada stories @villageresortmg. Publicado; site confere com o commit.
