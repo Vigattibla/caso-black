@@ -39,6 +39,10 @@ try {
             cb_require_admin();
             cb_json(cb_sql("SELECT id,equipe,criado_em,impresso_em FROM mural WHERE status='aprovado' ORDER BY criado_em")->fetchAll(PDO::FETCH_ASSOC));
         }
+        if (isset($_GET['tv'])) {
+            cb_require_admin(); $p = cb_tv_lista(); $base = dirname(__DIR__) . '/';
+            cb_json(['ok' => true, 'videos' => array_map(fn($v) => ['arquivo' => $v, 'nome' => $p['nomes'][$v] ?? basename($v, '.mp4'), 'tamanho' => filesize($base . $v)], $p['lista'])]);
+        }
         if (isset($_GET['imagem'])) {
             cb_require_admin(); $id = cb_uuid($_GET['imagem']);
             if (!cb_sql('SELECT 1 FROM mural WHERE id=?', [$id])->fetchColumn()) cb_fail('Álbum não encontrado.', 404);
@@ -50,6 +54,20 @@ try {
         cb_json(['ok' => true, 'servico' => 'Caso Black']);
     }
     if ($method !== 'POST') cb_fail('Método não permitido.', 405);
+    // Vídeo da TV: corpo cru (MP4) com CSRF no cabeçalho; vai direto para tv-videos/ e entra no fim da lista.
+    if (isset($_GET['tv-video'])) {
+        cb_require_admin(); cb_csrf(['csrf' => $_SERVER['HTTP_X_CSRF'] ?? '']);
+        $len = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
+        if ($len < 1000 || $len > 400000000) cb_fail('Envie um MP4 de até 400 MB.', 413);
+        @set_time_limit(600);
+        $dir = dirname(__DIR__) . '/tv-videos'; if (!is_dir($dir)) mkdir($dir, 0755);
+        $nome = 'tv-videos/' . time() . '-' . bin2hex(random_bytes(3)) . '.mp4'; $file = dirname(__DIR__) . '/' . $nome;
+        $in = fopen('php://input', 'rb'); $out = fopen("$file.part", 'wb'); $n = stream_copy_to_stream($in, $out, 400000001); fclose($in); fclose($out);
+        if ($n > 400000000 || substr((string)file_get_contents("$file.part", false, null, 0, 12), 4, 4) !== 'ftyp') { @unlink("$file.part"); cb_fail('O arquivo não é um vídeo MP4.'); }
+        rename("$file.part", $file); @chmod($file, 0644);
+        $p = cb_tv_lista(); $p['lista'][] = $nome; $p['nomes'][$nome] = mb_substr(trim(rawurldecode($_SERVER['HTTP_X_NOME'] ?? '')), 0, 80) ?: 'Vídeo';
+        cb_tv_salvar($p); cb_audit('tv-enviar', $nome); cb_json(['ok' => true]);
+    }
     if (stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== 0) cb_fail('Envie JSON.', 415);
     if ((int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 6500000) cb_fail('Imagem muito grande.', 413);
     $raw = file_get_contents('php://input', false, null, 0, 6500001);
@@ -63,7 +81,7 @@ try {
         session_regenerate_id(true); $_SESSION['admin_ate'] = time() + 28800; $_SESSION['csrf'] = bin2hex(random_bytes(24));
         cb_audit('login'); cb_json(['ok' => true, 'csrf' => $_SESSION['csrf']]);
     }
-    if (in_array($event, ['logout', 'moderar', 'impressos', 'ajustes'], true)) {
+    if (in_array($event, ['logout', 'moderar', 'impressos', 'ajustes', 'tv-ordem', 'tv-remover'], true)) {
         cb_require_admin(); cb_csrf($b);
         if ($event === 'logout') { $_SESSION = []; session_destroy(); cb_json(['ok' => true]); }
         if ($event === 'moderar') {
@@ -75,6 +93,18 @@ try {
         if ($event === 'impressos') {
             $ids = $b['ids'] ?? []; if (!is_array($ids) || count($ids) > 100) cb_fail('Seleção inválida.');
             foreach ($ids as $id) { $id = cb_uuid($id); cb_sql("UPDATE mural SET impresso_em=? WHERE id=? AND status='aprovado'", [cb_now(), $id]); cb_audit('impresso', $id); }
+        }
+        if ($event === 'tv-ordem') {
+            $p = cb_tv_lista(); $nova = $b['lista'] ?? null;
+            if (!is_array($nova) || count($nova) !== count($p['lista']) || array_diff($p['lista'], $nova) || array_diff($nova, $p['lista'])) cb_fail('Lista desatualizada. Atualize a página.', 409);
+            $p['lista'] = array_values($nova); cb_tv_salvar($p); cb_audit('tv-ordem');
+        }
+        if ($event === 'tv-remover') {
+            $p = cb_tv_lista(); $v = $b['arquivo'] ?? '';
+            if (!is_string($v) || !in_array($v, $p['lista'], true)) cb_fail('Vídeo não encontrado.', 404);
+            $p['lista'] = array_values(array_diff($p['lista'], [$v])); unset($p['nomes'][$v]); cb_tv_salvar($p);
+            if (str_starts_with($v, 'tv-videos/')) @unlink(dirname(__DIR__) . '/' . $v);
+            cb_audit('tv-remover', $v);
         }
         if ($event === 'ajustes') {
             $url = trim((string)($b['vip_url'] ?? '')); $u = parse_url($url);

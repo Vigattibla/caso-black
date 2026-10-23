@@ -94,3 +94,17 @@ function cb_csrf(array $body): void {
 }
 function cb_vip(): string { return (string)(cb_sql("SELECT valor FROM ajustes WHERE chave='vip_url'")->fetchColumn() ?: ''); }
 function cb_audit(string $action, string $target = ''): void { cb_sql('INSERT INTO auditoria(acao,alvo,criado_em) VALUES(?,?,?)', [$action, $target, cb_now()]); }
+
+// Vídeos da TV: a lista fica na pasta privada; os enviados pelo painel ficam em tv-videos/ (servidos direto, com Range).
+function cb_tv_lista(): array {
+    $p = json_decode((string)@file_get_contents(cb_dir() . '/tv/playlist.json'), true);
+    if (!is_array($p) || !is_array($p['lista'] ?? null))
+        $p = ['lista' => array_map(fn($n) => 'assets/tv/' . $n, json_decode((string)@file_get_contents(dirname(__DIR__) . '/assets/tv/playlist.json'), true) ?: [])];
+    $p['lista'] = array_values(array_filter($p['lista'], fn($v) => is_string($v) && preg_match('#^(assets/tv|tv-videos)/[a-z0-9-]{1,60}\.mp4$#', $v) && is_file(dirname(__DIR__) . '/' . $v)));
+    $p['nomes'] = is_array($p['nomes'] ?? null) ? $p['nomes'] : [];
+    return $p;
+}
+function cb_tv_salvar(array $p): void {
+    $d = cb_dir() . '/tv'; if (!is_dir($d)) mkdir($d, 0700, true);
+    file_put_contents("$d/playlist.json", json_encode(['lista' => array_values($p['lista']), 'nomes' => $p['nomes']], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX);
+}

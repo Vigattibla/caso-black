@@ -126,7 +126,7 @@ addEventListener('resize', desenharMural);
 
 // Vídeo: só ocupa a tela quando há playlist; sem ela o telão fica fixo.
 function modoVideo(sim) { document.body.classList.toggle('video', sim && lista.length > 0); if (sim && lista.length) filme.play().catch(function () {}); else filme.pause(); }
-function tocar(i) { if (!lista.length) return; faixa = (i + lista.length) % lista.length; filme.src = '../assets/tv/' + lista[faixa]; filme.play().catch(function () {}); }
+function tocar(i) { if (!lista.length) return; faixa = (i + lista.length) % lista.length; filme.src = '../' + lista[faixa]; filme.play().catch(function () {}); }
 filme.addEventListener('ended', function () { lista.length === 1 ? (filme.currentTime = 0, filme.play()) : tocar(faixa + 1); });
 filme.addEventListener('error', function () { setTimeout(function () { tocar(faixa + 1); }, 2000); });
 
@@ -190,9 +190,19 @@ document.addEventListener('visibilitychange', function () { if (!document.hidden
 acordar();
 setInterval(function () { var h = new Date().getHours(); if (h === 4 && performance.now() > 36e5 && !rodando) location.reload(); }, 6e5);
 
-fetch('../assets/tv/playlist.json', {cache: 'no-cache'}).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (l) {
-  lista = Array.isArray(l) ? l : []; if (lista.length) { tocar(0); modoVideo(true); setTimeout(vitrine, 4000); }
-});
+// Playlist montada pela equipe no painel (tv.php?lista), conferida a cada 5 min; sem PHP (teste local) cai no playlist.json.
+function lerLista() {
+  fetch('./tv.php?lista=1', {cache: 'no-cache'}).then(function (r) { return r.json(); }).then(function (j) { if (!Array.isArray(j.lista)) throw 0; return j.lista; })
+    .catch(function () { return fetch('../assets/tv/playlist.json', {cache: 'no-cache'}).then(function (r) { return r.json(); }).then(function (l) { return l.map(function (n) { return 'assets/tv/' + n; }); }); })
+    .catch(function () { return []; }).then(function (l) {
+      var antes = lista, atual = antes[faixa]; lista = l;
+      if (l.join() === antes.join()) return;
+      if (!l.length) { filme.removeAttribute('src'); filme.load(); return; }
+      if (l.indexOf(atual) < 0) { tocar(0); if (!rodando) modoVideo(true); } else faixa = l.indexOf(atual);
+      if (!antes.length) setTimeout(vitrine, 4000);
+    });
+}
+lerLista(); setInterval(lerLista, 3e5);
 
 function falso() {
   var W = 432, H = 528, c = document.createElement('canvas'), x = c.getContext('2d'), s = Math.random;

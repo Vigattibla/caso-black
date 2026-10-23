@@ -9,6 +9,13 @@ $indice = "$dir/indice.json";
 $ler = function () use ($indice) { $j = @json_decode((string)@file_get_contents($indice), true); return is_array($j) ? $j : []; };
 function sair($corpo, int $st = 200): void { http_response_code($st); header('Content-Type: application/json'); header('Cache-Control: no-store'); echo json_encode($corpo); exit; }
 
+// Lista de vídeos que a equipe monta no painel; sem ela, a do repositório.
+if (isset($_GET['lista'])) {
+    $p = @json_decode((string)@file_get_contents("$dir/playlist.json"), true);
+    $l = is_array($p['lista'] ?? null) ? $p['lista'] : array_map(fn($n) => 'assets/tv/' . $n, @json_decode((string)@file_get_contents(dirname(__DIR__) . '/assets/tv/playlist.json'), true) ?: []);
+    sair(['lista' => array_values(array_filter($l, fn($v) => is_string($v) && preg_match('#^(assets/tv|tv-videos)/[a-z0-9-]{1,60}\.mp4$#', $v)))]);
+}
+
 if (isset($_GET['img'])) {
     $id = (string)$_GET['img'];
     if (!preg_match('/^[0-9]{10,13}-[a-z0-9]{4,8}$/', $id) || !is_file("$dir/$id.jpg")) sair(['erro' => 'nao'], 404);
